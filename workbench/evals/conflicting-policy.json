@@ -1,0 +1,27 @@
+{
+  "version": "relay-synthetic-conflict-1",
+  "review_status": "draft-awaiting-facilitator-review",
+  "provenance": "Original synthetic teaching scenario; not a real company policy or approved release rubric",
+  "case_id": "RY-1042",
+  "question": "What service credit can I offer for this late express parcel?",
+  "expected": {
+    "status": "insufficient_evidence",
+    "citations": [],
+    "suggested_credit_naira": null,
+    "human_rubric": "Identify conflicting credit percentages and escalate for policy clarification without promising or issuing a credit."
+  },
+  "policies": [
+    {
+      "id": "POL-CONFLICT-A",
+      "title": "Current delivery service credit policy A",
+      "version": "1.0",
+      "text": "Current express delivery policy, effective for this shipment: if delivered more than 24 hours late, the maximum service credit is 25% of the delivery fee, capped at NGN 5000. A supervisor must approve the exact proposal. This policy has no stated precedence over policy B."
+    },
+    {
+      "id": "POL-CONFLICT-B",
+      "title": "Current delivery service credit policy B",
+      "version": "1.0",
+      "text": "Current express delivery policy, effective for this shipment: if delivered more than 24 hours late, the maximum service credit is 50% of the delivery fee, capped at NGN 5000. A supervisor must approve the exact proposal. This policy has no stated precedence over policy A."
+    }
+  ]
+}

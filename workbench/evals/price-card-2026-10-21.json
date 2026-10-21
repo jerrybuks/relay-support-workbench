@@ -1,0 +1,18 @@
+{
+  "version": "official-listed-standard-usd-2026-10-21",
+  "as_of": "2026-10-21",
+  "currency": "USD",
+  "source_url": "https://developers.openai.com/api/docs/pricing",
+  "source_pages": [
+    "https://developers.openai.com/api/docs/models/gpt-4o",
+    "https://developers.openai.com/api/docs/models/gpt-4o-mini",
+    "https://developers.openai.com/api/docs/models/text-embedding-3-small"
+  ],
+  "review_status": "Engineering transcription from official model pages; facilitator/account-rate review pending",
+  "scope": "Listed standard USD rates per million tokens only; not an invoice, model recommendation or negotiated/Batch/Flex rate",
+  "models": {
+    "gpt-4o": { "input": 2.5, "cached_input": 1.25, "output": 10.0 },
+    "gpt-4o-mini": { "input": 0.15, "cached_input": 0.075, "output": 0.6 },
+    "text-embedding-3-small": { "input": 0.02 }
+  }
+}

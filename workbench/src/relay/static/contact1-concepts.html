@@ -1,0 +1,1016 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#080b12" />
+    <meta
+      name="description"
+      content="Contact 1 concepts: models, harnesses, governance, RAG, tools, memory, streaming and evaluation, with explanatory speaker notes."
+    />
+    <title>Contact 1 concepts — AI application engineering · Relay</title>
+    <link rel="stylesheet" href="/static/contact1.css" />
+    <script src="/static/contact1.js" defer></script>
+  </head>
+  <body data-deck-mode="concepts">
+    <a class="skip-link" href="#deck">Skip to presentation</a>
+    <header class="deck-toolbar">
+      <a class="deck-brand" href="/course" aria-label="Back to course overview"
+        ><span aria-hidden="true">r.</span><strong>relay</strong><small>Concepts</small></a
+      >
+      <div class="slide-position">
+        <span id="phase-label">Concepts</span><span id="slide-counter">1 / 15</span
+        ><span id="planned-time"></span>
+      </div>
+      <div class="rehearsal">
+        <output id="timer" aria-label="Rehearsal elapsed time">00:00</output
+        ><button id="timer-button" type="button">Start timer</button
+        ><button id="reset-timer" type="button" aria-label="Reset rehearsal timer">Reset</button>
+      </div>
+      <nav aria-label="Presentation controls">
+        <button id="outline-button" type="button" aria-haspopup="dialog">
+          Contents <kbd>G</kbd>
+        </button>
+        <button id="notes-button" type="button" aria-pressed="false">
+          Speaker notes <kbd>N</kbd>
+        </button>
+        <button id="fullscreen-button" type="button">Fullscreen <kbd>F</kbd></button>
+        <button id="print-button" type="button">Print / PDF</button>
+      </nav>
+    </header>
+    <progress id="deck-progress" max="15" value="1" aria-label="Slide progress"></progress>
+    <main id="deck" aria-label="Contact 1 presentation">
+      <noscript
+        ><p class="fallback">
+          All slides are shown below. Enable JavaScript for navigation and speaker notes.
+        </p></noscript
+      >
+      <section
+        class="slide cover"
+        id="why"
+        data-phase="Concepts"
+        data-time=""
+        data-title="Start with the support decision"
+      >
+        <div class="slide-top">
+          <span>Contact 01 / Grounded AI application engineering</span>
+        </div>
+        <div class="cover-layout">
+          <p class="eyebrow">OpenAI API &amp; Codex / Contact 01</p>
+          <h1>Build an answer<br />you can <em>act on.</em></h1>
+          <p class="lead">RAG. Tool calling. Evidence you can trust.</p>
+          <p class="cover-case">
+            Customer message <span>“My parcel arrived late. Can I get compensation?”</span>
+          </p>
+          <p class="deck-context">Concepts explained <span>·</span> Kora Dispatch as our example</p>
+        </div>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            Let me give you the situation. Kora Dispatch is a Nigerian logistics company whose
+            support team is overwhelmed with customer questions. A customer paid ₦8,000 for express
+            delivery, but the parcel arrived two days late and they want compensation.
+          </p>
+          <p>
+            Relay is the support agent’s application. The agent uses its AI assistant to check the
+            shipment and company policy, then prepare an answer for the customer. We’ll use that
+            situation to understand the parts of a grounded AI application.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide"
+        id="outcomes"
+        data-phase="Concepts"
+        data-time=""
+        data-title="Contact 1: the concepts we will explain"
+      >
+        <div class="slide-top">
+          <span>01 / What success looks like</span>
+        </div>
+        <h2>What we’ll understand in Contact 1.</h2>
+        <div class="outcome-strip">
+          <p>
+            <b>01 / Ground</b>Embeddings + Qdrant (vector database) → evidence → OpenAI Responses.
+          </p>
+          <p>
+            <b>02 / Continue + stream</b>Tool calls, conversation context, streamed events and
+            cancellation.
+          </p>
+          <p><b>03 / Measure</b>Langfuse traces, golden cases, guardrails, latency and usage.</p>
+        </div>
+        <p class="anchor-line">
+          One support question.
+          <strong>Understand each part of the AI system.</strong>
+        </p>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            We’ll look at how the application finds relevant evidence, sends it to the model, gives
+            the model access to tools and checks the final answer.
+          </p>
+          <p>
+            We’ll also explain conversation history, streaming, safeguards and evaluation. For each
+            part, I want us to understand what it does, why we need it and which part of our backend
+            is responsible.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide"
+        id="harness"
+        data-phase="Concepts"
+        data-time=""
+        data-title="Harness: the software around the model"
+      >
+        <div class="slide-top"><span>02 / Model and harness</span></div>
+        <h2>The model is the horse.</h2>
+        <p class="lead">
+          A harness is the software that runs the model’s loop, tools, context and checks.
+        </p>
+        <div class="harness-scene">
+          <figure class="horse-model">
+            <svg viewBox="0 0 440 240" role="img" aria-labelledby="horse-title horse-desc">
+              <title id="horse-title">A horse wearing a harness</title>
+              <desc id="horse-desc">
+                The horse represents model capability. Blue straps and reins represent the
+                surrounding software that directs a run.
+              </desc>
+              <path class="horse-ground" d="M60 215H390" />
+              <path
+                class="horse-body"
+                d="M112 117C88 109 75 123 68 148C86 137 91 135 105 140L121 158L118 210H134L150 164L194 165L220 210H237L223 155C247 148 259 129 266 108L286 104L316 88L306 72L286 50L283 24L267 42L253 24L251 57L234 78L215 106C184 98 137 95 112 117Z"
+              />
+              <path
+                class="horse-detail"
+                d="M120 156L142 144M205 159L216 138M251 59L235 86L222 108"
+              />
+              <circle cx="285" cy="69" r="3" fill="#080b12" />
+              <path
+                class="horse-straps"
+                d="M271 52L280 99M300 70L286 91L266 92M239 85L254 120M152 105L150 161"
+              />
+              <path class="horse-reins" d="M285 91C326 126 364 125 401 87" />
+              <circle class="horse-ring" cx="285" cy="91" r="5" />
+              <circle class="horse-ring" cx="401" cy="87" r="4" />
+            </svg>
+            <figcaption>
+              <b>Model</b><span>Capability: interpret, reason, generate.</span>
+            </figcaption>
+          </figure>
+          <div class="harness-functions">
+            <p class="eyebrow">Harness / Coordinate the run</p>
+            <p><b>Loop + tools</b><span>Choose a step. Execute permitted tools.</span></p>
+            <p><b>Context + memory</b><span>Supply evidence and relevant history.</span></p>
+            <p><b>Checks + stopping</b><span>Validate results. Enforce run limits.</span></p>
+          </div>
+        </div>
+        <p class="anchor-line">
+          Agent harness = runtime. <strong>Evaluation harness = the test runner.</strong>
+        </p>
+        <div class="code-footnote" aria-label="Code references">
+          <span>Code · click to copy</span
+          ><button
+            type="button"
+            data-code-location="workbench/teaching/investigation_reference.py:94"
+            title="Copy location for make_investigator"
+          >
+            workbench/teaching/investigation_reference.py:94</button
+          ><button
+            type="button"
+            data-code-location="workbench/teaching/agent_harness.py:84"
+            title="Copy location for read_tools"
+          >
+            workbench/teaching/agent_harness.py:84
+          </button>
+        </div>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            Think of the model as the horse. It brings the capability. The harness is the software
+            around it that coordinates the work: what information goes in, which tools can run, how
+            their results come back, and when to stop.
+          </p>
+          <p>
+            In Relay, that includes the tool loop, conversation context and output checks. A more
+            capable model still needs those pieces around it.
+          </p>
+          <p>
+            You’ll also hear me say ‘evaluation harness’. That’s a separate meaning: the code that
+            runs our test questions and checks the results.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide"
+        id="governance"
+        data-phase="Concepts"
+        data-time=""
+        data-title="Governance: rules, decision rights and accountability"
+      >
+        <div class="slide-top">
+          <span>03 / Rules and accountability</span>
+        </div>
+        <h2>Governance sets the rules.</h2>
+        <p class="lead">Policies, decision rights and accountability for how AI is used.</p>
+        <div
+          class="governance-flow"
+          aria-label="A governance rule translated into a technical control"
+        >
+          <div>
+            <p class="eyebrow">The rule / Governance</p>
+            <h3>Every credit needs<br />supervisor approval.</h3>
+            <p>Who may decide?</p>
+          </div>
+          <span class="governance-arrow" aria-hidden="true">→</span>
+          <div>
+            <p class="eyebrow">Enforcement / System controls</p>
+            <h3>Block credits without<br />a valid approval.</h3>
+            <p>Enforced by our backend.</p>
+          </div>
+        </div>
+        <p class="governance-owner">
+          <span>Accountable owner</span
+          ><strong>A named supervisor. A reviewable audit record.</strong>
+        </p>
+        <p class="anchor-line">
+          Think rules and enforcement. <strong>People remain accountable.</strong>
+        </p>
+        <div class="code-footnote" aria-label="Code references">
+          <span>Code · click to copy</span
+          ><button
+            type="button"
+            data-code-location="workbench/src/relay/service.py:93"
+            title="Copy location for decide"
+          >
+            workbench/src/relay/service.py:93
+          </button>
+        </div>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            Governance answers questions like: who may use this information, who can approve an
+            action, and who is responsible when something goes wrong?
+          </p>
+          <p>
+            We can think of rules and enforcement, like laws and the police. Kora’s rule is that a
+            supervisor must approve compensation. Our system has to enforce that rule, even if the
+            model tries to skip it.
+          </p>
+          <p>
+            Our backend runs the AI through a harness: code that manages model calls, tools, context
+            and stopping rules. The backend also enforces permissions and supervisor approval. These
+            controls work together in the same application. People still own the policy, review the
+            risks and remain accountable for the system.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide"
+        id="request-path"
+        data-phase="Concepts"
+        data-time=""
+        data-title="One request, several owners"
+      >
+        <div class="slide-top">
+          <span>04 / Architecture and ownership</span>
+        </div>
+        <h2>One question. A chain of responsibilities.</h2>
+        <ol class="journey" aria-label="Investigation request path">
+          <li><b>Question</b><span>Browser</span></li>
+          <li><b>Authorize</b><span>FastAPI</span></li>
+          <li><b>Retrieve + read</b><span>RAG &amp; tools</span></li>
+          <li><b>Draft</b><span>Responses API</span></li>
+          <li><b>Validate</b><span>Application</span></li>
+        </ol>
+        <p class="anchor-line">The model advises. <strong>The application authorizes.</strong></p>
+        <div class="code-footnote" aria-label="Code references">
+          <span>Code · click to copy</span
+          ><button
+            type="button"
+            data-code-location="workbench/src/relay/main.py:206"
+            title="Copy location for create_app.run_query"
+          >
+            workbench/src/relay/main.py:206
+          </button>
+        </div>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            Let’s follow one question. The browser sends it to FastAPI. The application checks who
+            is asking and which case they can access. We retrieve the policies they’re allowed to
+            use and read the shipment details. The model drafts an answer, then the application
+            checks it. Any compensation proposal still goes through the separate approval process.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide"
+        id="responses"
+        data-phase="Concepts"
+        data-time=""
+        data-title="OpenAI Responses API: request, output and validation"
+      >
+        <div class="slide-top"><span>05 / OpenAI integration</span></div>
+        <h2>OpenAI Responses API: the model boundary.</h2>
+        <div class="split">
+          <div>
+            <p class="lead">Instructions + input → output items + usage.</p>
+            <dl class="roles">
+              <div>
+                <dt>create()</dt>
+                <dd>Text and tool-call output items.</dd>
+              </div>
+              <div>
+                <dt>parse()</dt>
+                <dd>SDK parsing into a Pydantic schema.</dd>
+              </div>
+              <div>
+                <dt>Validate</dt>
+                <dd>Check completion, refusal and citation scope.</dd>
+              </div>
+            </dl>
+          </div>
+          <pre aria-label="Relay structured Responses request"><code>context = [
+  {"role": "developer", "content": RULES},
+  {"role": "user", "content": question_and_evidence},
+]
+answer = client.responses.parse(
+  model=MODEL, input=context,
+  text_format=GroundedAnswer, store=False,
+)
+# Check status + output_parsed.</code></pre>
+        </div>
+        <p class="anchor-line">
+          A response can contain tool calls, not just text.
+          <strong>Schema validity does not prove truth.</strong>
+        </p>
+        <div class="code-footnote" aria-label="Code references">
+          <span>Code · click to copy</span
+          ><button
+            type="button"
+            data-code-location="workbench/teaching/investigation_reference.py:146"
+            title="Copy location for make_investigator.investigate.invoke"
+          >
+            workbench/teaching/investigation_reference.py:146</button
+          ><button
+            type="button"
+            data-code-location="workbench/teaching/responses_reference.py:14"
+            title="Copy location for GroundedAnswer"
+          >
+            workbench/teaching/responses_reference.py:14
+          </button>
+        </div>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            The Responses API is how we ask the model to do work. We send instructions and input.
+            The result can contain text or a request to call one of the tools we supplied.
+          </p>
+          <p>
+            responses.create makes a model request and returns its output items. responses.parse
+            also makes a model request, but adds our output schema and parses the answer into a
+            Python object. We don’t pass the result of create into parse just to reformat it.
+          </p>
+          <p>
+            For a tool-assisted answer, one request can ask for shipment information. Our backend
+            validates and executes that tool request, then a later request includes the result and
+            asks for the final structured answer. We still validate completion, refusals and
+            citations. Matching a schema doesn’t prove the answer is correct.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide"
+        id="rag"
+        data-phase="Concepts"
+        data-time=""
+        data-title="RAG has an indexing path and a query path"
+      >
+        <div class="slide-top">
+          <span>06 / Retrieval-augmented generation</span>
+        </div>
+        <h2>RAG has two paths.</h2>
+        <div class="rag-map">
+          <div class="rag-lane">
+            <div>
+              <span class="lane-number">01</span>
+              <h3>Prepare</h3>
+              <small>Before the question</small>
+            </div>
+            <ol>
+              <li>Published<br /><b>sources</b></li>
+              <li>Versioned<br /><b>chunks</b></li>
+              <li>OpenAI<br /><b>embeddings</b></li>
+              <li>Qdrant<br /><b>index</b></li>
+            </ol>
+          </div>
+          <div class="rag-lane">
+            <div>
+              <span class="lane-number">02</span>
+              <h3>Retrieve</h3>
+              <small>For each question</small>
+            </div>
+            <ol>
+              <li>Embed the<br /><b>question</b></li>
+              <li>Filter +<br /><b>search</b></li>
+              <li>Canonical<br /><b>evidence</b></li>
+              <li>Grounded<br /><b>answer</b></li>
+            </ol>
+          </div>
+        </div>
+        <p class="anchor-line">
+          Embeddings represent meaning as numbers. <strong>Access checks still apply.</strong>
+        </p>
+        <div class="code-footnote" aria-label="Code references">
+          <span>Code · click to copy</span
+          ><button
+            type="button"
+            data-code-location="workbench/teaching/rag_reference.py:217"
+            title="Copy location for VectorRag._embed_request"
+          >
+            workbench/teaching/rag_reference.py:217</button
+          ><button
+            type="button"
+            data-code-location="workbench/teaching/rag_reference.py:348"
+            title="Copy location for VectorRag.search"
+          >
+            workbench/teaching/rag_reference.py:348
+          </button>
+        </div>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            Qdrant is the vector database we’re using here. It stores the embeddings and searches
+            for similar passages. We chose its local mode so this workshop needs no separate
+            database service or hosted database key. Other options include PostgreSQL with pgvector,
+            Pinecone, Weaviate and Milvus. The right choice depends on the application’s existing
+            database, filtering needs, scale and operating requirements.
+          </p>
+          <p>
+            The model doesn’t automatically know Kora’s current policies. We need to find the
+            relevant policy and include it with the question. That’s what we’re using RAG for.
+          </p>
+          <p>
+            There are two paths here. Before answering questions, we split the approved documents
+            into smaller passages, create embeddings and store them in Qdrant. An embedding is a
+            list of numbers that helps us compare meaning.
+          </p>
+          <p>
+            When a question comes in, we embed the question too, search for similar passages, and
+            send the useful evidence to the model. The local Qdrant store needs no service key; the
+            embedding calls use our configured provider account.
+          </p>
+          <p>
+            Permissions apply before we choose the results. We also check that each passage still
+            matches the current approved document. If a policy changes or is withdrawn, an old
+            vector or saved conversation must not keep bringing it back into the answer.
+          </p>
+          <p>
+            Vector-store references:
+            <a href="https://qdrant.tech/documentation/overview/">Qdrant</a> ·
+            <a href="https://github.com/pgvector/pgvector">pgvector</a> ·
+            <a href="https://docs.pinecone.io/guides/get-started/overview">Pinecone</a> ·
+            <a href="https://docs.weaviate.io/weaviate">Weaviate</a> ·
+            <a href="https://milvus.io/docs/overview.md">Milvus</a>.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide"
+        id="evidence"
+        data-phase="Concepts"
+        data-time=""
+        data-title="Retrieval and answer support are different checks"
+      >
+        <div class="slide-top">
+          <span>07 / Grounding and abstention</span>
+        </div>
+        <h2>Relevant doesn’t always mean sufficient.</h2>
+        <div class="evidence-example">
+          <blockquote>“Why was the driver late?”</blockquote>
+          <div>
+            <span class="eyebrow">Retrieved: service-credit policy</span>
+            <p>
+              Explains <strong>credit eligibility.</strong><br />Doesn’t establish
+              <strong>the cause.</strong>
+            </p>
+          </div>
+        </div>
+        <p class="anchor-line">
+          When the evidence runs out, <strong>abstain and escalate.</strong>
+        </p>
+        <div class="code-footnote" aria-label="Code references">
+          <span>Code · click to copy</span
+          ><button
+            type="button"
+            data-code-location="workbench/teaching/investigation_reference.py:38"
+            title="Copy location for retrieve_evidence"
+          >
+            workbench/teaching/investigation_reference.py:38</button
+          ><button
+            type="button"
+            data-code-location="workbench/teaching/investigation_reference.py:266"
+            title="Copy location for make_investigator.investigate.validate_stage"
+          >
+            workbench/teaching/investigation_reference.py:266
+          </button>
+        </div>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            Finding a related policy is only the first step. We still need to ask whether it
+            actually supports the answer.
+          </p>
+          <p>
+            Suppose the customer asks why the driver was late. Our delivery policy can explain what
+            compensation may be available. It doesn’t tell us why that particular driver was
+            delayed. The model needs shipment evidence for that, or it needs to say the cause is
+            unknown.
+          </p>
+          <p>
+            That’s why I’ll check both the retrieved passage and the claim in the answer. A citation
+            can point to a real document while the sentence beside it says something the document
+            never supported.
+          </p>
+          <p>
+            Our similarity threshold is a starting value, not a guarantee. An unrelated question
+            might still retrieve a passage. We need to test whether the model recognizes when that
+            evidence is insufficient.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide"
+        id="tools"
+        data-phase="Concepts"
+        data-time=""
+        data-title="Function calling: model request, application execution and bounded loops"
+      >
+        <div class="slide-top">
+          <span>08 / Tools, workflows and agents</span>
+        </div>
+        <h2>Function calling: request → validate → execute.</h2>
+        <ol class="tool-loop" aria-label="Function tool execution loop">
+          <li><span>01</span><b>Select</b><small>Function name + JSON arguments</small></li>
+          <li><span>02</span><b>Validate</b><small>Schema, allowlist, case scope</small></li>
+          <li><span>03</span><b>Execute</b><small>Authorized read; return call_id</small></li>
+          <li><span>04</span><b>Continue</b><small>Append output → next response</small></li>
+        </ol>
+        <p class="anchor-line">
+          Workflow: fixed read, then answer.
+          <strong>Agent: bounded turns, tools and deadline.</strong>
+        </p>
+        <div class="code-footnote" aria-label="Code references">
+          <span>Code · click to copy</span
+          ><button
+            type="button"
+            data-code-location="workbench/teaching/agent_harness.py:38"
+            title="Copy location for execute_tools"
+          >
+            workbench/teaching/agent_harness.py:38</button
+          ><button
+            type="button"
+            data-code-location="workbench/teaching/agent_harness.py:84"
+            title="Copy location for read_tools"
+          >
+            workbench/teaching/agent_harness.py:84
+          </button>
+        </div>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            The model needs shipment facts, so we give it a tool called get_shipment. It can request
+            that tool by returning a name and arguments. Our application checks the request, reads
+            the permitted shipment and sends the result back with the matching call ID.
+          </p>
+          <p>
+            The model doesn’t get access to every shipment just because it asks for an ID. We check
+            the case, the tool’s arguments and the remaining request budget before executing it. The
+            policy-reading tool can only read passages already allowed for this run.
+          </p>
+          <p>
+            We have two execution modes. The fixed workflow reads the shipment and produces an
+            answer. The agent mode allows a few more tool-and-model turns, with a hard stopping
+            limit. Both expose read-only tools. Neither gives the model a way to approve
+            compensation.
+          </p>
+          <p>
+            We preserve the response items needed to continue the tool loop. That doesn’t mean
+            exposing private model reasoning in the interface or logs. This reference executes tool
+            reads sequentially; parallel tool execution is a separate design choice.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide"
+        id="memory"
+        data-phase="Concepts"
+        data-time=""
+        data-title="Conversation state: manual history, response chaining and Conversations API"
+      >
+        <div class="slide-top"><span>09 / State and memory</span></div>
+        <h2>Conversation state: who keeps the context?</h2>
+        <div class="state-options">
+          <article>
+            <span class="eyebrow">Caller-managed / Our backend</span>
+            <h3>Replay selected history</h3>
+            <p>Send permitted earlier exchanges in <code>input</code>. Default: no history.</p>
+          </article>
+          <article>
+            <span class="eyebrow">Response chaining / OpenAI</span>
+            <h3>previous_response_id</h3>
+            <p>Continue from a prior response. Send current instructions again.</p>
+          </article>
+          <article>
+            <span class="eyebrow">Conversations API / OpenAI</span>
+            <h3>conversation=id</h3>
+            <p>Attach turns to a persistent provider conversation.</p>
+          </article>
+        </div>
+        <p class="anchor-line">
+          <strong>Saving ≠ recalling.</strong> Relay rechecks access and source versions. Choose
+          what context the model receives.
+        </p>
+        <div class="code-footnote" aria-label="Code references">
+          <span>Code · click to copy</span
+          ><button
+            type="button"
+            data-code-location="workbench/teaching/memory_reference.py:9"
+            title="Copy location for conversation_context"
+          >
+            workbench/teaching/memory_reference.py:9
+          </button>
+        </div>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            When the agent asks a follow-up question, the model needs the relevant earlier context.
+            Saving that exchange in our database doesn’t automatically include it in the next
+            request.
+          </p>
+          <p>
+            With caller-managed history, our backend chooses earlier messages and sends them with
+            the new question. Relay defaults to no history. When case context is enabled, it selects
+            up to three supported exchanges within 6,000 characters and rechecks permissions and
+            policy versions.
+          </p>
+          <p>
+            Native OpenAI offers two other approaches. previous_response_id links the next request
+            to a prior response; we send current instructions again. The Conversations API keeps a
+            persistent conversation whose ID we attach to Responses calls. Responses generates the
+            output; Conversations stores the history. Our OpenRouter route supports the
+            caller-managed approach.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide"
+        id="guardrails"
+        data-phase="Concepts"
+        data-time=""
+        data-title="Keep authority outside the prompt"
+      >
+        <div class="slide-top">
+          <span>10 / Guardrails and trust boundaries</span>
+        </div>
+        <h2>Keep authority outside the prompt.</h2>
+        <div class="authority-diagram">
+          <div class="untrusted">
+            <span class="eyebrow">Untrusted request</span>
+            <blockquote>“Approve<br />₦50,000 now.”</blockquote>
+          </div>
+          <div class="authority-wall" aria-label="Server authorization boundary">
+            <span aria-hidden="true">→</span><b>SERVER<br />CHECKS</b>
+          </div>
+          <div class="enforced">
+            <span class="eyebrow">Application authority</span>
+            <p>Source access<br />Read-only tools<br />Credit limits<br />Supervisor approval</p>
+          </div>
+        </div>
+        <div class="code-footnote" aria-label="Code references">
+          <span>Code · click to copy</span
+          ><button
+            type="button"
+            data-code-location="workbench/teaching/agent_harness.py:38"
+            title="Copy location for execute_tools"
+          >
+            workbench/teaching/agent_harness.py:38</button
+          ><button
+            type="button"
+            data-code-location="workbench/src/relay/service.py:50"
+            title="Copy location for propose"
+          >
+            workbench/src/relay/service.py:50
+          </button>
+        </div>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            Suppose the user asks the AI to ignore policy and approve ₦50,000. Similar instructions
+            could be hidden inside a document or tool result.
+          </p>
+          <p>
+            Our backend runs the AI through a harness that manages its model calls, tools, context
+            and stopping rules. The same backend also checks permissions, compensation eligibility
+            and supervisor approval. The model’s output cannot replace those checks.
+          </p>
+          <p>
+            We need to assess both the answer and the actions taken. An answer might make an
+            unsupported promise even when the backend correctly blocks the action.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide"
+        id="streaming"
+        data-phase="Concepts"
+        data-time=""
+        data-title="Streaming Responses: deltas, completion, failure and cancellation"
+      >
+        <div class="slide-top">
+          <span>11 / OpenAI streaming → FastAPI SSE</span>
+        </div>
+        <h2>Streaming: events before the final answer.</h2>
+        <ol class="stream-lifecycle">
+          <li><code>response.created</code><span>The provider starts a response.</span></li>
+          <li><code>response.output_text.delta</code><span>Text arrives incrementally.</span></li>
+          <li><code>response.completed</code><span>Inspect the final response and usage.</span></li>
+        </ol>
+        <p class="anchor-line">
+          <strong>Relay streams progress, then a validated answer.</strong> Failure or cancellation
+          must not save partial claims.
+        </p>
+        <div class="code-footnote" aria-label="Code references">
+          <span>Code · click to copy</span
+          ><button
+            type="button"
+            data-code-location="workbench/teaching/streaming_reference.py:21"
+            title="Copy location for install_streaming"
+          >
+            workbench/teaching/streaming_reference.py:21</button
+          ><button
+            type="button"
+            data-code-location="workbench/teaching/investigation_reference.py:146"
+            title="Copy location for make_investigator.investigate.invoke"
+          >
+            workbench/teaching/investigation_reference.py:146
+          </button>
+        </div>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            Streaming lets us receive events while the model is producing its answer. That can make
+            the application feel more responsive, but partial output hasn’t passed our checks yet.
+          </p>
+          <p>
+            Relay consumes the provider’s stream and shows progress while it waits for the complete
+            structured answer. The backend then checks the result before displaying or saving it.
+            The browser’s progress events are application events; they aren’t the same as the
+            provider’s raw events.
+          </p>
+          <p>
+            Cancellation stops later steps and prevents partial-answer persistence. A network
+            request already in progress may still take time to finish or time out.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide"
+        id="tracing"
+        data-phase="Concepts"
+        data-time=""
+        data-title="Langfuse: stages, versions, usage and redacted observations"
+      >
+        <div class="slide-top">
+          <span>12 / Observability and streaming</span>
+        </div>
+        <h2>Langfuse: follow one investigation.</h2>
+        <div class="trace-layout">
+          <div class="trace-waterfall" aria-label="Illustrative trace, not measured timings">
+            <div><b>investigation</b><span class="trace-bar root-bar"></span></div>
+            <div><b>↳ retrieve</b><span class="trace-bar retrieval-bar"></span></div>
+            <div><b>↳ tool read</b><span class="trace-bar tool-bar"></span></div>
+            <div><b>↳ generate</b><span class="trace-bar generation-bar"></span></div>
+            <div><b>↳ validate</b><span class="trace-bar validation-bar"></span></div>
+            <small>Illustrative structure · no measured timings</small>
+          </div>
+          <div class="trace-caption">
+            <h3>Run → spans → evidence.</h3>
+            <p>
+              Prompt/model/corpus versions<br />Embedding + generation tokens<br />Latency, failures
+              and request IDs
+            </p>
+            <span class="eyebrow">Metadata export / no raw payloads</span>
+          </div>
+        </div>
+        <p class="anchor-line">
+          Local trace ≠ hosted receipt. <strong>Match the run ID in the collector.</strong>
+        </p>
+        <div class="code-footnote" aria-label="Code references">
+          <span>Code · click to copy</span
+          ><button
+            type="button"
+            data-code-location="workbench/teaching/observability_reference.py:58"
+            title="Copy location for RunObservation.stage"
+          >
+            workbench/teaching/observability_reference.py:58
+          </button>
+        </div>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            A trace shows the steps in one investigation: retrieval, embeddings, tool calls,
+            generation and validation. We use Langfuse to follow those steps and see where time or
+            failures occurred.
+          </p>
+          <p>
+            The run ID links those observations together. Prompt, model and policy versions help us
+            identify what was used. Timing and token counts let us investigate latency and usage.
+          </p>
+          <p>
+            We export selected metadata rather than raw questions, policy passages, answers or
+            private model reasoning. Access and retention rules still matter. Seeing a local trace
+            and confirming receipt in a hosted collector are separate checks.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide"
+        id="evaluation"
+        data-phase="Concepts"
+        data-time=""
+        data-title="Evaluate retrieval, answers and actions separately"
+      >
+        <div class="slide-top">
+          <span>13 / Evaluation and evidence</span>
+        </div>
+        <h2>A good answer needs three kinds of evidence.</h2>
+        <div class="eval-scorecard">
+          <div>
+            <span>01 / Retrieval</span>
+            <h3>Did we find<br />the right source?</h3>
+          </div>
+          <div>
+            <span>02 / Answer</span>
+            <h3>Does it support<br />the claim?</h3>
+          </div>
+          <div>
+            <span>03 / Execution</span>
+            <h3>Did we respect<br />the boundary?</h3>
+          </div>
+        </div>
+        <p class="anchor-line">
+          Golden dataset → held-out cases → failure slices → <strong>human review.</strong>
+        </p>
+        <div class="code-footnote" aria-label="Code references">
+          <span>Code · click to copy</span
+          ><button
+            type="button"
+            data-code-location="workbench/scripts/evaluate_live.py:30"
+            title="Copy location for evaluate"
+          >
+            workbench/scripts/evaluate_live.py:30</button
+          ><button
+            type="button"
+            data-code-location="workbench/teaching/semantic_evaluation.py:20"
+            title="Copy location for judge_answer"
+          >
+            workbench/teaching/semantic_evaluation.py:20
+          </button>
+        </div>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            How do we know this works beyond the one question we just tried? We need a repeatable
+            set of questions with expected results.
+          </p>
+          <p>
+            I’ll separate three checks. Did retrieval find the right information? Does the answer
+            make claims that the evidence supports? Did execution respect the tool and approval
+            rules?
+          </p>
+          <p>
+            Our examples include paraphrases, restricted information, missing evidence and attempts
+            to bypass the rules. They’re synthetic workshop cases, so the expected answers still
+            need domain review.
+          </p>
+          <p>
+            A model can help grade an answer, but its verdict also needs checking against human
+            reviews. Even a perfect source-ID score doesn’t tell us that every sentence is correct
+            or that the application is ready for customers.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide"
+        id="choices"
+        data-phase="Concepts"
+        data-time=""
+        data-title="Choose a runtime and model from evidence"
+      >
+        <div class="slide-top"><span>14 / Engineering choices</span></div>
+        <h2>Choose the model and runtime from evidence.</h2>
+        <div class="split">
+          <div>
+            <span class="eyebrow">Model + context</span>
+            <h3>Same task. Measured trade-offs.</h3>
+            <p>
+              Versioned instructions + permitted context.<br />Output budget: 1,800 tokens per
+              request.<br />Reasoning / verbosity: model-supported settings.<br />Inspect cached
+              tokens, p95 latency and cost.
+            </p>
+          </div>
+          <div>
+            <span class="eyebrow">Runtime responsibility</span>
+            <dl class="roles">
+              <div>
+                <dt>FastAPI</dt>
+                <dd>Contracts + authority</dd>
+              </div>
+              <div>
+                <dt>LangChain</dt>
+                <dd>Optional chunking component</dd>
+              </div>
+              <div>
+                <dt>LangGraph</dt>
+                <dd>Stages + conditional loops</dd>
+              </div>
+              <div>
+                <dt>Temporal</dt>
+                <dd>Durable workflows / Contact 3</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+        <p class="anchor-line">
+          Freeze corpus, questions and grading.
+          <strong>Configuration options are not measured improvements.</strong>
+        </p>
+        <div class="code-footnote" aria-label="Code references">
+          <span>Code · click to copy</span
+          ><button
+            type="button"
+            data-code-location="workbench/teaching/runtime_graph.py:12"
+            title="Copy location for execute_graph"
+          >
+            workbench/teaching/runtime_graph.py:12</button
+          ><button
+            type="button"
+            data-code-location="workbench/teaching/provider_settings.py:6"
+            title="Copy location for provider_options"
+          >
+            workbench/teaching/provider_settings.py:6
+          </button>
+        </div>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            To compare models fairly, keep the questions, policies and grading rules the same. Then
+            compare supported answers, failures, latency and token usage. The 1,800-token output
+            budget limits generation per request; reasoning and verbosity settings depend on what
+            the selected model supports.
+          </p>
+          <p>
+            p95 latency means 95% of the measured runs finished within that time. Cached-input
+            tokens tell us how much input the provider served from cache. A dated price card lets us
+            estimate token cost, but an estimate is not an invoice.
+          </p>
+          <p>
+            These tools have different jobs. FastAPI handles requests and application rules. In this
+            project, LangChain can split documents into chunks. LangGraph organizes execution steps
+            and branches. Temporal handles workflows that need to survive waits, retries and
+            restarts; it belongs to the later contact.
+          </p>
+          <p>
+            A new framework or configuration setting is a choice to test. It only counts as an
+            improvement when the results show it helped.
+          </p>
+        </aside>
+      </section>
+    </main>
+    <footer class="deck-footer">
+      <div class="navigation">
+        <button id="previous-slide" type="button" aria-label="Previous slide">← Prev</button>
+        <div id="slide-dots" role="group" aria-label="Slide shortcuts"></div>
+        <button id="next-slide" type="button" aria-label="Next slide">Next →</button>
+      </div>
+    </footer>
+    <p class="keyboard-help">
+      ← → slides · G contents · N notes · F fullscreen · Print / PDF exports all slides
+    </p>
+    <p id="announcement" class="sr-only" role="status" aria-live="polite"></p>
+    <dialog id="outline" aria-labelledby="outline-title">
+      <div class="outline-heading">
+        <div>
+          <p class="eyebrow">Contact 1 / Concepts</p>
+          <h2 id="outline-title">Presentation contents</h2>
+        </div>
+        <button id="close-outline" type="button" aria-label="Close contents">✕</button>
+      </div>
+      <p>15 concept slides · explanations and speaker notes</p>
+      <nav id="outline-list" aria-label="Slide selection"></nav>
+    </dialog>
+    <output id="code-copy-status" class="code-copy-status" role="status" hidden></output>
+  </body>
+</html>

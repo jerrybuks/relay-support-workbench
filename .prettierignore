@@ -1,0 +1,10 @@
+node_modules
+.git
+playwright-report
+test-results
+pnpm-lock.yaml
+workbench/.venv
+workbench/.runtime
+workbench/uv.lock
+workbench/evidence
+workbench/src/relay/static/vendor

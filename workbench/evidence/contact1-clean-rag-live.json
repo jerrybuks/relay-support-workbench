@@ -1,0 +1,34 @@
+{
+  "mode": "live OpenRouter embeddings and streamed Responses; disposable case database and copied index",
+  "human_semantic_review": false,
+  "results": [
+    {
+      "question": "dlivery polcy",
+      "http": 200,
+      "status": "supported",
+      "sources": [
+        "POL-DELIVERY-3"
+      ],
+      "retrieval": "hybrid",
+      "query_normalized": true,
+      "generation_progress": true,
+      "embedding_calls": 1,
+      "model_calls": 2,
+      "suggested_credit_naira": 2000
+    },
+    {
+      "question": "Can this customer receive compensation for a late express delivery?",
+      "http": 200,
+      "status": "supported",
+      "sources": [
+        "POL-DELIVERY-3"
+      ],
+      "retrieval": "hybrid",
+      "query_normalized": false,
+      "generation_progress": true,
+      "embedding_calls": 1,
+      "model_calls": 2,
+      "suggested_credit_naira": 2000
+    }
+  ]
+}

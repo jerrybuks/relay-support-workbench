@@ -1,0 +1,9 @@
+{
+  "kind": "live-metadata-only-collector-probe",
+  "openai_calls": 0,
+  "live_investigation_verified": false,
+  "authenticated": true,
+  "receipt": "confirmed-by-observation-read",
+  "trace_id": "102ea33f1da947f68585b0d9afc7a21a",
+  "receipt_api": "observations-v2; root trace context checked"
+}

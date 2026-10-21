@@ -1,0 +1,25 @@
+node_modules/
+.env*
+!.env.example
+playwright-report/
+test-results/
+.DS_Store
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+workbench/.runtime/
+.pnpm-store/
+
+# Local data and credentials must never enter the public repository.
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+*.db
+*.db-*
+*.pem
+*.key
+.coverage
+htmlcov/

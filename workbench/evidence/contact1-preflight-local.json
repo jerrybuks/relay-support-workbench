@@ -1,0 +1,22 @@
+{
+  "configured": {
+    "OPENAI_API_KEY": false,
+    "OPENAI_MODEL": false,
+    "RELAY_ALLOW_LIVE": false
+  },
+  "index_manifest_present": false,
+  "index_query_verified": false,
+  "provider_calls": 0,
+  "live_smoke": "not-run",
+  "langfuse_delivery": "not-run",
+  "human_dataset_review": "required",
+  "timed_rehearsal": "required",
+  "class_ready": false,
+  "versions": {
+    "openai": "3.35.1",
+    "qdrant-client": "1.19.1",
+    "langfuse": "4.18.0",
+    "langchain-text-splitters": "1.1.3",
+    "langgraph": "1.2.16"
+  }
+}

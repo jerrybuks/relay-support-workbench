@@ -1,0 +1,249 @@
+{
+  "as_of": "2026-10-21",
+  "selected_billing_route": "openrouter",
+  "selected_model": "openai/gpt-4o",
+  "embedding_model": "openai/text-embedding-3-small",
+  "status": "live-technical-preflight-passed; facilitator-review-and-rehearsal-pending",
+  "index_manifest_present": true,
+  "index": {
+    "collection": "relay_7837f3ad98a740009b7c6cf6ba6e781f",
+    "settings": {
+      "model": "openai/text-embedding-3-small",
+      "dimensions": 1536,
+      "chunk_size": 320,
+      "overlap": 64,
+      "chunker": "native"
+    },
+    "sources": {
+      "POL-DELIVERY-3": "55d9d092216c287fd3a8cba2a44a0497a35ca60925e2158fa9041b83943d72d2",
+      "POL-ADDRESS-2": "3a6bd6beef2400252d7e49bf2111a10b4e46beab837e75388eb77a0421f3f4a1",
+      "POL-DAMAGE-1": "9289b88125175ad0d46fe10c9de470316ff310820e631dd27bf18323fd54734b",
+      "OPS-PRIVATE-1": "5a39659278eb574031b531f4a9db565bc82c4d84e5fb565ced70abf1e369df80"
+    },
+    "revision": "082946a701d43a3bf6f9be67ada750ecb4429c5271262213f9c12c43e9cfdb34",
+    "chunks": 4,
+    "embedding_calls": 1,
+    "embedding_input_tokens": 171,
+    "reused_chunks": 0
+  },
+  "live_checks": {
+    "workflow": {
+      "status": "passed",
+      "run_id": "c4bffe3575ff4b7e872adb5aa8abc96b",
+      "prompt_version": "c1-grounded-runtime-4",
+      "model_calls": 2,
+      "embedding_calls": 1,
+      "duration_ms": 5966.9,
+      "input_tokens": 812,
+      "output_tokens": 115,
+      "langfuse_delivery": "confirmed-by-observation-read"
+    },
+    "stream": {
+      "status": "passed",
+      "run_id": "36368078ef6f4aaa980fe38ef8e8267e",
+      "prompt_version": "c1-grounded-runtime-4",
+      "model_calls": 2,
+      "embedding_calls": 1,
+      "duration_ms": 4793.68,
+      "input_tokens": 812,
+      "output_tokens": 126,
+      "langfuse_delivery": "not-run"
+    },
+    "agent": {
+      "status": "passed",
+      "run_id": "83821566f643417788eabb6de42643e5",
+      "prompt_version": "c1-grounded-runtime-4",
+      "model_calls": 4,
+      "embedding_calls": 1,
+      "duration_ms": 12516.02,
+      "input_tokens": 2150,
+      "output_tokens": 361,
+      "langfuse_delivery": "not-run"
+    },
+    "langgraph": {
+      "status": "passed",
+      "run_id": "e165dce3152c492ca75fb70a2d979193",
+      "prompt_version": "c1-grounded-runtime-4",
+      "model_calls": 2,
+      "embedding_calls": 1,
+      "duration_ms": 5292.1,
+      "input_tokens": 812,
+      "output_tokens": 114,
+      "langfuse_delivery": "not-run"
+    }
+  },
+  "application_memory_stream": {
+    "passed": true,
+    "checks": {
+      "first_supported": true,
+      "followup_supported": true,
+      "one_exchange_recalled": true,
+      "provider_deltas_observed": true,
+      "preview_not_saved": true,
+      "deletion_clears_local_history": true,
+      "no_proposals": true
+    },
+    "model_calls": 4,
+    "embedding_calls": 2,
+    "prompt_version": "c1-grounded-runtime-5",
+    "database": "disposable",
+    "retention_scope": "Local history deletion only; no claim of remote provider erasure."
+  },
+  "state_comparison": {
+    "manual": "two live turns; fee recalled from supplied history",
+    "stateless": "two live turns; follow-up returned Unknown",
+    "native_previous_and_conversation": "unsupported on OpenRouter; rejected locally before gateway requests"
+  },
+  "evaluations": {
+    "golden-v3": {
+      "dataset": "relay-synthetic-draft-2",
+      "dataset_sha256": "3fe2f3a8273a8417eef0eeffa5e8090285b918ed48d38ba292e1854e42acb3ee",
+      "evaluation_fingerprint": "c61ac90065b9eae3aa8e73944871ce980d3789a3477af135dd46afed0347e98b",
+      "prompt_version": "c1-grounded-runtime-5",
+      "completed_cases": 20,
+      "total_cases": 20,
+      "contract_checks_passed": 20,
+      "actual_model_calls": 26,
+      "actual_embedding_calls": 20,
+      "input_tokens": 12676,
+      "output_tokens": 1333,
+      "model_run_latency_p95_ms": 5531.37,
+      "semantic_accuracy": null,
+      "report": "workbench/.runtime/c1-preparation/openrouter-golden-v3.json",
+      "human_review": "pending; blank bound review template prepared locally"
+    },
+    "held-out-v2": {
+      "dataset": "synthetic-rag-held-out-draft-1",
+      "dataset_sha256": "db7605922dd7f47fb615798f745e07962111994441273ff837150d68556a36b8",
+      "evaluation_fingerprint": "101c0bccdf08341c0bbb347874f738c23dffbe488a81d25cb9872f7a86b195ba",
+      "prompt_version": "c1-grounded-runtime-5",
+      "completed_cases": 8,
+      "total_cases": 8,
+      "contract_checks_passed": 8,
+      "actual_model_calls": 8,
+      "actual_embedding_calls": 8,
+      "input_tokens": 3956,
+      "output_tokens": 470,
+      "model_run_latency_p95_ms": 5235.88,
+      "semantic_accuracy": null,
+      "report": "workbench/.runtime/c1-preparation/openrouter-held-out-v2.json",
+      "human_review": "pending; blank bound review template prepared locally"
+    }
+  },
+  "conflict": {
+    "contract_passed": true,
+    "checks": {
+      "both_conflicting_sources_retrieved": true,
+      "abstained": true,
+      "no_claimed_support": true,
+      "no_suggested_credit": true,
+      "no_proposals_created": true
+    },
+    "prompt_version": "c1-grounded-runtime-5",
+    "review_status": "pending facilitator semantic review"
+  },
+  "model_comparison": {
+    "complete": true,
+    "all_contract_checks_passed": true,
+    "actual_model_calls": 16,
+    "actual_embedding_calls": 12,
+    "summary": [
+      {
+        "model": "openai/gpt-4o",
+        "completed_cases": 6,
+        "total_cases": 6,
+        "contract_checks_passed": 6,
+        "semantic_accuracy": null,
+        "model_run_latency_p95_ms": 5130.02,
+        "input_tokens": 3932,
+        "output_tokens": 416,
+        "estimated_token_cost_usd": 0.01399116
+      },
+      {
+        "model": "openai/gpt-4o-mini",
+        "completed_cases": 6,
+        "total_cases": 6,
+        "contract_checks_passed": 6,
+        "semantic_accuracy": null,
+        "model_run_latency_p95_ms": 4686.91,
+        "input_tokens": 3932,
+        "output_tokens": 423,
+        "estimated_token_cost_usd": 0.00084476
+      }
+    ],
+    "statistical_limit": "Exploratory: 6 draft cases per model, one pass; no stable speed/semantic-quality conclusion.",
+    "human_review": "required"
+  },
+  "local_verification": {
+    "python_passed": 142,
+    "browser_passed": 22,
+    "opt_in_temporal_skips": 2,
+    "source_fingerprints": 92,
+    "log": "workbench/evidence/contact1-openrouter-live-verify.log"
+  },
+  "class_ready": false,
+  "remaining": [
+    "Facilitator review of synthetic policy labels and generated answers",
+    "Timed 60-minute rehearsal with recovery profiles",
+    "Native stored-state demonstrations require funded direct OpenAI access or explicit reference-only delivery"
+  ],
+  "evidence_limits": [
+    "Contract checks are not semantic accuracy or release approval.",
+    "Model comparison is six draft cases per model, one pass; no statistical superiority claim.",
+    "Costs in the comparison are supplied listed-rate token estimates, not invoices or total session spend.",
+    "Prior failed calls and unknown usage are retained; no zero-cost claim.",
+    "Initial workflow/agent/graph/stream smokes used prompt 4; final evaluations/conflict/API memory stream used prompt 5."
+  ],
+  "historical_status_before_successful_validation": {
+    "as_of": "2026-10-21",
+    "selected_model": "gpt-4o",
+    "model_metadata_access": "confirmed",
+    "openai_generation_attempts": 0,
+    "openai_embedding_attempts": 3,
+    "successful_embedding_responses": 0,
+    "index_manifest_present": false,
+    "provider_blocker": {
+      "embedding_access": "failed",
+      "exception_type": "RateLimitError",
+      "http_status": 429,
+      "error_code": "credit_balance_exhausted"
+    },
+    "attempt_sequence": [
+      "index build timed out",
+      "one index retry returned HTTP 429",
+      "tiny diagnostic returned credit_balance_exhausted"
+    ],
+    "usage_note": "No successful token-usage response; do not infer zero cost for the timed-out attempt.",
+    "collector": {
+      "kind": "live-metadata-only-collector-probe",
+      "openai_calls": 0,
+      "live_investigation_verified": false,
+      "authenticated": true,
+      "receipt": "confirmed-by-observation-read",
+      "trace_id": "102ea33f1da947f68585b0d9afc7a21a",
+      "receipt_api": "observations-v2; root trace context checked"
+    },
+    "conflict_scenario": "prepared and SDK/mock-HTTP tested; live execution and facilitator review pending",
+    "model_comparison": "bounded runner, frozen exploratory dataset and dated price card prepared; live measurements pending",
+    "full_live_smoke": "blocked on funded embedding access",
+    "generated_answer_review": "not-run",
+    "facilitator_dataset_review": "required",
+    "timed_rehearsal": "not-run",
+    "class_ready": false,
+    "selected_billing_route": "openrouter",
+    "openrouter": {
+      "selected_model": "openai/gpt-4o",
+      "embedding_model": "openai/text-embedding-3-small",
+      "embedding_attempts": 1,
+      "successful_embedding_responses": 0,
+      "generation_attempts": 0,
+      "http_status": 401,
+      "safe_error_message": "Missing Authentication header",
+      "index_manifest_present": false,
+      "native_state_modes": "previous/conversation rejected locally before any gateway request",
+      "local_verification": "134 Python passed; 22 browser passed; 2 opt-in Temporal skips; 91 source fingerprints",
+      "verification_log": "workbench/evidence/contact1-openrouter-verify.log",
+      "status": "blocked-authentication; replace key locally"
+    }
+  }
+}

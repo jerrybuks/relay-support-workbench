@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Relay Resolution API — Swagger UI</title>
+    <link rel="stylesheet" href="/static/vendor/swagger-ui/swagger-ui.css" />
+    <link rel="stylesheet" href="/static/swagger.css" />
+    <script src="/static/vendor/swagger-ui/swagger-ui-bundle.js" defer></script>
+    <script src="/static/swagger-init.js" defer></script>
+  </head>
+  <body>
+    <header class="docs-header">
+      <a href="/">← Back to Relay</a>
+      <strong>API documentation <span>Swagger UI</span></strong>
+      <a href="/openapi.json">OpenAPI JSON</a>
+    </header>
+    <aside class="docs-help" aria-label="Using the API">
+      <p>
+        Start with <b>POST /api/v1/demo/session</b> below, or open the workbench to create a
+        session. <b>Try it out</b> uses your current demo persona and sends the required CSRF token
+        automatically. Credit requests generate an idempotency key unless you supply one; reuse your
+        own key when testing retries.
+      </p>
+      <p>Local synthetic data. Credits stay in the local ledger; no payments are sent.</p>
+    </aside>
+    <main id="swagger-ui"></main>
+    <noscript>Enable JavaScript to use Swagger UI. The OpenAPI JSON is linked above.</noscript>
+  </body>
+</html>

@@ -1,0 +1,85 @@
+
+RUN <repository>/workbench/.venv/bin/python3 -m ruff check workbench
+All checks passed!
+
+RUN <repository>/workbench/.venv/bin/python3 -m ruff format --check workbench
+60 files already formatted
+
+RUN pnpm format:check
+
+> relay-workshop@0.3.1 format:check <repository>
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+RUN <repository>/workbench/.venv/bin/python3 -m pytest workbench/tests -q
+........................................................................ [ 78%]
+..................ss                                                     [100%]
+90 passed, 2 skipped in 4.10s
+
+RUN <repository>/workbench/.venv/bin/python3 workbench/scripts/evaluate.py
+{"baseline": "13/20", "contact1_lexical_intermediate": "20/20"}
+
+RUN pnpm scan:secrets
+
+> relay-workshop@0.3.1 scan:secrets <repository>
+> node scripts/scan-secrets.mjs
+
+No credential-shaped strings found in 103 source/document files. Pattern scan only; excludes local environment/runtime files.
+
+RUN pnpm exec playwright test --config workbench/playwright.config.ts
+[WebServer] INFO:     Started server process [39699]
+[WebServer] INFO:     Waiting for application startup.
+[WebServer] INFO:     Application startup complete.
+[WebServer] INFO:     Uvicorn running on http://127.0.0.1:8100 (Press CTRL+C to quit)
+
+Running 20 tests using 1 worker
+
+(node:39701) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop] › workbench/browser/workbench.spec.ts:3:1 › course overview explains the four contacts and supports topic exploration (3.4s)
+  ✓   2 [desktop] › workbench/browser/workbench.spec.ts:46:1 › investigate, inspect, propose, review and persist a resolution (7.6s)
+  ✓   3 [desktop] › workbench/browser/workbench.spec.ts:97:1 › starter paraphrase gap and unsaved preview are explicit (439ms)
+  ✓   4 [desktop] › workbench/browser/workbench.spec.ts:115:1 › failed live result is visible and offers no resolution action (367ms)
+  ✓   5 [desktop] › workbench/browser/workbench.spec.ts:145:1 › clear next action, search, memory and observer restrictions (624ms)
+  ✓   6 [desktop] › workbench/browser/workbench.spec.ts:169:1 › self-hosted Swagger supports sessions, protected reads and CSRF mutations (3.9s)
+  ✓   7 [desktop] › workbench/browser/workbench.spec.ts:257:1 › RAG presentation distinguishes embedding usage and exact chunk provenance (445ms)
+  ✓   8 [desktop] › workbench/browser/workbench.spec.ts:316:1 › live teaching controls send explicit context/runtime options and render a streamed result (463ms)
+  ✓   9 [desktop] › workbench/browser/workbench.spec.ts:392:1 › Contact 1 presentation supports deep links, keyboard navigation, notes and rehearsal timing (682ms)
+  ✓  10 [desktop] › workbench/browser/workbench.spec.ts:460:1 › Contact 1 print view contains the complete deck without notes or clipped slides (255ms)
+(node:39871) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  11 [mobile] › workbench/browser/workbench.spec.ts:3:1 › course overview explains the four contacts and supports topic exploration (4.0s)
+  ✓  12 [mobile] › workbench/browser/workbench.spec.ts:46:1 › investigate, inspect, propose, review and persist a resolution (7.6s)
+  ✓  13 [mobile] › workbench/browser/workbench.spec.ts:97:1 › starter paraphrase gap and unsaved preview are explicit (472ms)
+  ✓  14 [mobile] › workbench/browser/workbench.spec.ts:115:1 › failed live result is visible and offers no resolution action (358ms)
+  ✓  15 [mobile] › workbench/browser/workbench.spec.ts:145:1 › clear next action, search, memory and observer restrictions (539ms)
+  ✓  16 [mobile] › workbench/browser/workbench.spec.ts:169:1 › self-hosted Swagger supports sessions, protected reads and CSRF mutations (4.0s)
+  ✓  17 [mobile] › workbench/browser/workbench.spec.ts:257:1 › RAG presentation distinguishes embedding usage and exact chunk provenance (516ms)
+  ✓  18 [mobile] › workbench/browser/workbench.spec.ts:316:1 › live teaching controls send explicit context/runtime options and render a streamed result (479ms)
+  ✓  19 [mobile] › workbench/browser/workbench.spec.ts:392:1 › Contact 1 presentation supports deep links, keyboard navigation, notes and rehearsal timing (742ms)
+  ✓  20 [mobile] › workbench/browser/workbench.spec.ts:460:1 › Contact 1 print view contains the complete deck without notes or clipped slides (148ms)
+
+  20 passed (39.7s)
+
+RUN <repository>/workbench/.venv/bin/python3 -c import sys; import relay.main; assert not any(m == 'teaching' or m.startswith('teaching.') for m in sys.modules); print('Baseline import boundary: no teaching references loaded')
+Baseline import boundary: no teaching references loaded
+
+RUN uv build --project workbench --out-dir workbench/.runtime/dist --offline
+Building source distribution...
+Building wheel from source distribution...
+Successfully built workbench/.runtime/dist/relay_workbench-0.1.0.tar.gz
+Successfully built workbench/.runtime/dist/relay_workbench-0.1.0-py3-none-any.whl
+
+RUN <repository>/workbench/.venv/bin/python3 -c from pathlib import Path; from zipfile import ZipFile; wheel = next(Path('workbench/.runtime/dist').glob('*.whl')); names = ZipFile(wheel).namelist(); assert all('relay/static/' + p in names for p in ['index.html', 'app.js', 'course.html', 'course.css', 'contact1.html', 'contact1.css', 'contact1.js']); assert all('relay/static/vendor/swagger-ui/' + p in names for p in ['swagger-ui-bundle.js', 'swagger-ui.css', 'LICENSE', 'provenance.json']); assert not any('teaching/' in n or '.runtime/' in n for n in names); print('Baseline wheel includes frontend assets and excludes teaching/runtime data')
+Baseline wheel includes frontend assets and excludes teaching/runtime data
+
+RUN <repository>/workbench/.venv/bin/python3 -c from pathlib import Path; import tarfile; archive = next(Path('workbench/.runtime/dist').glob('*.tar.gz')); bundle = tarfile.open(archive); names = bundle.getnames(); bundle.close(); assert any(n.endswith('/src/relay/static/index.html') for n in names); assert not any(p in {'.runtime', '.venv', 'teaching', 'evidence', '__pycache__'} or p.startswith('.env') or p.endswith(('.sqlite', '.pyc')) for n in names for p in Path(n).parts); print('Source archive excludes runtime databases, secrets, binaries and teaching data')
+Source archive excludes runtime databases, secrets, binaries and teaching data
+
+RUN git diff --check
+Checkpoint fingerprints recorded: 77 files
+Checkpoint fingerprints verified: 77 files
+
+Relay local verification passed. External service quality/integration is not implied.

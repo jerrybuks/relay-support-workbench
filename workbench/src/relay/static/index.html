@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#111c35" />
+    <meta
+      name="description"
+      content="Relay brings case context, policy evidence, and reviewed resolutions into one workspace."
+    />
+    <title>Relay — Resolution desk</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to workspace</a>
+    <div id="app" aria-busy="true">
+      <div class="boot">
+        <span class="brand-symbol">r.</span>
+        <h1>Opening your resolution desk…</h1>
+        <p>Preparing a local workspace with fictional cases.</p>
+      </div>
+    </div>
+    <div id="notice" role="status" aria-live="polite"></div>
+    <dialog id="ai-inspector" aria-labelledby="inspector-title"></dialog>
+    <dialog id="action-dialog" aria-labelledby="dialog-title"></dialog>
+  </body>
+</html>
