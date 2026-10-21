@@ -9,6 +9,7 @@ from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from .assistant import investigate, title_retrieval
+from .hosting import Hosting
 from .models import (
     Actor,
     Ask,
@@ -40,10 +41,7 @@ def create_app(
     ask_model=Ask,
     investigation_options=None,
 ):
-    if os.getenv("RELAY_ENV", "local") != "local":
-        raise RuntimeError(
-            "Relay's demo identity provider is local-only. Production login is not configured."
-        )
+    hosting = Hosting()
     store = store_factory(db_path or os.getenv("RELAY_DB", str(ROOT / ".runtime" / "relay.sqlite")))
     app = FastAPI(
         title="Relay Resolution API",
@@ -56,19 +54,19 @@ def create_app(
     app.state.store = store
     app.state.checkpoint = checkpoint
     app.state.session_cookie = session_cookie
+    app.state.hosting = hosting
 
     @app.middleware("http")
     async def boundary(request: Request, call_next):
         request_id = uuid.uuid4().hex
         started = time.perf_counter()
         request.state.request_id = request_id
-        if request.url.hostname not in {"127.0.0.1", "localhost", "::1"}:
-            return JSONResponse(
-                {"error": {"code": "local_only", "message": "Use a loopback host."}}, 403
-            )
+        rejection = hosting.reject(request)
+        if rejection is not None:
+            return rejection
         if request.method not in {"GET", "HEAD", "OPTIONS"}:
             origin = request.headers.get("origin")
-            expected = f"{request.url.scheme}://{request.headers.get('host')}"
+            expected = hosting.origin or f"{request.url.scheme}://{request.headers.get('host')}"
             if (origin and origin != expected) or request.headers.get(
                 "sec-fetch-site"
             ) == "cross-site":
@@ -134,6 +132,10 @@ def create_app(
                 raise Problem(403, "csrf_failed", "Refresh your session and try again.")
             if store.limited(identity):
                 raise Problem(429, "rate_limited", "Too many requests. Try again in a minute.")
+            if identity.role != "observer" and not hosting.reserve_ai_request(request):
+                raise Problem(
+                    429, "workshop_run_limit", "The workshop AI request limit is reached."
+                )
         return identity
 
     app.state.authorize = actor
@@ -161,12 +163,19 @@ def create_app(
             {
                 "actor": identity.model_dump(exclude={"workspace", "csrf"}),
                 "csrf_token": identity.csrf,
-                "mode": "local-demo",
+                "mode": hosting.mode,
                 "checkpoint": checkpoint,
                 "provider": provider,
             }
         )
-        response.set_cookie(session_cookie, token, httponly=True, samesite="strict", max_age=28800)
+        response.set_cookie(
+            session_cookie,
+            token,
+            httponly=True,
+            samesite="strict",
+            secure=hosting.workshop,
+            max_age=28800,
+        )
         return response
 
     @app.get("/api/v1/session", tags=["Local identity"], response_model=SessionResponse)
@@ -174,7 +183,7 @@ def create_app(
         return {
             "actor": identity.model_dump(exclude={"workspace", "csrf"}),
             "csrf_token": identity.csrf,
-            "mode": "local-demo",
+            "mode": hosting.mode,
             "checkpoint": checkpoint,
             "provider": provider,
         }

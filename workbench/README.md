@@ -13,7 +13,7 @@ Course overview: http://127.0.0.1:8000/course. The participant-facing write-up f
 
 The separate [concepts-only presentation](http://127.0.0.1:8000/static/contact1-concepts.html) has 15 explanation slides with conversational notes and code references. It contains no demo cards, profile links, build instructions or prescribed slide timings. It is available as an optional concepts-only alternative. The original timed presentation and demo guide remain separately accessible. Both decks use the same local navigation/styles, and source-location verification covers both.
 
-The default database is `workbench/.runtime/relay.sqlite`, excluded from Git. Override `RELAY_DB` with a disposable path for QA. The server binds loopback. `RELAY_ENV` must be `local`; no real login provider is configured.
+The default database is `workbench/.runtime/relay.sqlite`, excluded from Git. Override `RELAY_DB` with a disposable path for QA. The server binds loopback. Default `RELAY_ENV=local` is loopback-only. The separate hosted entrypoint supports explicit `RELAY_ENV=workshop` with a configured HTTPS origin, secure cookies and shared AI limits. No real login provider is configured. See [deployment](../docs/DEPLOYMENT.md).
 
 ## Swagger UI
 

@@ -55,7 +55,7 @@ class PublicActor(BaseModel):
 class SessionResponse(BaseModel):
     actor: PublicActor
     csrf_token: str
-    mode: Literal["local-demo"]
+    mode: Literal["local-demo", "hosted-workshop"]
     checkpoint: str
     provider: Literal["fixture", "openai", "openrouter"] = "fixture"
 

@@ -51,7 +51,7 @@ flowchart TD
 
 ### Critical identity limitation
 
-M0 uses **local demo identities**, not production authentication. A new browser gets its own isolated workspace; changing persona preserves that workspace and rotates its session. This is acceptable for a loopback workshop. App startup rejects non-local `RELAY_ENV` and requests reject non-loopback hosts. Production OIDC/SSO, secure HTTPS cookies and real user provisioning remain release prerequisites, not claimed implemented capabilities. Ordinary API patterns are prepared for inspection; the slides spend only a few minutes on them.
+M0 uses **local demo identities**, not production authentication. A new browser gets its own isolated workspace; changing persona preserves that workspace and rotates its session. This is acceptable for a loopback workshop. App startup rejects non-local `RELAY_ENV` and requests reject non-loopback hosts. A separately authorized hosted-workshop mode now permits one configured HTTPS host, uses Secure cookies and enforces shared AI request limits. It remains a public synthetic demo with selectable personas and ephemeral state on Render Free; it adds no individual production identity. See [deployment](DEPLOYMENT.md). Production OIDC/SSO and real user provisioning remain release prerequisites, not claimed implemented capabilities. Ordinary API patterns are prepared for inspection; the slides spend only a few minutes on them.
 
 ## Data and trust boundaries
 

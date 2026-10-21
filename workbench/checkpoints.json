@@ -73,7 +73,7 @@
         "preflight": "pnpm contact1:preflight; --live explicitly billable",
         "providerStateComparison": "standalone SDK reference: stateless/manual/previous/Conversations; mock transport verified; live pending"
       },
-      "verification": "workbench/evidence/publication-verify.log; 145 Python tests; 24 desktop/mobile checks; 2 opt-in Temporal skips; 95 source fingerprints",
+      "verification": "workbench/evidence/hosted-workshop-verify.log; 164 Python tests; 26 desktop/mobile checks; 2 opt-in Temporal skips; 98 source fingerprints",
       "presentation": {
         "route": "/course/contact-1",
         "source": "workbench/src/relay/static/contact1.html",
@@ -151,5 +151,22 @@
     "Advanced practice implementations",
     "Timed rehearsal and exact course-objective mapping",
     "Customer identity/data/operational review before production"
-  ]
+  ],
+  "hostedWorkshop": {
+    "entrypoint": "workbench/scripts/serve_workshop.py",
+    "blueprint": "render.yaml",
+    "image": "Dockerfile",
+    "plan": "Render Free; no paid disk/database/worker",
+    "publicUI": true,
+    "publicAI": true,
+    "limits": {
+      "perMinute": 10,
+      "perUTCDay": 100,
+      "scope": "shared across visitors in one process; resets on instance restart"
+    },
+    "storage": "ephemeral; synthetic index rebuilds on fresh boot",
+    "verification": "workbench/evidence/hosted-workshop-verify.log",
+    "liveContainerEvidence": "workbench/evidence/hosted-container-live.json",
+    "cloudStatus": "not-created; owner Render login required"
+  }
 }

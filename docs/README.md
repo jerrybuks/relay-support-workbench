@@ -15,6 +15,8 @@ Start with the document that matches your task:
 9. [Coverage audit](teaching/CONTACT_1_COVERAGE_AUDIT.md): verified application paths, corrected omissions and later-contact implementation gaps.
 10. [Participant practice](teaching/RELAY_PRACTICE.md): exercises and evidence expected beyond the facilitated sessions.
 
+Deployment setup is in [the hosted workshop guide](DEPLOYMENT.md): a free single-service Render Blueprint, with ephemeral data and public AI request limits.
+
 These files are the active specification. Superseded game code and documents have been removed from the working tree and remain recoverable from historical Git tags. Their results are not evidence for Relay.
 
 Prepare ordinary API engineering before class. Preserve meaningful instructor engineering in Contacts 1–3, separate before/intermediate/reference states, zero-key local fallback, source/data governance, reproducible failures, tests and measured evidence. Contact 4 retains release decisions and separate API/Codex readiness without requiring learner presentations.

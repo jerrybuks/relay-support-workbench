@@ -27,6 +27,7 @@ const state = {
   checkpoint: 'm0-baseline',
   csrf: '',
   provider: 'fixture',
+  hosted: false,
   preview: null,
   questionDraft: '',
   busy: false,
@@ -88,6 +89,7 @@ async function boot() {
     state.actor = session.actor;
     state.csrf = session.csrf_token;
     state.provider = session.provider || 'fixture';
+    state.hosted = session.mode === 'hosted-workshop';
     state.checkpoint = session.checkpoint || 'm0-baseline';
     await load();
   } catch (error) {
@@ -151,7 +153,7 @@ function render() {
           ? knowledgeView()
           : activityView()
     }
-    <footer class="footer"><span>Local demo · fictional data · no customer messages or payments are sent</span><a href="/course">Course overview ↗</a><a href="/docs" target="_blank" rel="noopener">API reference ↗</a></footer></main></div></div>`;
+    <footer class="footer"><span>${state.hosted ? 'Workshop demo · fictional data · history resets when the free service restarts' : 'Local demo · fictional data · no customer messages or payments are sent'}</span><a href="/course">Course overview ↗</a><a href="/docs" target="_blank" rel="noopener">API reference ↗</a></footer></main></div></div>`;
   $('#app').setAttribute('aria-busy', 'false');
   if ($('#ai-inspector').open) renderInspector();
 }

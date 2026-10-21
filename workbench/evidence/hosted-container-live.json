@@ -1,0 +1,19 @@
+{
+  "mode": "actual locally built Docker image, capped at 512 MiB; real OpenRouter calls on synthetic data",
+  "cloud_deployed": false,
+  "public_ui": true,
+  "session_mode": "hosted-workshop",
+  "secure_cookie": true,
+  "status": "supported",
+  "sources": [
+    "POL-DELIVERY-3"
+  ],
+  "stream_progress": true,
+  "retrieval": "hybrid",
+  "model_calls": 2,
+  "query_embedding_calls": 1,
+  "typo_search": "passed",
+  "shared_limit": "third AI request rejected; case reading remains available",
+  "storage": "new disposable container data; no owner runtime files mounted",
+  "browser": "Actual container UI through a local test proxy; exact saved provider answer rendered, source expanded, hosted notice and inspector verified. This is not a cloud URL."
+}

@@ -1,5 +1,5 @@
 {
-  "created_at": "2026-10-21T20:36:58.651001+00:00",
+  "created_at": "2026-10-21T21:35:32.209696+00:00",
   "dataset": "relay-synthetic-draft-2",
   "dataset_review_status": "draft-awaiting-facilitator-review",
   "provider": "fixture",
@@ -9,8 +9,8 @@
   "model_accuracy": null,
   "tokens": null,
   "live_latency_p95": null,
-  "source_fingerprint_sha256": "09acfdf47776cc39b23f7f28be02738cd59d20381f4cc0bf314fefb78b9c4f42",
-  "base_git_revision": "d0fa61458484797d0b37bb61ae61f9b2091962ab",
+  "source_fingerprint_sha256": "3d81792f11965e615467e9e4ce5630f9a4b1ca696a3a806affd6c5c9204c8501",
+  "base_git_revision": "fe3b0d0863609f190635b8a4072bdc01b72b9041",
   "working_tree_dirty": true,
   "scope": "Retrieval presence/abstention, access and deterministic policy checks; not live generation, embedding quality, semantic entailment or customer acceptance.",
   "results": {

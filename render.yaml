@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: relay-workshop
+    runtime: docker
+    plan: free
+    branch: main
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    autoDeployTrigger: off
+    envVars:
+      - key: RELAY_ENV
+        value: workshop
+      - key: RELAY_PROFILE
+        value: live
+      - key: RELAY_DATA_DIR
+        value: /data
+      - key: RELAY_WORKSHOP_MINUTE_RUN_LIMIT
+        value: '10'
+      - key: RELAY_WORKSHOP_DAILY_RUN_LIMIT
+        value: '100'
+      - key: RELAY_AI_PROVIDER
+        value: openrouter
+      - key: RELAY_ALLOW_LIVE
+        value: '1'
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: OPENROUTER_MODEL
+        value: openai/gpt-4o
+      - key: OPENROUTER_EMBEDDING_MODEL
+        value: openai/text-embedding-3-small
+      - key: RELAY_BOOTSTRAP_INDEX
+        value: '1'
+      - key: RELAY_RETRIEVAL_MODE
+        value: hybrid
+      - key: RELAY_TRACE_EXPORT
+        value: '0'
+      # Render is the only network ingress to this container.
+      - key: FORWARDED_ALLOW_IPS
+        value: '*'

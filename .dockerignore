@@ -1,0 +1,16 @@
+**
+!Dockerfile
+!workbench/
+!workbench/pyproject.toml
+!workbench/uv.lock
+!workbench/src/
+!workbench/src/**
+!workbench/teaching/
+!workbench/teaching/*.py
+!workbench/scripts/
+!workbench/scripts/serve_workshop.py
+**/__pycache__/
+**/*.pyc
+**/.env*
+**/.runtime/
+**/.venv/

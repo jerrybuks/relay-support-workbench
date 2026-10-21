@@ -1,4 +1,13 @@
 // Local presentation controls only. No provider calls, telemetry or remote dependencies.
+// Hosted demonstrations use the current service; local rehearsal keeps its explicit ports.
+if (!['127.0.0.1', 'localhost', '[::1]'].includes(location.hostname)) {
+  document.querySelectorAll('.demo-links a').forEach((link) => {
+    const target = new URL(link.href);
+    if (target.hostname === '127.0.0.1' && target.port === '8002') {
+      link.href = location.origin + target.pathname;
+    }
+  });
+}
 const conceptsOnly = document.body.dataset.deckMode === 'concepts';
 const slides = [...document.querySelectorAll('.slide')];
 const outline = document.querySelector('#outline');

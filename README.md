@@ -21,6 +21,10 @@ Contact 1 presentation, speaker notes and demo guide: **http://127.0.0.1:8000/co
 
 The browser starts an isolated local demo workspace as Tolu, a support agent. Open RY-1042, choose **Investigate case**, inspect policy evidence, then **Propose a service credit**. Use **Demo persona** to switch to Amara and review it. Reload preserves the workspace. Another browser/context starts independently.
 
+## Host the workshop
+
+[Deploy the frontend and backend together on Render Free](https://render.com/deploy?repo=https%3A%2F%2Fgithub.com%2Fjerrybuks%2Frelay-support-workbench). Supply your OpenRouter key through Render, not Git. The UI and AI are public with shared request limits. Free-instance restarts erase workshop history and rebuild the synthetic vector index. See the [deployment guide](docs/DEPLOYMENT.md) for the owner setup, limits and verification.
+
 ## Verify
 
 Install the browser/formatting tooling with `pnpm install --frozen-lockfile` and the reference SDKs with `uv sync --project workbench --locked --extra references`.
@@ -47,6 +51,6 @@ The [documentation index](docs/README.md) links the product design, facilitator 
 
 ## Honest boundaries
 
-This is a **loopback-only workshop**, with synthetic data, demo identity switching, SQLite, fixture tools and a local ledger. It is not production authentication, a payment integration, a real logistics service or proof of live model quality. Production startup is intentionally rejected until real identity and operational controls are supplied. Advanced/reference SDK installation does not activate a service or authorize external writes.
+The default app is a **loopback-only workshop**, with synthetic data, demo identity switching, SQLite, fixture tools and a local ledger. It is not production authentication, a payment integration, a real logistics service or proof of live model quality. An explicit public hosted-workshop mode adds an HTTPS origin, secure cookies and shared request limits. Production startup remains rejected until real identity and operational controls are supplied. Advanced/reference SDK installation does not activate a service or authorize external writes.
 
 This public repository starts with a clean Relay snapshot. Earlier game commits and tags remain in the original local repository and are not published here. Historical tag names in older evidence refer to that local history; use the documented launch profiles for this snapshot. Credentials, runtime databases, vector indexes, dependencies and raw provider reports stay local. Included screenshots use fictional workshop data; published verification logs have local machine paths replaced with placeholders and trailing whitespace normalized.

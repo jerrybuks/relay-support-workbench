@@ -703,3 +703,23 @@ test('Contact 1 print view contains the complete deck without notes or clipped s
     });
   }
 });
+
+test('hosted presentation links open the current service rather than localhost', async ({
+  page,
+}) => {
+  const origin = 'https://relay-workshop.example';
+  await page.route(origin + '/**', async (route) => {
+    const url = new URL(route.request().url());
+    const response = await page.request.get('http://127.0.0.1:8100' + url.pathname + url.search);
+    await route.fulfill({ response });
+  });
+  await page.goto(origin + '/course/contact-1#demo-baseline');
+  await expect(page.getByRole('link', { name: 'Open Relay', exact: false })).toHaveAttribute(
+    'href',
+    origin + '/',
+  );
+  await expect(
+    page.locator('#demo-baseline').getByRole('link', { name: 'Swagger', exact: false }),
+  ).toHaveAttribute('href', origin + '/docs');
+  await expect(page.locator('.demo-links a[href*="127.0.0.1"]')).toHaveCount(0);
+});

@@ -417,3 +417,26 @@ def test_query_normalization_is_conservative_and_scoped():
     assert search_query("police", TEAM) == "police"
     assert search_query("resere", TEAM) == "resere"  # Restricted title cannot influence query.
     assert search_query("dlivery", [{**TEAM[0], "title": "delivery dliverys"}]) == "dlivery"
+
+
+def test_hosted_bootstrap_reuses_vectors_and_keeps_unreviewed_sources_out(
+    tmp_path, sdk, monkeypatch
+):
+    from scripts.serve_workshop import prepare_index
+
+    client, requests, _ = sdk
+    monkeypatch.setenv("RELAY_AI_PROVIDER", "openai")
+    monkeypatch.setenv("RELAY_EMBEDDING_DIMENSIONS", "3")
+    monkeypatch.setenv("RELAY_VECTOR_PATH", str(tmp_path / "hosted-index"))
+    monkeypatch.setenv("RELAY_BOOTSTRAP_INDEX", "1")
+    prepare_index(client)
+    before = len(requests)
+    prepare_index(client)
+    assert len(requests) == before  # Warm starts have no new embedding call.
+    rag = VectorRag(client, tmp_path / "hosted-index", replace(CONFIG, min_score=0.4))
+    try:
+        assert set(rag.manifest()["sources"]) == {d["id"] for d in DOCS}
+        assert "POL-DRAFT-4" not in rag.manifest()["sources"]
+        assert "OTHER-POL" not in rag.manifest()["sources"]
+    finally:
+        rag.close()
