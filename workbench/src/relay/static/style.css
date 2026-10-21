@@ -146,6 +146,8 @@ p {
   height: 100vh;
 }
 .brand {
+  color: inherit;
+  text-decoration: none;
   display: flex;
   align-items: center;
   gap: 12px;

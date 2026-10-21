@@ -13,9 +13,9 @@ uv sync --project workbench --locked
 uv run --project workbench python -m relay.main
 ```
 
-Open **http://127.0.0.1:8000**. Interactive API documentation: **http://127.0.0.1:8000/docs**.
+Open the workbench at **http://127.0.0.1:8000/dashboard**. Interactive API documentation: **http://127.0.0.1:8000/docs**.
 
-Course overview and four-contact learning path: **http://127.0.0.1:8000/course**.
+Course homepage and four-contact learning path: **http://127.0.0.1:8000/** (also available at `/course`).
 
 Contact 1 presentation, speaker notes and demo guide: **http://127.0.0.1:8000/course/contact-1**.
 

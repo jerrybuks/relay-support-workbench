@@ -116,7 +116,7 @@ function render() {
     activity: 'Activity & decisions',
   }[state.page];
   $('#app').innerHTML = `<div class="shell ${live ? 'live-workbench' : ''}">
-    <aside class="sidebar"><div class="brand"><span class="brand-symbol">r.</span><div class="brand-text"><div class="brand-name">relay</div><div class="brand-small">A clearer way forward</div></div></div>
+    <aside class="sidebar"><a class="brand" href="/" aria-label="Relay home"><span class="brand-symbol">r.</span><div class="brand-text"><div class="brand-name">relay</div><div class="brand-small">A clearer way forward</div></div></a>
       <p class="workspace-label eyebrow">Workspace</p><nav class="nav" aria-label="Workspace navigation">
       ${[
         ['queue', 'Resolution desk', state.cases.length],
@@ -153,7 +153,7 @@ function render() {
           ? knowledgeView()
           : activityView()
     }
-    <footer class="footer"><span>${state.hosted ? 'Workshop demo · fictional data · history resets when the free service restarts' : 'Local demo · fictional data · no customer messages or payments are sent'}</span><a href="/course">Course overview ↗</a><a href="/docs" target="_blank" rel="noopener">API reference ↗</a></footer></main></div></div>`;
+    <footer class="footer"><span>${state.hosted ? 'Workshop demo · fictional data · history resets when the free service restarts' : 'Local demo · fictional data · no customer messages or payments are sent'}</span><a href="/">Course overview ↗</a><a href="/docs" target="_blank" rel="noopener">API reference ↗</a></footer></main></div></div>`;
   $('#app').setAttribute('aria-busy', 'false');
   if ($('#ai-inspector').open) renderInspector();
 }

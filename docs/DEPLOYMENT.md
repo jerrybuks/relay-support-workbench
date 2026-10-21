@@ -10,7 +10,7 @@ The frontend, FastAPI API, Swagger and slides share **one service and one HTTPS 
 2. Review the Blueprint: one Docker web service on the **Free** plan, with no paid disk, database or worker. Keep the repository root as the Docker context.
 3. Supply **OPENROUTER_API_KEY** in Render's secret prompt. Copy only that value from your local configuration; do not upload `.env`, credentials, local databases or vector indexes. No password or class code is required for visitors.
 4. Create the service. The explicit hosted entrypoint builds embeddings for the original published synthetic policies before accepting traffic. A provider failure stops startup; it never substitutes fixture answers.
-5. Open the URL Render assigns after the deploy reports **Live**. The same URL serves `/`, `/docs`, `/course` and `/course/contact-1`. Demo slide links adapt to that hosted URL.
+5. Open the URL Render assigns after the deploy reports **Live**. The same URL serves the course homepage at `/` (also `/course`), the workbench at `/dashboard`, Swagger at `/docs` and slides at `/course/contact-1`. Demo slide links adapt to that hosted URL.
 
 Automatic redeploys are off so source updates do not unexpectedly reset a class workspace. After a later code change, use **Manual Deploy → Deploy latest commit** in Render.
 
@@ -30,7 +30,8 @@ In Render's Environment settings, `RELAY_WORKSHOP_MINUTE_RUN_LIMIT` and `RELAY_W
 
 ## Verify the hosted demo
 
-- `/api/health` returns `ok`, the live reference checkpoint and `openrouter`.
+- `HEAD /api/health` checks the same database readiness as GET and returns an empty successful response without a session or provider call.
+- `GET /api/health` returns `ok`, the live reference checkpoint and `openrouter`.
 - Open RY-1042 and ask: “Can this customer receive compensation for a late express delivery?” Check its policy citation and the ₦2,000 proposal limit, subject to supervisor approval.
 - Try `dlivery polcy` in Swagger's protected-by-session RAG search, or ask it in the policy assistant.
 - Inspect the actual run and embedding/generation usage. Check a second browser receives a separate workspace.

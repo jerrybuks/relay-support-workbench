@@ -5,7 +5,7 @@ from pathlib import Path
 
 from fastapi import Depends, FastAPI, Header, Query, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
+from fastapi.responses import FileResponse, JSONResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from .assistant import investigate, title_retrieval
@@ -152,6 +152,11 @@ def create_app(
             "database": "ready",
             "external_actions": False,
         }
+
+    @app.head("/api/health", tags=["Operations"], response_class=Response)
+    def health_head():
+        health()
+        return Response(status_code=200)
 
     @app.post("/api/v1/demo/session", tags=["Local identity"], response_model=SessionResponse)
     def session(data: DemoSession, request: Request):
@@ -337,10 +342,11 @@ def create_app(
     def activity(identity: Actor = Depends(actor)):
         return {"items": store.timeline(identity)}
 
-    @app.get("/", include_in_schema=False)
+    @app.get("/dashboard", include_in_schema=False)
     def index():
         return FileResponse(STATIC / "index.html")
 
+    @app.get("/", include_in_schema=False)
     @app.get("/course", include_in_schema=False)
     def course():
         return FileResponse(STATIC / "course.html")

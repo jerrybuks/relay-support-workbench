@@ -1,14 +1,14 @@
 # Contact 1 preparation
 
-**Main Contact 1 demo: one live RAG app on http://127.0.0.1:8002.** Open RY-1042, ask “Can this customer receive compensation for a late express delivery?”, read the answer and open its cited policy. Inspect the same request in Swagger and the execution details. There is no required title-search or FTS intermediate exercise.
+**Main Contact 1 demo: one live RAG app on http://127.0.0.1:8002/dashboard.** Open RY-1042, ask “Can this customer receive compensation for a late express delivery?”, read the answer and open its cited policy. Inspect the same request in Swagger and the execution details. There is no required title-search or FTS intermediate exercise.
 
 The profiles below remain isolated references. Before/intermediate are optional historical exercises, not steps in the main walkthrough. The normal app remains the zero-key starter. Profiles use separate SQLite files **and cookie names**: loopback ports alone do not isolate browser cookies.
 
-| State                  | Root command              | URL                   | What actually runs                                                                                 |
-| ---------------------- | ------------------------- | --------------------- | -------------------------------------------------------------------------------------------------- |
-| Before                 | `pnpm contact1:before`    | http://127.0.0.1:8004 | Title-only retrieval and deterministic fixture answers                                             |
-| Retrieval intermediate | `pnpm contact1:retrieval` | http://127.0.0.1:8001 | Permissioned FTS passage/tag search; fixture answers                                               |
-| Live reference         | `pnpm contact1:live`      | http://127.0.0.1:8002 | OpenAI query embeddings → permission-filtered Qdrant → read-only shipment tool → structured answer |
+| State                  | Root command              | URL                             | What actually runs                                                                                 |
+| ---------------------- | ------------------------- | ------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Before                 | `pnpm contact1:before`    | http://127.0.0.1:8004/dashboard | Title-only retrieval and deterministic fixture answers                                             |
+| Retrieval intermediate | `pnpm contact1:retrieval` | http://127.0.0.1:8001/dashboard | Permissioned FTS passage/tag search; fixture answers                                               |
+| Live reference         | `pnpm contact1:live`      | http://127.0.0.1:8002/dashboard | OpenAI query embeddings → permission-filtered Qdrant → read-only shipment tool → structured answer |
 
 Install locked dependencies first: `uv sync --project workbench --locked --extra references` and `pnpm install --frozen-lockfile`. Verify `/api/health` on each server before demonstrating. Baseline `pnpm dev` stays on port 8000 and retains the owner's existing data. Stop a profile with Ctrl-C; restarting preserves its own workspace. Use a fresh browser context for a new case journey rather than deleting a working database.
 

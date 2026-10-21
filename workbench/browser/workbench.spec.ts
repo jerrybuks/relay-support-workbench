@@ -5,7 +5,7 @@ test('course overview explains the four contacts and supports topic exploration'
 }, info) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  await page.goto('/course');
+  await page.goto('/');
   await expect(page.getByRole('heading', { level: 1 })).toContainText('AI engineering');
   await expect(page.getByText('4 contacts × 60 minutes', { exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -58,8 +58,12 @@ test('course overview explains the four contacts and supports topic exploration'
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.getByRole('link', { name: 'Open workbench', exact: false }).click();
   await expect(page.getByRole('heading', { name: 'Resolution desk', exact: true })).toBeVisible();
+  await expect(page).toHaveURL(/\/dashboard$/);
+  await page.getByRole('link', { name: 'Relay home', exact: true }).click();
+  await expect(page).toHaveURL(/\/$/);
+  await page.getByRole('link', { name: 'Open workbench', exact: false }).click();
   await page.getByRole('link', { name: 'Course overview', exact: false }).click();
-  await expect(page).toHaveURL(/\/course$/);
+  await expect(page).toHaveURL(/\/$/);
   expect(errors).toEqual([]);
 });
 
@@ -133,7 +137,7 @@ test('concepts-only deck explains the existing topics without demonstration inst
 test('investigate, inspect, propose, review and persist a resolution', async ({ page }, info) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  await page.goto('/');
+  await page.goto('/dashboard');
   await expect(page.getByRole('heading', { name: 'Resolution desk', exact: true })).toBeVisible();
   await page.getByRole('button', { name: /Open case RY-1042/ }).click();
   await expect(page.getByRole('list', { name: 'Resolution progress' })).toContainText(
@@ -182,7 +186,7 @@ test('investigate, inspect, propose, review and persist a resolution', async ({ 
 });
 
 test('starter paraphrase gap and unsaved preview are explicit', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/dashboard');
   await page.getByRole('button', { name: /Open case RY-1042/ }).click();
   await page.getByRole('button', { name: /Can this customer receive compensation/ }).click();
   await expect(page.getByLabel('Ask about this case')).toHaveValue(
@@ -216,7 +220,7 @@ test('failed live result is visible and offers no resolution action', async ({ p
       },
     });
   });
-  await page.goto('/');
+  await page.goto('/dashboard');
   await page.getByRole('button', { name: /Open case RY-1042/ }).click();
   await page.getByLabel('Ask about this case').fill('delivery service credit policy');
   await page.getByLabel('Save this exchange in the case').uncheck();
@@ -230,7 +234,7 @@ test('failed live result is visible and offers no resolution action', async ({ p
 });
 
 test('clear next action, search, memory and observer restrictions', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/dashboard');
   await page.getByLabel('Search cases').fill('damaged');
   await expect(page.getByRole('button', { name: /Open case RY-1044/ })).toBeVisible();
   await expect(page.getByRole('button', { name: /Open case RY-1042/ })).toHaveCount(0);
@@ -385,7 +389,7 @@ test('RAG presentation distinguishes embedding usage and exact chunk provenance'
       },
     });
   });
-  await page.goto('/');
+  await page.goto('/dashboard');
   await page.getByRole('button', { name: /Open case RY-1042/ }).click();
   await page.getByLabel('Ask about this case').fill('What remedy applies?');
   await page.getByLabel('Save this exchange in the case').uncheck();
@@ -466,7 +470,7 @@ for (const provider of ['openai', 'openrouter']) {
           .join(''),
       });
     });
-    await page.goto('/');
+    await page.goto('/dashboard');
     await expect(page.locator('.mode-badge')).toContainText(
       provider === 'openrouter' ? 'OpenAI via OpenRouter' : 'Live OpenAI reference',
     );
@@ -637,7 +641,7 @@ test('Contact 1 presentation supports deep links, keyboard navigation, notes and
   await expect(page.locator('#planned-time')).toHaveText('15–23 min');
   await expect(page.getByRole('link', { name: 'Open Relay', exact: false })).toHaveAttribute(
     'href',
-    'http://127.0.0.1:8002',
+    'http://127.0.0.1:8002/dashboard',
   );
   await expect(
     page.locator('.slide.demo a[href*="8004"], .slide.demo a[href*="8001"]'),
@@ -716,7 +720,7 @@ test('hosted presentation links open the current service rather than localhost',
   await page.goto(origin + '/course/contact-1#demo-baseline');
   await expect(page.getByRole('link', { name: 'Open Relay', exact: false })).toHaveAttribute(
     'href',
-    origin + '/',
+    origin + '/dashboard',
   );
   await expect(
     page.locator('#demo-baseline').getByRole('link', { name: 'Swagger', exact: false }),

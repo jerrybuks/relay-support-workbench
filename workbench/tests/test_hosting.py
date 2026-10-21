@@ -23,7 +23,9 @@ def browser(app):
     return client
 
 
-@pytest.mark.parametrize("path", ["/", "/course", "/docs", "/static/app.js", "/api/health"])
+@pytest.mark.parametrize(
+    "path", ["/", "/course", "/dashboard", "/docs", "/static/app.js", "/api/health"]
+)
 def test_public_workshop_has_no_password_gate_but_checks_host(hosted, path):
     with browser(hosted) as client:
         assert client.get(path).status_code == 200
@@ -169,3 +171,13 @@ def test_hosted_fixture_entrypoint_uses_new_storage_without_live_imports(monkeyp
     with browser(workshop()) as client:
         assert client.get("/api/health").json()["provider"] == "fixture"
         assert client.get("/").status_code == 200
+
+
+def test_hosted_head_health_is_public_and_allows_internal_probe(hosted):
+    with browser(hosted) as client:
+        for host in ["class.example", "127.0.0.1:8000"]:
+            response = client.head("/api/health", headers={"Host": host})
+            assert response.status_code == 200
+            assert response.content == b""
+            assert "set-cookie" not in response.headers
+        assert client.head("/api/health", headers={"Host": "evil.example"}).status_code == 403

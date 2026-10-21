@@ -288,3 +288,21 @@ def test_production_fails_closed(monkeypatch, tmp_path):
     monkeypatch.setenv("RELAY_ENV", "production")
     with pytest.raises(RuntimeError, match="local-only"):
         create_app(tmp_path / "production.sqlite")
+
+
+def test_landing_and_dashboard_routes_and_head_health(client, app, monkeypatch):
+    landing = client.get("/")
+    assert landing.content == client.get("/course").content
+    assert "AI engineering" in landing.text
+    assert "/static/app.js" in client.get("/dashboard").text
+    response = client.head("/api/health")
+    assert response.status_code == 200
+    assert response.content == b""
+    assert "head" in client.get("/openapi.json").json()["paths"]["/api/health"]
+
+    def unavailable():
+        raise RuntimeError("Disposable test database unavailable")
+
+    monkeypatch.setattr(app.state.store, "connect", unavailable)
+    with pytest.raises(RuntimeError, match="Disposable test database unavailable"):
+        client.head("/api/health")
