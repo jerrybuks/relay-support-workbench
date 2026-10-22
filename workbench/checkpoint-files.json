@@ -24,7 +24,7 @@
     "scripts/contact2_browser.mjs": "35dd1a180941c6aafe9d28fdd4ac361fb52e67a1c7083210955adc5ecafe4919",
     "scripts/contact2_mcp.py": "d2a4771b56efd014599e6481f68058c621e79ddb9ac55533f8995d87a05444d2",
     "scripts/contact2_preflight.py": "5b408116320d5316c07b8effdabd9da9d80e954d758e39222c8a4e02d1126b02",
-    "scripts/contact2_workspace.py": "69737288c513b92261f35201971fb22432cc1619eb7514662227211123760889",
+    "scripts/contact2_workspace.py": "f47d14355a8856a356efaa7f3b41147f19a5f61d784aa97c84db67ac51173969",
     "scripts/evaluate.py": "352948677dfd8b3ec7537d6eb0f6807b03c543dd9d95b621760f5b6da022abea",
     "scripts/evaluate_live.py": "b5b0a4d259d4631006dd9e5a0fc15bcecf0046b4424354c8f0e6bf4d23204e2e",
     "scripts/live_smoke.py": "3687f5b18959efac3d19745bef434e06b3e457a948e083eaabedaa3f90428097",

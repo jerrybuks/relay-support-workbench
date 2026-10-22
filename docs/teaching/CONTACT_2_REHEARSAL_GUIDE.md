@@ -27,7 +27,7 @@ Freeze the document text, expected answers and input format before rehearsal. Th
 
 ## Start your rehearsal
 
-The prepared class checkout is `/private/tmp/relay-contact2-class`. Open that folder in the IDE, not the normal project folder. Its `workbench/teaching/contact2/exercise.py` is the live edit; the original Relay app and Contact 1 runtime data stay separate.
+The prepared class checkout is `~/projects/relay-contact2-class`. Open that folder in the IDE, not the normal project folder. Its `workbench/teaching/contact2/exercise.py` is the live edit; the original Relay app and Contact 1 runtime data stay separate.
 
 The class app uses the single local port **8002**. Open:
 
@@ -56,7 +56,7 @@ Use the policy lab to preview and import. Preview makes no model request. Import
 If the server is stopped, run from the original project root:
 
 ```sh
-uv run --project /private/tmp/relay-contact2-class/workbench --locked --extra references --env-file workbench/.env python /private/tmp/relay-contact2-class/workbench/scripts/contact2.py serve --state before --reload
+uv run --project ~/projects/relay-contact2-class/workbench --locked --extra references --env-file workbench/.env python ~/projects/relay-contact2-class/workbench/scripts/contact2.py serve --state before --reload
 ```
 
 Do not run a second server if port 8002 is occupied. The reloader picks up parser edits. For recovery, stop that server and use the same command with `--state reference` instead of `--state before --reload`. The reference parser uses the same app, UI and teaching database. Nothing resets automatically.
@@ -64,14 +64,14 @@ Do not run a second server if port 8002 is occupied. The reloader picks up parse
 To launch Codex in the class checkout with the external documentation server available only for that invocation:
 
 ```sh
-codex -C /private/tmp/relay-contact2-class -c 'mcp_servers.openaiDeveloperDocs.url="https://developers.openai.com/mcp"'
+codex -C ~/projects/relay-contact2-class -c 'mcp_servers.openaiDeveloperDocs.url="https://developers.openai.com/mcp"'
 ```
 
 Use the client model/effort controls, then Plan mode and the task prompt below. `/mcp` should list the documentation connection. For the prepared non-interactive example, inspect the recorded CLI events/result and actual repair patch at `workbench/teaching/contact2/artifacts/CODEX_REPAIR.patch`. The verification record includes real cached-token counts from Codex, separate from Relay's reported cached input.
 
 The two general skills are installed under the class checkout's `.agents/skills`. The third skill reference is `workbench/teaching/contact2/skills/ingest-approved-policy/SKILL.md`; author it during the exercise, or copy it into `.agents/skills/ingest-approved-policy/` for recovery. Never install it globally for this class.
 
-For a **fresh** additional checkout, run `pnpm contact2:setup --path /private/tmp/relay-contact2-another` from the original repository. The setup refuses an existing destination. It installs locked dependencies and the two skills; it copies no credentials. A seed-only Contact 2 index can be reused without another API request. If a seed index cannot be reused, explicitly initialize the new teaching home with `contact2.py init --confirm-billable` before serving; never run it on Contact 1 data.
+For a **fresh** additional checkout, run `pnpm contact2:setup --path ~/projects/relay-contact2-another` from the original repository. The setup refuses an existing destination. It installs locked dependencies and the two skills; it copies no credentials. A seed-only Contact 2 index can be reused without another API request. If a seed index cannot be reused, explicitly initialize the new teaching home with `contact2.py init --confirm-billable` before serving; never run it on Contact 1 data.
 
 ## Prepared assets and evidence
 
