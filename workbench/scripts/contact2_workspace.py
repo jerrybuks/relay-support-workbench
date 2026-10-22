@@ -12,9 +12,9 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--path", default="/private/tmp/relay-contact2-class")
+    parser.add_argument("--path", default=str(ROOT.parent / "relay-contact2-class"))
     args = parser.parse_args()
-    target = Path(args.path).resolve()
+    target = Path(args.path).expanduser().resolve()
     if target.exists():
         raise SystemExit(
             "Destination exists. Reuse it or choose a new --path; no reset was performed."
