@@ -1,2 +1,5 @@
 # Preserve upstream vendored bytes, including their original whitespace.
 workbench/src/relay/static/vendor/** -whitespace
+
+# Unified diff artifacts preserve a single space on blank context lines.
+workbench/teaching/contact2/artifacts/CODEX_REPAIR.patch -whitespace

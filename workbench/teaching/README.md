@@ -42,6 +42,10 @@ RELAY_ALLOW_LIVE=1 uv run --project workbench --locked --extra references python
 
 ## Contact 2
 
+The current main session is the [120-minute approved-policy ingestion and governed Codex rehearsal](../../docs/teaching/CONTACT_2_REHEARSAL_GUIDE.md). It has one app, a deliberately unfinished parser, a completed reference, two general engineering skills and a reusable ingestion skill. See `contact2/TASK.md`, `contact2_app.py` and `scripts/contact2.py`.
+
+The original duplicate-event red/green fixture below remains optional practice, not the main session:
+
 ```sh
 PYTHONPATH=. .venv/bin/python teaching/contact2_regression.py --state before
 PYTHONPATH=. .venv/bin/python teaching/contact2_regression.py --state reference

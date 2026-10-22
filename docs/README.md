@@ -13,7 +13,8 @@ Start with the document that matches your task:
 7. [Delivery backlog](ISSUES.md): remaining integrations, reviews and rehearsal work.
 8. [Contact 1 preparation](teaching/CONTACT_1_PREPARATION.md): launch profiles, live preflight, evaluation and rehearsal.
 9. [Coverage audit](teaching/CONTACT_1_COVERAGE_AUDIT.md): verified application paths, corrected omissions and later-contact implementation gaps.
-10. [Participant practice](teaching/RELAY_PRACTICE.md): exercises and evidence expected beyond the facilitated sessions.
+10. [Contact 2 rehearsal guide](teaching/CONTACT_2_REHEARSAL_GUIDE.md): updated two-hour RAG and governed Codex session, code walkthrough, talk track, prompts and preparation gates.
+11. [Participant practice](teaching/RELAY_PRACTICE.md): exercises and evidence expected beyond the facilitated sessions.
 
 Deployment setup is in [the hosted workshop guide](DEPLOYMENT.md): a free single-service Render Blueprint, with ephemeral data and public AI request limits.
 

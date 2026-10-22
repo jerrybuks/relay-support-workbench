@@ -8,3 +8,6 @@ workbench/.runtime
 workbench/uv.lock
 workbench/evidence
 workbench/src/relay/static/vendor
+
+# Byte-exact canonical teaching inputs are bound to approval hashes.
+workbench/teaching/contact2/policies/

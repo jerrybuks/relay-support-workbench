@@ -7,7 +7,7 @@ test('course overview explains the four contacts and supports topic exploration'
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1 })).toContainText('AI engineering');
-  await expect(page.getByText('4 contacts × 60 minutes', { exact: true })).toBeVisible();
+  await expect(page.getByText('4 contacts · Contact 2 is 2 hours', { exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: `workbench/evidence/${info.project.name}-course.png` });
   const contextButton = page.getByRole('button', {
@@ -36,7 +36,7 @@ test('course overview explains the four contacts and supports topic exploration'
     page.getByRole('heading', { name: 'From a model response to a trustworthy application' }),
   ).toBeVisible();
   await expect(
-    page.getByRole('heading', { name: 'Take a real engineering task from issue to review' }),
+    page.getByRole('heading', { name: 'Follow the evidence from document to answer' }),
   ).toBeVisible();
   await expect(
     page.getByRole('heading', { name: 'Give automation useful capabilities and clear boundaries' }),
@@ -726,4 +726,90 @@ test('hosted presentation links open the current service rather than localhost',
     page.locator('#demo-baseline').getByRole('link', { name: 'Swagger', exact: false }),
   ).toHaveAttribute('href', origin + '/docs');
   await expect(page.locator('.demo-links a[href*="127.0.0.1"]')).toHaveCount(0);
+});
+
+test('Contact 2 slides follow the RAG and governed Codex task with readable references', async ({
+  page,
+}, info) => {
+  await page.goto('/course/contact-2');
+  await expect(page.locator('#slide-counter')).toHaveText('1 / 22');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('One policy');
+  await page.keyboard.press('g');
+  await expect(page.locator('#outline-list button')).toHaveCount(22);
+  await page.getByRole('button', { name: /Plan the approach/ }).click();
+  await expect(page).toHaveURL(/#plan$/);
+  await page.keyboard.press('n');
+  await expect(page.locator('#plan .speaker-notes')).toBeVisible();
+  await page.keyboard.press('n');
+  const ids = await page.locator('.slide').evaluateAll((items) => items.map((s) => s.id));
+  for (const id of ids) {
+    await page.goto('/course/contact-2#' + id);
+    await expect(page.locator('#' + id)).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), id).toBe(
+      true,
+    );
+    if (info.project.name === 'desktop') {
+      const footer = await page.locator('.deck-footer').boundingBox();
+      expect(footer!.y + footer!.height, id).toBeLessThanOrEqual(720);
+    }
+  }
+  await page.goto('/course/contact-2#ingestion');
+  await expect(page.locator('#ingestion [data-code-location]')).toHaveCount(2);
+  await page.screenshot({ path: `workbench/evidence/${info.project.name}-contact2-ingestion.png` });
+  await page.emulateMedia({ media: 'print' });
+  await expect(page.locator('.slide:visible')).toHaveCount(22);
+  if (info.project.name === 'desktop')
+    await page.pdf({
+      path: 'workbench/evidence/contact2-presentation.pdf',
+      preferCSSPageSize: true,
+      printBackground: true,
+    });
+});
+
+test('Contact 2 lab previews before enabling a separately confirmed import', async ({ page }) => {
+  let imports = 0;
+  await page.route('**/api/v1/teaching/policies', async (route) => {
+    const body = route.request().postDataJSON();
+    expect(route.request().headers()['x-csrf-token']).toBeTruthy();
+    if (body.document === 'unreviewed.md') {
+      await route.fulfill({
+        status: 403,
+        json: {
+          error: {
+            code: 'source_not_approved',
+            message: 'A separate matching review record is required.',
+          },
+        },
+      });
+    } else {
+      if (body.execute) {
+        expect(body.confirm_billable).toBe(true);
+        imports++;
+      }
+      await route.fulfill({
+        json: body.execute
+          ? { embedding_calls: 1 }
+          : {
+              source: { id: 'POL-COLLECTION-1' },
+              chunks: [{ excerpt: 'seven calendar days' }],
+              embedding_calls: 0,
+            },
+      });
+    }
+  });
+  await page.goto('/static/contact2-lab.html');
+  await expect(page.getByRole('button', { name: 'Import policy' })).toBeDisabled();
+  await page.getByRole('button', { name: 'Preview document and chunks' }).click();
+  await expect(page.getByRole('status')).toContainText('Preview ready:');
+  await expect(page.getByRole('button', { name: 'Import policy' })).toBeDisabled();
+  await page.getByRole('checkbox').check();
+  await page.getByRole('button', { name: 'Import policy' }).click();
+  await expect(page.getByRole('status')).toContainText('Imported.');
+  expect(imports).toBe(1);
+  await page.getByLabel('Teaching document').selectOption('unreviewed.md');
+  await expect(page.getByRole('checkbox')).not.toBeChecked();
+  await expect(page.getByRole('button', { name: 'Import policy' })).toBeDisabled();
+  await page.getByRole('button', { name: 'Preview document and chunks' }).click();
+  await expect(page.getByRole('status')).toContainText('matching review record');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });

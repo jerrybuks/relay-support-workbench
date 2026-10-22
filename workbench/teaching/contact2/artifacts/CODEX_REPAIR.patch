@@ -1,0 +1,62 @@
+diff --git a/workbench/teaching/contact2/exercise.py b/workbench/teaching/contact2/exercise.py
+index e638b0f..a865fe7 100644
+--- a/workbench/teaching/contact2/exercise.py
++++ b/workbench/teaching/contact2/exercise.py
+@@ -1,9 +1,56 @@
+ """Contact 2 live edit: implement this parser only; the working app stays isolated."""
+ 
++import json
++import re
++
++from relay.service import Problem
++
+ 
+ def parse_markdown(raw):
+     """Return validated source metadata plus exact body text from the teaching Markdown format.
+ 
+     Acceptance rules are in TASK.md. Approval is checked separately by the application.
+     """
+-    raise NotImplementedError("Contact 2 parser is intentionally unfinished")
++    message = "Check policy metadata and readable UTF-8 body."
++    try:
++        if not isinstance(raw, bytes) or len(raw) > 12_000:
++            raise ValueError
++        source = raw.decode("utf-8")
++        lines = source.splitlines(keepends=True)
++        if not lines or lines[0].rstrip("\r\n") != "---":
++            raise ValueError
++        closing = next(
++            (i for i in range(1, len(lines)) if lines[i].rstrip("\r\n") == "---"),
++            None,
++        )
++        if closing is None:
++            raise ValueError
++        header = "".join(lines[1:closing])
++        body = "".join(lines[closing + 1 :])
++        metadata = json.loads(header)
++        expected = {"id", "title", "version", "tenant", "visibility", "tags"}
++        if not isinstance(metadata, dict) or set(metadata) != expected:
++            raise ValueError
++        if not isinstance(metadata["id"], str) or not re.fullmatch(
++            r"POL-[A-Z0-9-]{3,40}", metadata["id"]
++        ):
++            raise ValueError
++        if not isinstance(metadata["title"], str) or not 5 <= len(metadata["title"]) <= 150:
++            raise ValueError
++        if not isinstance(metadata["version"], str) or not re.fullmatch(
++            r"\d+\.\d+", metadata["version"]
++        ):
++            raise ValueError
++        if not isinstance(metadata["tenant"], str) or not re.fullmatch(
++            r"[a-z][a-z0-9-]{1,30}", metadata["tenant"]
++        ):
++            raise ValueError
++        if metadata["visibility"] not in {"team", "supervisor"}:
++            raise ValueError
++        if not isinstance(metadata["tags"], str) or len(metadata["tags"]) > 300:
++            raise ValueError
++        if "\x00" in body or len(body.strip()) < 50:
++            raise ValueError
++    except (ValueError, UnicodeError, json.JSONDecodeError, TypeError):
++        raise Problem(422, "invalid_policy", message) from None
++    return {**metadata, "text": body, "state": "published"}

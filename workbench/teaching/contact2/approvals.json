@@ -1,0 +1,32 @@
+{
+  "collection.md": {
+    "sha256": "e1f3fee63e8974d9994edbdba7f6d8bc25c755e5ac17be9eec468e510bf3196d",
+    "source_id": "POL-COLLECTION-1",
+    "tenant": "kora",
+    "version": "1.0",
+    "visibility": "team",
+    "reviewed_by": "Synthetic curriculum review fixture",
+    "rights": "Original fictional teaching content",
+    "status": "approved"
+  },
+  "redelivery.md": {
+    "sha256": "182d527e12a67b2906533a882742544686a22598f0067f3e518f7379736f09e0",
+    "source_id": "POL-REDELIVERY-1",
+    "tenant": "kora",
+    "version": "1.0",
+    "visibility": "team",
+    "reviewed_by": "Synthetic curriculum review fixture",
+    "rights": "Original fictional teaching content",
+    "status": "approved"
+  },
+  "restricted.md": {
+    "sha256": "e703f5029ed36b92f766e6dacb347bde2d14240e1c8fcfbd82b5573affa3dfe0",
+    "source_id": "POL-ESCALATION-2",
+    "tenant": "kora",
+    "version": "1.0",
+    "visibility": "supervisor",
+    "reviewed_by": "Synthetic curriculum review fixture",
+    "rights": "Original fictional teaching content",
+    "status": "approved"
+  }
+}

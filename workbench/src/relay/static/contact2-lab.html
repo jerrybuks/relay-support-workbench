@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Approved policy ingestion · Relay</title>
+    <link rel="stylesheet" href="/static/contact2-lab.css" />
+    <script src="/static/contact2-lab.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <a href="/" class="brand">r. <strong>relay</strong></a>
+      <nav>
+        <a href="/course/contact-2">Contact 2 slides</a><a href="/dashboard">Resolution desk ↗</a
+        ><a href="/docs">Swagger ↗</a>
+      </nav>
+    </header>
+    <main>
+      <p class="eyebrow">Contact 2 · isolated teaching corpus</p>
+      <h1>One policy. Follow every step.</h1>
+      <p class="intro">
+        Preview an approved document, inspect its chunks, then import it. Use the resolution desk to
+        ask a question and inspect its citation.
+      </p>
+      <ol class="flow" aria-label="Document flow">
+        <li>Document</li>
+        <li>Validate</li>
+        <li>Chunk</li>
+        <li>Embed</li>
+        <li>Store</li>
+        <li>Retrieve</li>
+        <li>Answer + cite</li>
+      </ol>
+      <section class="panel">
+        <h2>1. Inspect the policy</h2>
+        <label for="document">Teaching document</label
+        ><select id="document">
+          <option value="collection.md">Parcel collection and return</option>
+          <option value="redelivery.md">Missed collection redelivery</option>
+          <option value="restricted.md">Supervisor-only escalation</option>
+          <option value="missing-metadata.md">Missing metadata · reject</option>
+          <option value="unreviewed.md">Unreviewed policy · reject</option>
+          <option value="injection.md">Instruction injection · reject</option></select
+        ><button id="preview">Preview document and chunks</button>
+        <p class="hint">
+          Preview makes no model call. This lab uses a supervisor demo session. Demo personas are
+          not production authentication.
+        </p>
+      </section>
+      <section class="panel">
+        <h2>2. Confirm the import</h2>
+        <label class="confirm"
+          ><input id="billable" type="checkbox" />I authorize embedding this approved synthetic
+          policy using the configured provider.</label
+        ><button id="ingest" disabled>Import policy</button>
+        <p class="hint">
+          The server verifies a separate content-hash approval record. Source text cannot approve
+          itself.
+        </p>
+      </section>
+      <p id="status" role="status" aria-live="polite">Ready to preview.</p>
+      <section class="panel" id="output" hidden>
+        <h2>Input and output</h2>
+        <pre id="result"></pre>
+      </section>
+      <section class="panel">
+        <h2>3. Ask and verify</h2>
+        <p>In the resolution desk, open RY-1042 and ask:</p>
+        <blockquote>
+          How long can a parcel stay at a collection point, when does that period start, and who
+          reviews return to the sender?
+        </blockquote>
+        <a class="button" href="/dashboard">Ask in Relay ↗</a>
+        <p class="hint">
+          Check “seven calendar days”, the notice-date rule, supervisor review and citation to
+          POL-COLLECTION-1. Return to the support-agent persona to check access filtering.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>

@@ -32,7 +32,15 @@
     "contact1:state": "uv run --project workbench --locked --extra references python workbench/scripts/contact1_state.py",
     "contact1:conflict": "uv run --project workbench --locked --extra references python workbench/scripts/contact1_conflict.py",
     "contact1:compare": "uv run --project workbench --locked --extra references python workbench/scripts/contact1_compare.py",
-    "contact1:collector": "uv run --project workbench --locked --extra references python workbench/scripts/contact1_collector.py"
+    "contact1:collector": "uv run --project workbench --locked --extra references python workbench/scripts/contact1_collector.py",
+    "contact2:check": "uv run --project workbench --locked --extra references python workbench/scripts/contact2.py check",
+    "contact2:before": "uv run --project workbench --locked --extra references --env-file workbench/.env python workbench/scripts/contact2.py serve --state before --reload",
+    "contact2:reference": "uv run --project workbench --locked --extra references --env-file workbench/.env python workbench/scripts/contact2.py serve --state reference",
+    "contact2:preview": "uv run --project workbench --locked --extra references --env-file workbench/.env python workbench/scripts/contact2.py preview --state reference",
+    "contact2:mcp": "uv run --project workbench --locked --extra references python workbench/scripts/contact2_mcp.py",
+    "contact2:browser": "node workbench/scripts/contact2_browser.mjs --base http://127.0.0.1:8002",
+    "contact2:setup": "uv run --project workbench --locked --extra references python workbench/scripts/contact2_workspace.py",
+    "contact2:preflight": "uv run --project workbench --locked --extra references --env-file workbench/.env python workbench/scripts/contact2_preflight.py"
   },
   "devDependencies": {
     "@playwright/test": "1.64.1",

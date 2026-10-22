@@ -115,13 +115,24 @@
       }
     },
     "2": {
-      "before": "teaching/contact2_before.py",
-      "intermediate": "teaching/codex-task.md",
-      "reference": "teaching/contact2_reference.py",
-      "status": "verified-local-red-before-green-reference",
-      "mcp": "actual SDK in-process fixture protocol verified",
-      "realLinearGitHubCodexCloud": "not-run",
-      "remainingImplementation": "App-visible defect journey, exact patch/PR artifact, actual programmatic/cloud/CI and Windsurf references"
+      "durationMinutes": 120,
+      "before": "teaching.contact2_app:create_app; RELAY_C2_STATE=before",
+      "reference": "teaching.contact2_app:create_app; RELAY_C2_STATE=reference",
+      "port": 8002,
+      "data": "workbench/.runtime/contact2 within isolated worktree",
+      "guide": "docs/teaching/CONTACT_2_REHEARSAL_GUIDE.md",
+      "task": "workbench/teaching/contact2/TASK.md",
+      "evidence": "workbench/evidence/contact2-preparation.json",
+      "status": "technical-preparation-verified; presenter timing and client Plan/Goal practice remain",
+      "legacyDuplicateEvent": {
+        "before": "teaching/contact2_before.py",
+        "intermediate": "teaching/codex-task.md",
+        "reference": "teaching/contact2_reference.py",
+        "status": "verified-local-red-before-green-reference",
+        "mcp": "actual SDK in-process fixture protocol verified",
+        "realLinearGitHubCodexCloud": "not-run",
+        "remainingImplementation": "App-visible defect journey, exact patch/PR artifact, actual programmatic/cloud/CI and Windsurf references"
+      }
     },
     "3": {
       "before": "baseline app plus teaching/AGENTS.before.md",

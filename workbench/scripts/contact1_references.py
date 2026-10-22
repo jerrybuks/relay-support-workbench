@@ -98,14 +98,15 @@ def location(path, symbol):
     return f"workbench/{path}:{tree.lineno}"
 
 
-def process_deck(deck, required, *, write=False):
+def process_deck(deck, required, *, write=False, references=None):
+    references = REFERENCES if references is None else references
     source = deck.read_text()
     checked = []
 
     def section(match):
         body = match.group()
         sid = re.search(r'\bid="([^"]+)"', body).group(1)
-        expected = [location(path, symbol) for path, symbol in REFERENCES.get(sid, [])]
+        expected = [location(path, symbol) for path, symbol in references.get(sid, [])]
         actual = re.findall(r'data-code-location="([^"]+)"', body)
         if not write:
             if actual != expected:
@@ -119,7 +120,7 @@ def process_deck(deck, required, *, write=False):
                 f'<button type="button" data-code-location="{html.escape(loc)}" '
                 f'title="Copy location for {html.escape(symbol)}">'
                 f"{html.escape(loc)}</button>"
-                for loc, (_, symbol) in zip(expected, REFERENCES[sid], strict=True)
+                for loc, (_, symbol) in zip(expected, references[sid], strict=True)
             ]
             footnote = (
                 '<div class="code-footnote" aria-label="Code references">'
@@ -166,6 +167,26 @@ def main():
         "evaluation",
         "choices",
     }
+    c2 = {
+        "ingestion": [
+            ("scripts/contact1_index.py", "main"),
+            ("teaching/contact2/pipeline.py", "preview"),
+        ],
+        "chunks": [("teaching/rag_reference.py", "chunks")],
+        "embeddings": [("teaching/rag_reference.py", "VectorRag._embed_request")],
+        "index": [("teaching/rag_reference.py", "VectorRag.build")],
+        "query": [("teaching/investigation_reference.py", "retrieve_evidence")],
+        "ranking": [("teaching/rag_reference.py", "VectorRag.search")],
+        "generation": [
+            ("teaching/investigation_reference.py", "make_investigator.investigate.generate_stage")
+        ],
+        "implement": [("teaching/contact2/exercise.py", "parse_markdown")],
+        "boundary": [
+            ("teaching/contact2/pipeline.py", "preview"),
+            ("teaching/contact2/pipeline.py", "ingest"),
+        ],
+    }
+    process_deck(DECK.with_name("contact2.html"), set(c2), write=args.write, references=c2)
     process_deck(DECK, set(REFERENCES), write=args.write)
     process_deck(
         DECK.with_name("contact1-concepts.html"), concept_ids & set(REFERENCES), write=args.write

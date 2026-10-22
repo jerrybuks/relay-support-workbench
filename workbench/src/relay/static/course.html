@@ -22,6 +22,7 @@
         <a href="#contacts">The four contacts</a>
         <a href="#practice">Guided practice</a>
         <a href="/course/contact-1">Contact 1 slides</a>
+        <a href="/course/contact-2">Contact 2 slides</a>
         <a class="workbench-link" href="/dashboard"
           >Open workbench <span aria-hidden="true">↗</span></a
         >
@@ -43,7 +44,7 @@
           <dl class="course-facts">
             <div>
               <dt>Format</dt>
-              <dd>4 contacts × 60 minutes</dd>
+              <dd>4 contacts · Contact 2 is 2 hours</dd>
             </div>
             <div>
               <dt>Approach</dt>
@@ -330,43 +331,45 @@
           <div class="contact-index">
             <span>02</span>
             <p>Contact 2</p>
-            <small>60 minutes</small><a href="#contacts">Course outline ↑</a>
+            <small>120 minutes</small><a href="#contacts">Course outline ↑</a>
           </div>
           <div class="contact-content">
-            <p class="contact-theme">Codex engineering and delivery</p>
-            <h3 id="contact-2-title">Take a real engineering task from issue to review</h3>
+            <p class="contact-theme">RAG implementation and governed Codex</p>
+            <h3 id="contact-2-title">Follow the evidence from document to answer</h3>
             <p>
-              Use a controlled duplicate-event defect to practise the delivery loop: understand the
-              task, reproduce it, make a narrow change and verify the result.
+              Trace ingestion and retrieval through actual code, then use Codex to add an approved
+              policy and verify the cited answer.
             </p>
             <ul>
               <li>
-                <strong>Task contracts:</strong> acceptance criteria, repository instructions,
-                AGENTS.md, constraints and stopping conditions.
+                <strong>RAG walkthrough:</strong> parsing, chunks, embeddings, Qdrant, hybrid
+                ranking, model input, streaming and citations.
               </li>
               <li>
-                <strong>Repair loops:</strong> plan, reproduce, test, patch and review; recognize an
-                overbroad change and bring the task back into scope.
+                <strong>Codex controls:</strong> model and effort, Plan mode, Goals, sandbox and
+                approval boundaries.
               </li>
               <li>
-                <strong>Browser verification and PR workflows:</strong> Playwright, user-visible
-                regressions, diff and security review, useful PR descriptions and review ownership.
+                <strong>Reusable engineering:</strong> clear task prompts, AGENTS.md, general
+                review/browser skills and a reusable ingestion skill.
               </li>
               <li>
-                <strong>Model Context Protocol (MCP):</strong> scoped ticket access, tool
-                permissions and untrusted results; integration patterns for platforms such as Linear
-                and GitHub.
+                <strong>Tools and context:</strong> external documentation MCP, permissions,
+                handover, memory and caching distinctions.
               </li>
               <li>
-                <strong>Execution choices:</strong> local and cloud work, isolated worktrees,
-                non-interactive Codex, SDK and CI workflows, plus a bounded Windsurf comparison.
+                <strong>Delivery:</strong> isolated worktree, test/repair loop, browser evidence,
+                diff review and a local PR draft; prepared automation reference.
               </li>
             </ul>
+            <a class="text-link contact-slides-link" href="/course/contact-2"
+              >Open Contact 2 slides ↗</a
+            >
             <div class="contact-artifact">
               <span>Evidence to inspect</span>
               <p>
-                A failing regression, a minimal correction, passing browser checks and a reviewable
-                PR draft.
+                Validated import, canonical source and vector metadata, repeat-import reuse, cited
+                answer, permission regression and reviewed change.
               </p>
             </div>
           </div>

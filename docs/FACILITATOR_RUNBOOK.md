@@ -1,6 +1,6 @@
 # Relay — facilitator runbook
 
-Active replacement for the game runbook. Four contacts of 60 minutes. Learners are technical; ordinary API engineering is prepared beforehand. Contacts 1–3 use approximately 15 minutes of slides plus 45 minutes of facilitator-led demonstration/engineering. Contact 4 uses evidence and decision exercises; participant presentations are not required.
+Active replacement for the game runbook. Four contacts: Contacts 1, 3 and 4 are 60 minutes; Contact 2 is 120 minutes. Learners are technical; ordinary API engineering is prepared beforehand. Contacts 1–3 use approximately 15 minutes of slides plus 45 minutes of facilitator-led demonstration/engineering. Contact 4 uses evidence and decision exercises; participant presentations are not required.
 
 Read the [coverage audit](teaching/CONTACT_1_COVERAGE_AUDIT.md), then [product/design](PRODUCT_AND_TECHNICAL_DESIGN.md), [test/evidence plan](TEST_AND_EVIDENCE_PLAN.md), [full coverage blueprint](AI_ENGINEERING_AND_FDE_BLUEPRINT.md) and the current verification report before teaching. A listed feature is not necessarily a completed reference. The checkpoint registry and evidence define what actually works.
 
@@ -84,21 +84,25 @@ The main walkthrough uses one live RAG app; title-only and FTS fixtures are opti
 
 Follow-up reference: prompt/context versions, stateless/stateful strategies, caching/model comparisons, deeper hybrid tuning/reranking and deployment controls. These have guided exercises rather than extra live build time.
 
-## Contact 2 — Codex engineering and delivery
+## Contact 2 — RAG implementation and governed Codex engineering
 
-### Prepare before class
+Contact 2 now has **120 minutes**, replacing the older 60-minute duplicate-event repair demonstration. Use the [Contact 2 rehearsal guide](teaching/CONTACT_2_REHEARSAL_GUIDE.md) for the talk track, code paths, task prompts, timing, recovery and readiness gates. This is the session-specific override to the original four-hour plan; if the other three contacts remain one hour, total facilitated time is five hours.
 
-A local issue describing duplicated event processing, isolated broken/corrected fixtures, regression test, reference diff, browser journey, ticket MCP fixture, PR template, worktree/local/cloud instructions and non-interactive/SDK example. The baseline ledger must remain correct.
+The task is to ingest an approved policy into a disposable Relay teaching workspace and verify its retrieval, answer and citation. Trace the existing pipeline first, then demonstrate prompting, `AGENTS.md`, two general engineering skills, a reusable ingestion skill, external documentation MCP, permissions, context, caching, browser verification and PR review through that one assignment.
 
-| Minutes | Action                                                                                                 | Evidence                                                   |
-| ------- | ------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
-| 0–15    | Slides: issue-to-PR loop, task contract, AGENTS.md, sandbox/tool permissions, review responsibility    | One bounded task and stop conditions                       |
-| 15–25   | Inspect ticket via local MCP; reproduce the defect and browser-visible impact where applicable         | Red regression, reproducible input, fixture mode disclosed |
-| 25–40   | Use Codex to plan/patch/test; inspect a rejected overbroad proposal                                    | Minimal diff, green regression, no authorization weakening |
-| 40–50   | Browser verification, concurrency/security review and PR preparation                                   | Desktop/mobile evidence and reviewable PR body             |
-| 50–60   | Inspect prepared cloud/non-interactive/CI automation and worktree isolation; brief Windsurf comparison | Exact mode/results and same acceptance criteria            |
+Technical preparation is recorded in `workbench/evidence/contact2-preparation.json`. The guide includes the prepared worktree, real provider/browser/MCP checks and actual bounded Codex repair. Presenter timing and client-specific Plan/Goal practice remain rehearsal tasks. Keep the duplicate-event fixtures as optional practice; do not introduce their intentional defect into the normal application.
 
-No automatic merge, real ticket comment or cloud execution is implied by a local draft. If an integration is unavailable, show a sanitized replay and provide the runnable local alternative.
+| Minutes | Action                                                                                |
+| ------- | ------------------------------------------------------------------------------------- |
+| 0–10    | Establish task and missing evidence                                                   |
+| 10–35   | Trace document ingestion, retrieval and generation through code                       |
+| 35–55   | Orient model/effort, Plan mode, Goals, permissions, then task context, skills and MCP |
+| 55–85   | Implement the bounded approved-file ingestion feature                                 |
+| 85–100  | Create and reuse the ingestion skill                                                  |
+| 100–110 | Verify browser behavior, review the change and explain bounded loops                  |
+| 110–120 | Explain handover/cache usage, inspect prepared automation and take questions          |
+
+The full review/publication lifecycle, source revocation, Temporal and scheduled automation remain in Contact 3. Local drafts and recorded results must not be presented as actual remote writes or live executions.
 
 ## Contact 3 — governed ingestion and durable automation
 

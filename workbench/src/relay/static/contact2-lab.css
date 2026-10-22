@@ -1,0 +1,147 @@
+:root {
+  color-scheme: light;
+  font-family: Inter, system-ui, sans-serif;
+  color: #17243c;
+  background: #f3f6fc;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+header {
+  background: #111c35;
+  color: white;
+  padding: 20px 5vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+a {
+  color: #315ee8;
+  text-decoration: none;
+}
+header a {
+  color: white;
+}
+.brand {
+  font-size: 24px;
+}
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+main {
+  max-width: 1000px;
+  margin: 48px auto;
+  padding: 0 24px;
+}
+h1 {
+  font-size: clamp(32px, 5vw, 52px);
+  letter-spacing: -2px;
+  margin: 12px 0;
+}
+h2 {
+  font-size: 20px;
+}
+p {
+  line-height: 1.7;
+}
+.eyebrow {
+  color: #4165bc;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+.intro {
+  max-width: 720px;
+  color: #52617a;
+}
+.panel {
+  padding: 24px;
+  background: white;
+  border: 1px solid #dce4f1;
+  border-radius: 16px;
+  margin: 20px 0;
+}
+.flow {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  gap: 8px;
+}
+.flow li {
+  background: #e5ecff;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+label {
+  display: block;
+  margin: 12px 0;
+}
+select {
+  padding: 12px;
+  max-width: 100%;
+  border: 1px solid #bbc9e3;
+  border-radius: 8px;
+  font: inherit;
+}
+button,
+.button {
+  display: inline-block;
+  margin: 12px 0 0;
+  background: #315ee8;
+  color: white;
+  border: 0;
+  border-radius: 8px;
+  padding: 12px 18px;
+  cursor: pointer;
+  font: inherit;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.hint {
+  font-size: 13px;
+  color: #65738c;
+}
+.confirm {
+  line-height: 1.7;
+}
+pre {
+  font-size: 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+}
+blockquote {
+  border-left: 3px solid #315ee8;
+  padding-left: 18px;
+  margin-left: 0;
+}
+#status {
+  font-weight: 600;
+}
+:focus-visible {
+  outline: 3px solid #f3af50;
+  outline-offset: 4px;
+}
+@media (max-width: 600px) {
+  header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  nav {
+    font-size: 13px;
+  }
+  .panel {
+    padding: 18px;
+  }
+}

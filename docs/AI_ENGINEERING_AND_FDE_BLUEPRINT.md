@@ -2,6 +2,8 @@
 
 Research date: 19 October 2026. Status: expanded curriculum adopted; Relay baseline and selected references verified locally. Full delivery readiness still requires the preflight, review and practice gates recorded in the active design and Relay evidence.
 
+The owner extended Contact 2 to two hours on 22 October 2026. That session-specific allocation supersedes the original four-hour budget; the other three contacts remain one hour each.
+
 ## Intent and relationship to the original specifications
 
 The owner has expanded the teaching scope beyond the game specification. Participants are likely comfortable with ordinary backend/API engineering. Prepare that foundation before class and explain it briefly. The practical project must expose AI engineering, reliable delivery with Codex, and forward-deployed engineering (FDE) decisions through understandable business workflows.
@@ -79,15 +81,11 @@ Demonstrate both developer productivity automation (for example, scheduled Codex
 
 Prepared inspection materials cover ingestion, routing/caching and alternative runtimes. Deeper experiments have guided references. Do not promise to build all of these live.
 
-### Contact 2: Codex-assisted delivery
+### Contact 2: RAG implementation and governed Codex delivery
 
-- 0–15: issue/acceptance criteria, AGENTS.md, permissions, review responsibility and local/cloud/CI integration.
-- 15–25: inspect a scoped ticket through MCP or a disclosed fixture; reproduce its failure in tests/browser.
-- 25–40: bounded Codex plan/patch/test loop; inspect and reject an overbroad change.
-- 40–50: browser regression, security/diff review and prepared PR workflow.
-- 50–60: inspect a preflighted cloud/non-interactive automation, worktree isolation and Windsurf comparison. Fall back to captured results with their mode disclosed.
+The owner extended Contact 2 to 120 minutes. Use the [rehearsal guide](teaching/CONTACT_2_REHEARSAL_GUIDE.md): trace ingestion/retrieval in code, implement one approved-file ingestion parser, package a reusable skill, verify the cited answer and review the delivery evidence. Teach model/effort, Plan mode, Goals, permissions, AGENTS.md, general engineering skills, MCP, context, caching, worktree isolation and bounded repair through that one task.
 
-External ticket/PR writes require the owner's explicit integration authorization. Until then, use local issue fixtures and reviewable drafts. No actual cloud execution is claimed from a replay.
+The duplicate-event fixture remains optional practice. Native Goal support is detected but lifecycle operation belongs to the presenter rehearsal. Cloud, SDK and Windsurf examples are reference comparisons, not claimed live executions. External ticket/PR writes require separate task authorization.
 
 ### Contact 3: governed ingestion and durable automation
 

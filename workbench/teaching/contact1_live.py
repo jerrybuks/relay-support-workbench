@@ -5,6 +5,7 @@ from pydantic import Field
 
 from relay.main import create_app as baseline
 from relay.models import Contract
+from relay.store import Store
 
 from .agent_harness import LiveAsk
 from .contact1_reference import search_reference
@@ -27,6 +28,9 @@ def create_app(
     retriever=None,
     vector_path=None,
     rag_config=None,
+    store_factory=Store,
+    checkpoint="contact-1-live-reference",
+    session_cookie="relay_c1_live",
 ):
     import os
     from pathlib import Path
@@ -43,12 +47,13 @@ def create_app(
     app = baseline(
         path,
         retriever=retriever or search_reference,
-        checkpoint="contact-1-live-reference",
+        checkpoint=checkpoint,
+        store_factory=store_factory,
         investigator=make_investigator(client, model, trace_client, rag=rag),
         ask_model=LiveAsk,
         investigation_options=lambda data: data.model_dump(exclude={"question", "remember"}),
         provider=provider_name(client),
-        session_cookie="relay_c1_live",
+        session_cookie=session_cookie,
     )
 
     from fastapi import Depends

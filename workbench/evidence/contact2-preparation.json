@@ -1,0 +1,345 @@
+{
+  "date": "2026-10-22",
+  "scope": "Technical Contact 2 preparation; not a timed instructor rehearsal or production certification",
+  "offline": {
+    "reference_parser_acceptance": 16,
+    "ingestion_pytest_cases": 17,
+    "skill_validation": "3 of 3 pass"
+  },
+  "provider": {
+    "mode": "live-OpenRouter",
+    "model": "openai/gpt-4o",
+    "before_status": "insufficient_evidence",
+    "after_status": "supported",
+    "answer": "A parcel can stay at a collection point for seven calendar days, starting from the date the first collection notice is sent. If uncollected after this period, a supervisor reviews the case before deciding on its return to the sender.",
+    "citations": [
+      {
+        "id": "POL-COLLECTION-1",
+        "title": "Parcel collection and return policy",
+        "version": "1.0",
+        "excerpt": "\n# Parcel collection and return\n\nKora Dispatch holds a parcel at a collection point for seven calendar days after sending the first collection notice. The seven-day period starts on the notice date, not the original dispatch date.\n\nThe recipient must present the collection code and a matching identity document. A",
+        "chunk_id": "43007c2c-aef0-5c2f-9919-c435a10a8246",
+        "start": 0,
+        "end": 314,
+        "score": 0.03278688524590164
+      },
+      {
+        "id": "POL-COLLECTION-1",
+        "title": "Parcel collection and return policy",
+        "version": "1.0",
+        "excerpt": "present the collection code and a matching identity document. A support agent can explain the policy but cannot waive identity checks.\n\nIf the parcel remains uncollected after seven calendar days, a supervisor reviews the case before return to the sender. Relay must not promise automatic extensions or invent storage",
+        "chunk_id": "cf69e03b-6541-570f-a2f6-4251e257dfb4",
+        "start": 251,
+        "end": 568,
+        "score": 0.03225806451612903
+      }
+    ],
+    "checks": {
+      "unreviewed.md": "source_not_approved",
+      "injection.md": "source_not_approved",
+      "missing-metadata.md": "invalid_policy",
+      "invalid_input_embedding_calls": 0,
+      "restricted_source_absent": true
+    },
+    "imports": [
+      {
+        "mode": "import",
+        "source_id": "POL-COLLECTION-1",
+        "source_version": "1.0",
+        "unchanged": false,
+        "chunks": 7,
+        "reused_chunks": 4,
+        "embedding_calls": 1,
+        "embedding_input_tokens": 133,
+        "revision": "4c54527049d010872b7add2d5651696519cf9f734976fe7a7abdba60c099db1e"
+      },
+      {
+        "mode": "import",
+        "source_id": "POL-COLLECTION-1",
+        "source_version": "1.0",
+        "unchanged": true,
+        "chunks": 7,
+        "reused_chunks": 7,
+        "embedding_calls": 0,
+        "embedding_input_tokens": 0,
+        "revision": "4c54527049d010872b7add2d5651696519cf9f734976fe7a7abdba60c099db1e"
+      },
+      {
+        "mode": "import",
+        "source_id": "POL-REDELIVERY-1",
+        "source_version": "1.0",
+        "unchanged": false,
+        "chunks": 9,
+        "reused_chunks": 7,
+        "embedding_calls": 1,
+        "embedding_input_tokens": 108,
+        "revision": "8bf11674fbfaf47e94741e3c7fb0631362127f4a1880536efbe993d158289bdb"
+      },
+      {
+        "mode": "import",
+        "source_id": "POL-ESCALATION-2",
+        "source_version": "1.0",
+        "unchanged": false,
+        "chunks": 11,
+        "reused_chunks": 9,
+        "embedding_calls": 1,
+        "embedding_input_tokens": 82,
+        "revision": "c24759ceded02b2174bb98970254db587e81c75982cfc65d9b781860ea150d2c"
+      }
+    ],
+    "trace": {
+      "prompt_version": "c1-grounded-runtime-5",
+      "corpus_version": "c24759ceded02b2174bb98970254db587e81c75982cfc65d9b781860ea150d2c",
+      "model_calls": 2,
+      "input_tokens": 1518,
+      "output_tokens": 115,
+      "api_cost_usd": null,
+      "runtime": "direct",
+      "execution_mode": "workflow",
+      "state": "stateless",
+      "export": "disabled",
+      "streamed": false,
+      "budget": {
+        "max_model_calls": 2,
+        "max_tool_calls": 1,
+        "deadline_seconds": 60
+      },
+      "provider_settings": {},
+      "memory_mode": "stateless",
+      "memory_exchanges": 0,
+      "memory_characters": 0,
+      "retrieval": "hybrid",
+      "query_normalized": false,
+      "vector_hits": 5,
+      "embedding_model": "openai/text-embedding-3-small",
+      "embedding_dimensions": 1536,
+      "embedding_calls": 1,
+      "embedding_input_tokens": 25,
+      "chunk_count": 11,
+      "retrieval_ms": 810.91,
+      "min_vector_score": 0.4,
+      "retrieved_chunks": [
+        {
+          "id": "POL-COLLECTION-1",
+          "chunk_id": "43007c2c-aef0-5c2f-9919-c435a10a8246",
+          "start": 0,
+          "end": 314,
+          "score": 0.03278688524590164,
+          "vector_score": 0.6281038027235405
+        },
+        {
+          "id": "POL-COLLECTION-1",
+          "chunk_id": "cf69e03b-6541-570f-a2f6-4251e257dfb4",
+          "start": 251,
+          "end": 568,
+          "score": 0.03225806451612903,
+          "vector_score": 0.5881220541626659
+        },
+        {
+          "id": "POL-REDELIVERY-1",
+          "chunk_id": "8630a145-c005-5ca6-9a67-f6ac04f436a8",
+          "start": 0,
+          "end": 312,
+          "score": 0.03149801587301587,
+          "vector_score": 0.5710914404919346
+        }
+      ],
+      "source_count": 3,
+      "served_models": [
+        "openai/gpt-4o"
+      ],
+      "cached_input_tokens": 0,
+      "duration_ms": 3691.42,
+      "stages": [
+        {
+          "name": "memory",
+          "type": "span",
+          "status": "completed",
+          "duration_ms": 2.92
+        },
+        {
+          "name": "query_or_document_embedding",
+          "type": "embedding",
+          "status": "completed",
+          "input_tokens": 25,
+          "output_tokens": 0,
+          "duration_ms": 805.78
+        },
+        {
+          "name": "vector_search",
+          "type": "retriever",
+          "status": "completed",
+          "duration_ms": 3.07
+        },
+        {
+          "name": "retrieval",
+          "type": "retriever",
+          "status": "completed",
+          "duration_ms": 812.13
+        },
+        {
+          "name": "tool_selection",
+          "type": "generation",
+          "status": "completed",
+          "input_tokens": 652,
+          "output_tokens": 9,
+          "duration_ms": 1009.42
+        },
+        {
+          "name": "get_shipment",
+          "type": "tool",
+          "status": "completed",
+          "duration_ms": 0.06
+        },
+        {
+          "name": "tool_workflow",
+          "type": "agent",
+          "status": "completed",
+          "duration_ms": 1009.65
+        },
+        {
+          "name": "answer_generation",
+          "type": "generation",
+          "status": "completed",
+          "input_tokens": 866,
+          "output_tokens": 106,
+          "duration_ms": 1863.12
+        },
+        {
+          "name": "output_validation",
+          "type": "guardrail",
+          "status": "completed",
+          "duration_ms": 0.07
+        },
+        {
+          "name": "relay.investigation",
+          "type": "span",
+          "status": "completed",
+          "metadata": {
+            "prompt_version": "c1-grounded-runtime-5",
+            "corpus_version": "c24759ceded02b2174bb98970254db587e81c75982cfc65d9b781860ea150d2c",
+            "model_calls": 2,
+            "runtime": "direct",
+            "execution_mode": "workflow",
+            "memory_mode": "stateless",
+            "embedding_model": "openai/text-embedding-3-small",
+            "embedding_dimensions": 1536,
+            "embedding_calls": 1,
+            "source_count": 3
+          },
+          "duration_ms": 3688.12
+        }
+      ]
+    }
+  },
+  "browser": {
+    "status": "passed",
+    "mode": "live-provider",
+    "checks": [
+      {
+        "viewport": "desktop",
+        "preview": true,
+        "dashboard": true,
+        "horizontalOverflow": false
+      },
+      {
+        "viewport": "mobile",
+        "preview": true,
+        "dashboard": true,
+        "horizontalOverflow": false
+      }
+    ],
+    "errors": [],
+    "scope": "Live answer/citation on desktop; preview, dashboard and overflow checks on desktop/mobile. Separate Playwright fixtures cover mobile answer presentation."
+  },
+  "mcp": {
+    "mode": "live-remote-MCP",
+    "server": "https://developers.openai.com/mcp",
+    "tools": [
+      "search_openai_docs",
+      "list_openai_docs",
+      "fetch_openai_doc",
+      "list_api_endpoints",
+      "get_openapi_spec"
+    ],
+    "tool": "search_openai_docs",
+    "arguments": {
+      "query": "embeddings dimensions text-embedding-3-small"
+    },
+    "status": "passed"
+  },
+  "codex": {
+    "cli": "0.162.1",
+    "model": "gpt-6-luna",
+    "reasoning": "low",
+    "snapshot_revision": "5f0ac42",
+    "first_attempt": "Basic source check passed; independent acceptance found tenant regex accepted a digit first.",
+    "corrective_attempt": "Tenant regex corrected; 16 independent acceptance checks passed with zero provider calls.",
+    "review": "No actionable findings in the tracked diff. `parse_markdown` enforces the stated byte limit, UTF-8 decoding, front matter and metadata constraints, body length and NUL checks, and returns the body text unchanged. Its errors use a fixed safe message and the required `Problem(422, \"invalid_policy\", ...)`. The caller handles approval and provider boundaries separately.\n\n**Limitations:** I did not run tests. The independent acceptance result from the prior handover was **16 passed, zero provider calls**; I have not independently verified it. I did not inspect the reference parser, read credentials, make network calls, or edit files.",
+    "permission": "Exit status: **1**. The write was denied with `PermissionError: [Errno 1] Operation not permitted`.",
+    "permission_probe_exists": false,
+    "token_usage": [
+      {
+        "run": "codex-events.jsonl",
+        "usage": {
+          "input_tokens": 207728,
+          "cached_input_tokens": 183808,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 1886,
+          "reasoning_output_tokens": 0
+        }
+      },
+      {
+        "run": "codex-repair-events.jsonl",
+        "usage": {
+          "input_tokens": 59849,
+          "cached_input_tokens": 43904,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 496,
+          "reasoning_output_tokens": 0
+        }
+      },
+      {
+        "run": "permission-events.jsonl",
+        "usage": {
+          "input_tokens": 28287,
+          "cached_input_tokens": 25344,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 126,
+          "reasoning_output_tokens": 0
+        }
+      },
+      {
+        "run": "review-events.jsonl",
+        "usage": {
+          "input_tokens": 69422,
+          "cached_input_tokens": 61056,
+          "cache_write_input_tokens": 0,
+          "output_tokens": 1001,
+          "reasoning_output_tokens": 454
+        }
+      }
+    ]
+  },
+  "goals": {
+    "installed_feature_detected": true,
+    "persistent_goal_created": false,
+    "lifecycle_demo": "presenter exercises in rehearsal"
+  },
+  "not_claimed": [
+    "Two-hour timed facilitator rehearsal",
+    "Native Goal lifecycle execution",
+    "Codex cloud or SDK execution",
+    "External ticket/PR writes",
+    "Production deployment"
+  ],
+  "local_evidence": "workbench/.runtime/contact2/evidence; raw CLI logs in isolated automation worktree",
+  "full_verification": {
+    "command": "pnpm verify (locked references installed); --record-checkpoint",
+    "python_passed": 184,
+    "python_opt_in_temporal_skipped": 2,
+    "browser_passed": 30,
+    "source_fingerprints": 131,
+    "status": "passed"
+  }
+}
