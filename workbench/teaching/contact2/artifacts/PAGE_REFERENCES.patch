@@ -1,0 +1,384 @@
+--- a/workbench/teaching/contact2/indexing/pipeline.py
++++ b/workbench/teaching/contact2/indexing/pipeline.py
+@@ -12,7 +12,13 @@
+ def preview_pdf(raw, metadata, config):
+     """Parse the PDF and show its chunks before authorizing embedding requests."""
+     text, pages = extract_pdf(raw)
+-    source = {**metadata, "text": text}
++    page_ranges = []
++    offset = 0
++    for page in pages:
++        end = offset + len(page["text"])
++        page_ranges.append({"page": page["page"], "start": offset, "end": end})
++        offset = end + 2  # extract_pdf joins pages with exactly two newline characters.
++    source = {**metadata, "text": text, "page_ranges": page_ranges}
+     passages = chunks(source, config)
+     return source, pages, passages
+ 
+--- a/workbench/teaching/contact2/indexing/chunking.py
++++ b/workbench/teaching/contact2/indexing/chunking.py
+@@ -49,7 +49,7 @@
+ 
+ def chunks(document, config):
+     if config.chunker == "native":
+-        return native_chunks(document, config)
++        return add_page_references(native_chunks(document, config), document)
+     from langchain_text_splitters import RecursiveCharacterTextSplitter
+ 
+     if not document["text"].strip() or len(document["text"]) > 100_000:
+@@ -83,4 +83,15 @@
+                 "state": document["state"],
+             }
+         )
+-    return result
++    return add_page_references(result, document)
++
++
++def add_page_references(passages, document):
++    """Use exact character-range intersections; never infer page numbers from an LLM."""
++    for passage in passages:
++        passage["pages"] = [
++            page["page"]
++            for page in document.get("page_ranges", [])
++            if page["start"] < passage["end"] and passage["start"] < page["end"]
++        ]
++    return passages
+--- a/workbench/teaching/contact2/config.py
++++ b/workbench/teaching/contact2/config.py
+@@ -57,9 +57,10 @@
+ 
+ 
+ def source_hash(document):
+-    return digest(
+-        {
+-            k: document.get(k)
+-            for k in ("id", "tenant", "title", "version", "text", "tags", "state", "visibility")
+-        }
+-    )
++    source = {
++        k: document.get(k)
++        for k in ("id", "tenant", "title", "version", "text", "tags", "state", "visibility")
++    }
++    if "page_ranges" in document:
++        source["page_ranges"] = document["page_ranges"]
++    return digest(source)
+--- a/workbench/src/relay/models.py
++++ b/workbench/src/relay/models.py
+@@ -103,6 +103,7 @@
+     end: int | None = None
+     score: float | None = None
+     vector_score: float | None = None
++    pages: list[int] = Field(default_factory=list)
+ 
+ 
+ class Investigation(BaseModel):
+--- a/workbench/src/relay/static/contact2-pdf.js
++++ b/workbench/src/relay/static/contact2-pdf.js
+@@ -62,13 +62,19 @@
+         : text;
+     return score;
+   }
++  function pageLabel(item) {
++    if (!item.pages?.length) return '';
++    return item.pages.length === 1
++      ? `Page ${item.pages[0]}`
++      : `Pages ${item.pages[0]}–${item.pages.at(-1)}`;
++  }
+   function passages(container, items, mode = null) {
+     container.replaceChildren();
+     for (const [index, item] of items.entries()) {
+       const card = document.createElement('article');
+       card.className = 'passage';
+       const heading = document.createElement('h3');
+-      heading.textContent = `Chunk ${index + 1}${item.title ? ' · ' + item.title : ''}`;
++      heading.textContent = `Chunk ${index + 1}${item.title ? ' · ' + item.title : ''}${pageLabel(item) ? ' · ' + pageLabel(item) : ''}`;
+       const text = document.createElement('p');
+       text.textContent = item.excerpt;
+       card.append(heading);
+@@ -211,7 +217,9 @@
+       const csrf = await session();
+       const base = '/api/v1/teaching/pdf/' + upload.upload_id;
+       await request(base + '/review', csrf, { confirm_reviewed: true });
+-      const result = await request(base + '/index', csrf, { confirm_billable: true });
++      const result = await request(base + '/index', csrf, {
++        confirm_billable: true,
++      });
+       $('pdf-embed-state').textContent = 'Complete';
+       $('pdf-store-state').textContent = 'Complete';
+       $('pdf-embedding-info').textContent =
+@@ -266,7 +274,7 @@
+       for (const citation of data.citations || []) {
+         const details = document.createElement('details');
+         const label = document.createElement('summary');
+-        label.textContent = `Source: ${citation.title} · v${citation.version}`;
++        label.textContent = `Source: ${citation.title} · v${citation.version}${pageLabel(citation) ? ' · ' + pageLabel(citation) : ''}`;
+         const quote = document.createElement('blockquote');
+         quote.textContent = citation.excerpt;
+         details.append(label, retrievalScores(citation, retrievalMode), quote);
+--- a/workbench/browser/workbench.spec.ts
++++ b/workbench/browser/workbench.spec.ts
+@@ -9,19 +9,25 @@
+   await expect(page.getByRole('heading', { level: 1 })).toContainText('AI engineering');
+   await expect(page.getByText('4 contacts · Contact 2 is 2 hours', { exact: true })).toBeVisible();
+   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+-  await page.screenshot({ path: `workbench/evidence/${info.project.name}-course.png` });
++  await page.screenshot({
++    path: `workbench/evidence/${info.project.name}-course.png`,
++  });
+   const contextButton = page.getByRole('button', {
+     name: 'Read the Kora Dispatch project context',
+   });
+   await contextButton.click();
+-  const context = page.getByRole('dialog', { name: 'The Kora Dispatch context' });
++  const context = page.getByRole('dialog', {
++    name: 'The Kora Dispatch context',
++  });
+   await expect(context).toBeVisible();
+   await expect(context).toContainText('Their support team is overwhelmed with customer questions');
+   await expect(context).toContainText('I paid ₦8,000 for express delivery');
+   await expect(context.locator('.context-modal-body p')).toHaveCount(4);
+   await expect(context).not.toContainText('Your assignment is');
+   expect(await context.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
+-  await page.screenshot({ path: `workbench/evidence/${info.project.name}-course-context.png` });
++  await page.screenshot({
++    path: `workbench/evidence/${info.project.name}-course-context.png`,
++  });
+   await page.getByRole('button', { name: 'Close project context', exact: true }).click();
+   await expect(context).not.toBeVisible();
+   await expect(contextButton).toBeFocused();
+@@ -33,16 +39,22 @@
+   await page.getByRole('link', { name: 'The four contacts', exact: true }).click();
+   await expect(page).toHaveURL(/#contacts$/);
+   await expect(
+-    page.getByRole('heading', { name: 'From a model response to a trustworthy application' }),
++    page.getByRole('heading', {
++      name: 'From a model response to a trustworthy application',
++    }),
+   ).toBeVisible();
+   await expect(
+     page.getByRole('heading', { name: 'Build, verify and review with Codex' }),
+   ).toBeVisible();
+   await expect(
+-    page.getByRole('heading', { name: 'Give automation useful capabilities and clear boundaries' }),
++    page.getByRole('heading', {
++      name: 'Give automation useful capabilities and clear boundaries',
++    }),
+   ).toBeVisible();
+   await expect(
+-    page.getByRole('heading', { name: 'Decide what is ready to put in front of a customer' }),
++    page.getByRole('heading', {
++      name: 'Decide what is ready to put in front of a customer',
++    }),
+   ).toBeVisible();
+   const topic = page
+     .locator('.topic-groups details')
+@@ -74,7 +86,10 @@
+   page.on('pageerror', (error) => errors.push(error.message));
+   await page.goto('/course');
+   await page
+-    .getByRole('link', { name: 'Open the optional concepts-only slides', exact: false })
++    .getByRole('link', {
++      name: 'Open the optional concepts-only slides',
++      exact: false,
++    })
+     .click();
+   await expect(page).toHaveURL(/contact1-concepts\.html$/);
+   await expect(page.locator('#slide-counter')).toHaveText('1 / 15');
+@@ -82,7 +97,9 @@
+   await expect(page.locator('.slide[data-phase="Demo"], .slide.appendix')).toHaveCount(0);
+   await expect(page.locator('a[href^="http://127.0.0.1:800"]')).toHaveCount(0);
+   await expect(page.locator('#why')).toContainText('Concepts explained');
+-  await page.screenshot({ path: `workbench/evidence/${info.project.name}-contact1-concepts.png` });
++  await page.screenshot({
++    path: `workbench/evidence/${info.project.name}-contact1-concepts.png`,
++  });
+   await page.keyboard.press('g');
+   await expect(page.locator('#outline-list')).toContainText('Contact 1 / Concepts');
+   await expect(page.locator('#outline-list')).not.toContainText('00–15');
+@@ -216,7 +233,12 @@
+         citations: [],
+         tools: [],
+         suggested_credit_naira: null,
+-        trace: { duration_ms: 20, model_calls: 1, input_tokens: null, output_tokens: null },
++        trace: {
++          duration_ms: 20,
++          model_calls: 1,
++          input_tokens: null,
++          output_tokens: null,
++        },
+       },
+     });
+   });
+@@ -282,9 +304,9 @@
+ 
+   const operation = (method: string, path: string) =>
+     page.locator(`.opblock-${method}`).filter({
+-      has: page
+-        .locator('.opblock-summary-path')
+-        .filter({ hasText: new RegExp('^' + path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$') }),
++      has: page.locator('.opblock-summary-path').filter({
++        hasText: new RegExp('^' + path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$'),
++      }),
+     });
+   const prepare = async (method: string, path: string) => {
+     const block = operation(method, path);
+@@ -342,7 +364,9 @@
+   expect(errors).toEqual([]);
+   expect(await page.evaluate(() => (window as any).cspViolations)).toEqual([]);
+   await page.evaluate(() => window.scrollTo(0, 0));
+-  await page.screenshot({ path: `workbench/evidence/${info.project.name}-swagger.png` });
++  await page.screenshot({
++    path: `workbench/evidence/${info.project.name}-swagger.png`,
++  });
+ });
+ 
+ test('RAG presentation distinguishes embedding usage and exact chunk provenance', async ({
+@@ -480,7 +504,9 @@
+     );
+     await expect(page.getByRole('list', { name: 'Resolution progress' })).toHaveCount(0);
+     await expect(page.getByLabel('Ask about this case')).toBeVisible();
+-    const suggestions = page.getByRole('group', { name: 'Suggested questions' });
++    const suggestions = page.getByRole('group', {
++      name: 'Suggested questions',
++    });
+     await expect(suggestions.getByRole('button')).toHaveCount(4);
+     await suggestions.getByRole('button', { name: 'Compensation?', exact: true }).click();
+     await expect(page.getByLabel('Ask about this case')).toHaveValue(
+@@ -567,9 +593,14 @@
+   );
+   await expect(page.getByRole('button', { name: 'Previous slide' })).toBeDisabled();
+   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+-  await page.screenshot({ path: `workbench/evidence/${info.project.name}-contact1-cover.png` });
++  await page.screenshot({
++    path: `workbench/evidence/${info.project.name}-contact1-cover.png`,
++  });
+   await expect(page.locator('#slide-dots button')).toHaveCount(30);
+-  const ragShortcut = page.getByRole('button', { name: 'Go to slide 7', exact: true });
++  const ragShortcut = page.getByRole('button', {
++    name: 'Go to slide 7',
++    exact: true,
++  });
+   await ragShortcut.click();
+   await expect(page).toHaveURL(/#rag$/);
+   await expect(ragShortcut).toHaveAttribute('aria-current', 'step');
+@@ -586,7 +617,9 @@
+   await expect(page).toHaveURL(/#harness$/);
+   await expect(page.getByRole('img', { name: 'A horse wearing a harness' })).toBeVisible();
+   await expect(page.locator('#harness')).toContainText('Evaluation harness = the test runner.');
+-  await page.screenshot({ path: `workbench/evidence/${info.project.name}-contact1-harness.png` });
++  await page.screenshot({
++    path: `workbench/evidence/${info.project.name}-contact1-harness.png`,
++  });
+   await page.keyboard.press('ArrowRight');
+   await expect(page).toHaveURL(/#governance$/);
+   await expect(page.locator('#governance')).toContainText('People remain accountable.');
+@@ -607,7 +640,9 @@
+   await expect(page.getByRole('heading', { name: 'RAG has two paths.' })).toBeVisible();
+   await page.getByRole('button', { name: /Speaker notes/ }).click();
+   await expect(page.locator('#rag .speaker-notes')).toBeHidden();
+-  await page.screenshot({ path: `workbench/evidence/${info.project.name}-contact1-rag.png` });
++  await page.screenshot({
++    path: `workbench/evidence/${info.project.name}-contact1-rag.png`,
++  });
+   for (const [id, heading] of [
+     ['responses', 'OpenAI Responses API: the model boundary.'],
+     ['memory', 'Conversation state: who keeps the context?'],
+@@ -616,9 +651,13 @@
+     await page.goto(`/course/contact-1#${id}`);
+     await expect(page.getByRole('heading', { name: heading, exact: true })).toBeVisible();
+     await expect(page.locator(`#${id} .speaker-notes`)).toBeHidden();
+-    await page.screenshot({ path: `workbench/evidence/${info.project.name}-contact1-${id}.png` });
++    await page.screenshot({
++      path: `workbench/evidence/${info.project.name}-contact1-${id}.png`,
++    });
+   }
+-  await page.screenshot({ path: `workbench/evidence/${info.project.name}-contact1-streaming.png` });
++  await page.screenshot({
++    path: `workbench/evidence/${info.project.name}-contact1-streaming.png`,
++  });
+   await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+   await page.getByRole('button', { name: 'Start timer', exact: true }).click();
+   await page.clock.fastForward(61000);
+@@ -782,7 +821,9 @@
+   }
+   await page.goto('/course/contact-2#dimensions');
+   await expect(page.locator('#dimensions [data-code-location]')).toHaveCount(1);
+-  await page.screenshot({ path: `workbench/evidence/${info.project.name}-contact2-ingestion.png` });
++  await page.screenshot({
++    path: `workbench/evidence/${info.project.name}-contact2-ingestion.png`,
++  });
+   await page.emulateMedia({ media: 'print' });
+   await expect(page.locator('.slide:visible')).toHaveCount(15);
+   if (info.project.name === 'desktop')
+@@ -815,7 +856,11 @@
+       }
+       await route.fulfill({
+         json: body.execute
+-          ? { source_id: 'POL-COLLECTION-1', source_version: '1.0', embedding_calls: 1 }
++          ? {
++              source_id: 'POL-COLLECTION-1',
++              source_version: '1.0',
++              embedding_calls: 1,
++            }
+           : {
+               source: {
+                 id: 'POL-COLLECTION-1',
+@@ -825,7 +870,9 @@
+               },
+               chunks: [
+                 { excerpt: 'Hold for seven calendar days.' },
+-                { excerpt: '<img src=x onerror="window.injected=true"> is document text.' },
++                {
++                  excerpt: '<img src=x onerror="window.injected=true"> is document text.',
++                },
+               ],
+               embedding_calls: 0,
+             },
+@@ -880,6 +927,7 @@
+     chunk_id: 'fixture-chunk',
+     score: 0.03279,
+     vector_score: 0.88,
++    pages: [2],
+   };
+   await page.route('**/api/v1/teaching/pdf**', async (route) => {
+     const url = new URL(route.request().url());
+@@ -937,7 +985,7 @@
+       json: {
+         status: 'supported',
+         answer: 'The parcel is held for seven calendar days.',
+-        retrieved_passages: [chunk],
++        retrieved_passages: [chunk, { ...chunk, chunk_id: 'spanning-chunk', pages: [1, 2] }],
+         citations: [chunk],
+         trace: { retrieval: 'hybrid' },
+       },
+@@ -976,6 +1024,9 @@
+   await page.getByRole('button', { name: 'Retrieve and answer' }).click();
+   await expect(page.locator('#pdf-answer')).toContainText('seven calendar days');
+   await expect(page.locator('#pdf-hits')).toContainText(source.text);
++  await expect(page.locator('#pdf-hits')).toContainText('Page 2');
++  await expect(page.locator('#pdf-hits')).toContainText('Pages 1–2');
++  await expect(page.locator('#pdf-answer summary')).toContainText('Page 2');
+   await expect(page.locator('#pdf-hits')).toContainText('Cosine similarity: 0.880');
+   await expect(page.locator('#pdf-hits')).toContainText('Hybrid rank (RRF): 0.03279');
+   await page.locator('#pdf-answer summary').click();
+@@ -993,10 +1044,18 @@
+   await page.reload();
+   await expect(page.locator('#pdf-question-panel')).toBeVisible();
+   await expect(
+-    page.getByRole('button', { name: 'Remove policy: ' + source.title, exact: true }),
++    page.getByRole('button', {
++      name: 'Remove policy: ' + source.title,
++      exact: true,
++    }),
+   ).toBeVisible();
+   page.once('dialog', (dialog) => dialog.accept());
+-  await page.getByRole('button', { name: 'Remove policy: ' + source.title, exact: true }).click();
++  await page
++    .getByRole('button', {
++      name: 'Remove policy: ' + source.title,
++      exact: true,
++    })
++    .click();
+   await expect(page.locator('#pdf-status')).toContainText('Policy removed');
+   await expect(page.locator('#pdf-indexed-list')).toHaveText('No PDF policies indexed yet.');
+   await page

@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-23",
+  "mode": "fixture HTTP and local Qdrant; no billable provider calls",
+  "before_acceptance": {
+    "failed": 5,
+    "expected": true
+  },
+  "reference_acceptance": {
+    "passed": 5
+  },
+  "reference_regression": {
+    "passed": 197,
+    "optional_temporal_skipped": 2
+  },
+  "reference_browser": {
+    "passed": 2,
+    "viewports": [
+      "desktop",
+      "mobile"
+    ],
+    "mode": "fixture"
+  },
+  "implementation_files": {
+    "workbench/teaching/contact2/indexing/pipeline.py": {
+      "before_sha256": "1c985a06e1c900b9c11496efc7afa7665bb300644d8cd60d57298ec21bb82ea2",
+      "reference_sha256": "916503ec16df7a1383740cee9222c5ee24bcd52a1723b00d89af49cd2678d875"
+    },
+    "workbench/teaching/contact2/indexing/chunking.py": {
+      "before_sha256": "d4e29ca5b05b75a2ae6243af10223d8dc3f6c5937b3a2039d0b242a09eb45f03",
+      "reference_sha256": "5c0ca30a1c8eed4288177d2860b47850a425fc8e9c949a659597e1f8b40809da"
+    },
+    "workbench/teaching/contact2/config.py": {
+      "before_sha256": "a807ee77db69cecee832ee0233588076353de904a8a4ca3e139c9ac8e3680cfd",
+      "reference_sha256": "fe891fdeddbe690e28542024592a6df5e78cb2307b5f7296e283925ca0fdf662"
+    },
+    "workbench/src/relay/models.py": {
+      "before_sha256": "fafc0035c173f10db58a686b819cc7e803b5e65d8c964975ed3abd831eaf14e5",
+      "reference_sha256": "3a7cc36c62b1ebd734480eb7cad72e6ffd93726571dac3048006d72719eb2be5"
+    },
+    "workbench/src/relay/static/contact2-pdf.js": {
+      "before_sha256": "bf38db2a45cabc2e90d4ec0ef95d94c874b5f5fe629c4b7d849bc7362515c502",
+      "reference_sha256": "1f274622d882e020f87aad6ece82f5f3ce3e7bba7b55e7731997030a6fc7bdeb"
+    },
+    "workbench/browser/workbench.spec.ts": {
+      "before_sha256": "b4fff6fe7e3ecbe0e729dd21a8ab611aea2e94278c133a36136aa01e6b5b5331",
+      "reference_sha256": "7df78cce5685944eafd80f0a024af49cc1df54fb9c9fe1bfd2257222747c9618"
+    }
+  },
+  "limitations": [
+    "No timed instructor rehearsal",
+    "No live-provider page-reference verification",
+    "Previously imported PDFs require explicit removal and re-upload to capture page metadata."
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "verified_on": "2026-10-23",
+  "scope": "Merged main and Contact 2 class source; local release verification",
+  "evidence_mode": "Offline fixtures and disposable stores; no live provider quality claim",
+  "full_command": "pnpm relay:verify --record-checkpoint",
+  "python_tests": {
+    "passed": 207,
+    "skipped": 2,
+    "skip_reason": "Optional Temporal tests require explicit opt-in"
+  },
+  "browser_tests": {
+    "passed": 36,
+    "platforms": [
+      "desktop",
+      "mobile"
+    ]
+  },
+  "focused_pdf_and_acceptance_command": "workbench/.venv/bin/python -m pytest -c workbench/pyproject.toml workbench/tests/test_pdf_page_references.py workbench/tests/test_contact2_ingestion.py workbench/tests/test_contact2_query.py workbench/teaching/contact2/reference_tests/page_reference_acceptance.py -q",
+  "focused_pdf_and_acceptance_passed": 43,
+  "legacy_preview_regression": "Observed failure before fix; passing after binding upload identity to canonical source provenance",
+  "source_fingerprints": 159,
+  "secret_scan": "Passed for release source and before-class checkpoint; pattern scan only",
+  "isolated_hosted_source_imports": "Passed, including nested RAG modules; no provider calls",
+  "docker_image_build": "Not run: local Docker daemon is not running",
+  "runtime_data_modified": false,
+  "external_deployment": "Separate from local verification"
+}

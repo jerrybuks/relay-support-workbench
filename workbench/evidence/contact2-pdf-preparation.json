@@ -1,0 +1,89 @@
+{
+  "mode": "live-provider-disposable-data",
+  "model": "openai/gpt-4o",
+  "pages": 1,
+  "policy_chunks": 3,
+  "index_embedding_calls": 1,
+  "dimensions": 1536,
+  "source_id": "POL-PDF-E01B691592310669",
+  "answer": "A parcel can stay at a collection point for seven calendar days. This period starts on the notice date, not the original dispatch date. If the parcel remains uncollected after this period, a supervisor reviews the case for return to the sender.",
+  "citations": [
+    {
+      "chunk_id": "2848b8f1-85dc-5260-8a6f-7252def55f82",
+      "end": 567,
+      "excerpt": "The seven-day period starts on the notice\ndate, not the original dispatch date.\nThe recipient must present the collection code and a matching identity document. A\nsupport agent can explain the policy but cannot waive identity checks.\nIf the parcel remains uncollected after seven calendar days, a supervisor reviews\nthe",
+      "id": "POL-PDF-E01B691592310669",
+      "score": 0.03252247488101534,
+      "start": 248,
+      "title": "Parcel collection and return policy",
+      "version": "1.0"
+    },
+    {
+      "chunk_id": "3a0534b5-ac35-5ec2-b27a-febba4589571",
+      "end": 312,
+      "excerpt": "KORA DISPATCH\nParcel collection and return policy | Version 1.0\nOriginal synthetic workshop document\nParcel collection and return\nKora Dispatch holds a parcel at a collection point for seven calendar days after\nsending the first collection notice. The seven-day period starts on the notice\ndate, not the original",
+      "id": "POL-PDF-E01B691592310669",
+      "score": 0.03252247488101534,
+      "start": 0,
+      "title": "Parcel collection and return policy",
+      "version": "1.0"
+    },
+    {
+      "chunk_id": "48c9b312-98af-540b-9869-f607c48cd118",
+      "end": 720,
+      "excerpt": "uncollected after seven calendar days, a supervisor reviews\nthe case before return to the sender. Relay must not promise automatic extensions\nor invent storage charges. This policy does not set compensation amounts.\n",
+      "id": "POL-PDF-E01B691592310669",
+      "score": 0.031746031746031744,
+      "start": 504,
+      "title": "Parcel collection and return policy",
+      "version": "1.0"
+    }
+  ],
+  "retrieved_passages": [
+    {
+      "chunk_id": "2848b8f1-85dc-5260-8a6f-7252def55f82",
+      "end": 567,
+      "excerpt": "The seven-day period starts on the notice\ndate, not the original dispatch date.\nThe recipient must present the collection code and a matching identity document. A\nsupport agent can explain the policy but cannot waive identity checks.\nIf the parcel remains uncollected after seven calendar days, a supervisor reviews\nthe",
+      "id": "POL-PDF-E01B691592310669",
+      "score": 0.03252247488101534,
+      "start": 248,
+      "title": "Parcel collection and return policy",
+      "version": "1.0"
+    },
+    {
+      "chunk_id": "3a0534b5-ac35-5ec2-b27a-febba4589571",
+      "end": 312,
+      "excerpt": "KORA DISPATCH\nParcel collection and return policy | Version 1.0\nOriginal synthetic workshop document\nParcel collection and return\nKora Dispatch holds a parcel at a collection point for seven calendar days after\nsending the first collection notice. The seven-day period starts on the notice\ndate, not the original",
+      "id": "POL-PDF-E01B691592310669",
+      "score": 0.03252247488101534,
+      "start": 0,
+      "title": "Parcel collection and return policy",
+      "version": "1.0"
+    },
+    {
+      "chunk_id": "48c9b312-98af-540b-9869-f607c48cd118",
+      "end": 720,
+      "excerpt": "uncollected after seven calendar days, a supervisor reviews\nthe case before return to the sender. Relay must not promise automatic extensions\nor invent storage charges. This policy does not set compensation amounts.\n",
+      "id": "POL-PDF-E01B691592310669",
+      "score": 0.031746031746031744,
+      "start": 504,
+      "title": "Parcel collection and return policy",
+      "version": "1.0"
+    }
+  ],
+  "status": "passed",
+  "repeat_embedding_calls": 0,
+  "date": "2026-10-22",
+  "verification": {
+    "python_tests": 188,
+    "optional_temporal_skips": 2,
+    "desktop_mobile_browser_tests": 32,
+    "source_fingerprints": 136,
+    "baseline_import_isolation": "passed"
+  },
+  "limitations": [
+    "Text PDFs only; OCR is not implemented.",
+    "Local demo supervisor review is not production authentication or certification.",
+    "Browser pipeline journey uses explicit response fixtures; this separate API preflight used the real provider and disposable stores."
+  ]
+}

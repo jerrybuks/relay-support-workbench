@@ -73,11 +73,18 @@ def create_app(
                 return JSONResponse(
                     {"error": {"code": "origin_denied", "message": "Origin denied."}}, 403
                 )
-            body = await request.body()
-            if len(body) > 16_384:
-                return JSONResponse(
-                    {"error": {"code": "body_too_large", "message": "Request too large."}}, 413
-                )
+            # Opt-in teaching routes can declare a bounded file-upload limit.
+            # All ordinary API routes retain the starter's 16 KiB limit.
+            limit = getattr(app.state, "request_body_limits", {}).get(request.url.path, 16_384)
+            body = bytearray()
+            async for part in request.stream():
+                if len(body) + len(part) > limit:
+                    return JSONResponse(
+                        {"error": {"code": "body_too_large", "message": "Request too large."}},
+                        413,
+                    )
+                body.extend(part)
+            request._body = bytes(body)
         response = await call_next(request)
         response.headers.update(
             {

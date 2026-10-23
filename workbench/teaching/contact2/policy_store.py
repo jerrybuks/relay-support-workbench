@@ -1,21 +1,13 @@
-"""Prepared plumbing: scoped canonical storage, trusted review record, atomic index build.
+"""Canonical policy persistence and transactional publication for the teaching corpus."""
 
-This is a local course corpus shared across workspaces within one tenant. It accepts
-only packaged fixtures, not arbitrary uploads. Publication workflow remains Contact 3.
-"""
-
-import hashlib
 import json
 import threading
-from pathlib import Path
 
 from relay.seed import DOCUMENTS
 from relay.service import Problem
 from relay.store import Store, encoded
 
-from ..rag_reference import chunks
-
-ROOT = Path(__file__).parent
+from .indexing.pipeline import build_index
 
 
 class PolicyStore(Store):
@@ -26,6 +18,11 @@ class PolicyStore(Store):
             db.execute(
                 "CREATE TABLE IF NOT EXISTS c2_sources "
                 "(tenant TEXT,id TEXT,data TEXT,PRIMARY KEY(tenant,id))"
+            )
+            db.execute(
+                "CREATE TABLE IF NOT EXISTS c2_pdf_uploads "
+                "(id TEXT PRIMARY KEY,workspace TEXT,tenant TEXT,sha256 TEXT,source TEXT,"
+                "reviewed_by TEXT,reviewed_at REAL,created REAL)"
             )
 
     def corpus(self, tenant="kora", db=None):
@@ -49,33 +46,7 @@ class PolicyStore(Store):
         ]
 
 
-def preview(name, parser, *, tenant="kora", config=None):
-    # Filename allowlist prevents traversal, symlink and arbitrary-file access.
-    available = {p.name: p for p in (ROOT / "policies").glob("*.md") if not p.is_symlink()}
-    if name not in available:
-        raise Problem(404, "policy_not_found", "Select a packaged teaching policy.")
-    raw = available[name].read_bytes()
-    source = parser(raw)
-    approvals = json.loads((ROOT / "approvals.json").read_text())
-    review = approvals.get(name, {})
-    if source["tenant"] != tenant:
-        raise Problem(403, "source_tenant_denied", "Source is outside this tenant.")
-    if not (
-        review.get("status") == "approved"
-        and review.get("sha256") == hashlib.sha256(raw).hexdigest()
-        and review.get("source_id") == source["id"]
-        and review.get("tenant") == source["tenant"]
-        and review.get("version") == source["version"]
-        and review.get("visibility") == source["visibility"]
-    ):
-        raise Problem(403, "source_not_approved", "A separate matching review record is required.")
-    source.update(reviewed_by=review["reviewed_by"], rights=review["rights"])
-    from ..rag_reference import RagConfig
-
-    return source, chunks(source, config or RagConfig())
-
-
-def ingest(store, rag, source, actor):
+def publish_source(store, rag, source, actor):
     if actor.role != "supervisor" or actor.tenant != source["tenant"]:
         raise Problem(403, "supervisor_required", "A supervisor must confirm this local import.")
     # Shared lock order matches retrieval: vector lock, then database work.
@@ -88,7 +59,7 @@ def ingest(store, rag, source, actor):
             "INSERT OR IGNORE INTO c2_sources VALUES (?,?,?)",
             (source["tenant"], source["id"], encoded(source)),
         )
-        report = rag.build(store.corpus(actor.tenant, db))
+        report = build_index(rag, store.corpus(actor.tenant, db))
         store.audit(db, actor, "source.imported", {"source_id": source["id"], "reused": reused})
     return {
         "source_id": source["id"],

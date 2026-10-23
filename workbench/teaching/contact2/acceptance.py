@@ -4,7 +4,7 @@ import json
 
 from relay.service import Problem
 
-from .pipeline import ROOT, preview
+from .markdown_practice import ROOT, preview
 
 
 def check(parser):

@@ -92,6 +92,30 @@ select {
   border-radius: 8px;
   font: inherit;
 }
+input[type='text'],
+#pdf-title,
+textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #bbc9e3;
+  border-radius: 8px;
+  font: inherit;
+}
+#pdf-pipeline > details > summary {
+  font-size: 18px;
+  font-weight: 600;
+  color: #17243c;
+}
+#pdf-pipeline summary span {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: #52617a;
+  margin-top: 8px;
+}
+#pdf-status {
+  font-weight: 600;
+}
 button,
 .button {
   display: inline-block;
@@ -108,9 +132,48 @@ button:disabled {
   opacity: 0.5;
   cursor: default;
 }
+button.code-reference {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #315ee8;
+  font: inherit;
+  text-align: left;
+  text-decoration: underline;
+  overflow-wrap: anywhere;
+}
+#code-copy-status {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  padding: 12px 16px;
+  border: 1px solid #bbc9e3;
+  border-radius: 8px;
+  background: white;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+}
 .hint {
   font-size: 13px;
   color: #65738c;
+}
+.indexed-policy {
+  border-top: 1px solid #dce4f1;
+  padding: 12px 0;
+  overflow-wrap: anywhere;
+}
+.indexed-policy p {
+  margin: 0;
+}
+button.remove-policy {
+  color: #a32a3b;
+  background: #fff4f5;
+  border: 1px solid #ecc4cb;
+  padding: 8px 12px;
+  font-size: 13px;
 }
 .confirm {
   line-height: 1.7;
@@ -129,6 +192,25 @@ blockquote {
 #status {
   font-weight: 600;
 }
+.passage {
+  border-left: 3px solid #315ee8;
+  padding: 4px 16px;
+  margin: 20px 0;
+  background: #f6f8ff;
+  overflow-wrap: anywhere;
+}
+.passage h3 {
+  font-size: 13px;
+  color: #52617a;
+}
+.passage p {
+  white-space: pre-wrap;
+}
+summary {
+  cursor: pointer;
+  color: #52617a;
+  font-size: 13px;
+}
 :focus-visible {
   outline: 3px solid #f3af50;
   outline-offset: 4px;
@@ -144,4 +226,52 @@ blockquote {
   .panel {
     padding: 18px;
   }
+}
+
+.pipeline-map summary {
+  color: #17243c;
+  font-size: 16px;
+  font-weight: 650;
+}
+.pipeline-scroll {
+  overflow-x: auto;
+  padding: 4px 0 12px;
+}
+.pipeline-steps {
+  display: flex;
+  list-style: none;
+  gap: 28px;
+  margin: 0;
+  padding: 0;
+}
+.pipeline-steps li {
+  position: relative;
+  flex: 1 0 152px;
+  padding: 14px;
+  border: 1px solid #c4b5fd;
+  border-radius: 12px;
+  background: #ede9fe;
+}
+.pipeline-steps li + li::before {
+  content: '→';
+  position: absolute;
+  left: -23px;
+  top: 24px;
+  color: #4165bc;
+}
+.pipeline-steps h3 {
+  font-size: 14px;
+  margin: 0 0 10px;
+}
+.pipeline-steps code {
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+.pipeline-steps .code-reference {
+  display: block;
+  margin-top: 10px;
+  text-align: left;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }

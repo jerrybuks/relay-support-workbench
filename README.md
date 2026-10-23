@@ -21,6 +21,30 @@ Contact 1 presentation, speaker notes and demo guide: **http://127.0.0.1:8000/co
 
 The browser starts an isolated local demo workspace as Tolu, a support agent. Open RY-1042, choose **Investigate case**, inspect policy evidence, then **Propose a service credit**. Use **Demo persona** to switch to Amara and review it. Reload preserves the workspace. Another browser/context starts independently.
 
+## Contact 2: code and slides from class
+
+[Open the hosted Contact 2 slides](https://relay-workshop.onrender.com/course/contact-2). The current `main` branch includes the completed PDF page-reference feature, ingestion/query pipeline, offline tests and three repository skills under `.agents/skills/`.
+
+To run the PDF assistant locally:
+
+```sh
+pnpm install --frozen-lockfile
+uv sync --project workbench --locked --extra references
+cp workbench/.env.example workbench/.env
+```
+
+Edit `workbench/.env` locally with your funded provider credentials and the configuration described in [workbench guidance](workbench/README.md). Never commit it. Then run:
+
+```sh
+pnpm contact2:before
+```
+
+Open **http://127.0.0.1:8002/teaching/contact-2** for the PDF assistant and **http://127.0.0.1:8002/course/contact-2** for slides. Upload one of the supplied synthetic PDFs, review its extracted text and confirm indexing before asking a question. Embedding and answer requests consume provider credits. The `before` command name selects the separate, intentionally unfinished Markdown practice; the PDF feature on `main` is complete.
+
+Use tag **`contact-2-before`** in a separate checkout to repeat the original page-number exercise. Tag **`contact-2-complete`** identifies this completed release. Keep each checkout's runtime data separate. The [facilitator guide](docs/teaching/CONTACT_2_REHEARSAL_GUIDE.md) records the class flow; its preparation statuses describe the original rehearsal, not a reset of your current checkout.
+
+The hosted service provides the course, slides and resolution desk. The PDF upload lab is a local opt-in teaching app; it is not enabled on the public service.
+
 ## Host the workshop
 
 [Deploy the frontend and backend together on Render Free](https://render.com/deploy?repo=https%3A%2F%2Fgithub.com%2Fjerrybuks%2Frelay-support-workbench). Supply your OpenRouter key through Render, not Git. The UI and AI are public with shared request limits. Free-instance restarts erase workshop history and rebuild the synthetic vector index. See the [deployment guide](docs/DEPLOYMENT.md) for the owner setup, limits and verification.
@@ -43,8 +67,8 @@ Detailed reference commands/status are in [workbench guidance](workbench/README.
 | Contact | Core live work                                                                                       |
 | ------- | ---------------------------------------------------------------------------------------------------- |
 | 1       | Embeddings/vector RAG, Responses, structured evidence, tools, safety, traces/evaluation; basic Codex |
-| 2       | Ticket → reproduce → Codex patch/test → browser checks → review/PR; bounded integrations             |
-| 3       | Governed ingestion/skills, MCP and prepared durable/scheduled approval workflow                      |
+| 2       | PDF RAG walkthrough; governed Codex plan/build/test/review; skills, MCP, context and caching         |
+| 3       | Governed publication and prepared durable/scheduled approval workflows                               |
 | 4       | FDE pilot/operational decisions, incidents, handover, API/Codex readiness                            |
 
 The [documentation index](docs/README.md) links the product design, facilitator runbook, test plan and expanded coverage blueprint. Prepared API infrastructure saves live time. Optional practice/reference material supplies breadth beyond the four-hour demonstrations.

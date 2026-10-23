@@ -20,7 +20,8 @@ try {
     const context = await browser.newContext({ viewport });
     const page = await context.newPage();
     page.on('pageerror', (error) => report.errors.push(error.message));
-    await page.goto(base.origin + '/teaching/contact-2');
+    await page.goto(base.origin + '/static/contact2-markdown.html');
+    await page.getByText('Optional Codex exercise · Markdown parser', { exact: true }).click();
     await page.getByRole('button', { name: 'Preview document and chunks' }).click();
     await page
       .getByRole('status')

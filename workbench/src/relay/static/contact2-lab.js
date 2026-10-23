@@ -44,7 +44,32 @@ async function run(execute) {
     const result = await response.json();
     document.querySelector('#output').hidden = false;
     document.querySelector('#result').textContent = JSON.stringify(result, null, 2);
+    const summary = document.querySelector('#source-summary');
+    const passages = document.querySelector('#passages');
+    passages.replaceChildren();
+    summary.textContent = '';
+    document.querySelector('#output-title').textContent = response.ok
+      ? execute
+        ? 'Policy indexed'
+        : 'Document and chunks'
+      : 'Document could not be processed';
     if (!response.ok) throw new Error(result.error?.message || 'Request failed.');
+    if (execute) {
+      summary.textContent = `${result.source_id} · version ${result.source_version}. Import complete: ${result.embedding_calls} embedding requests. Ask your question in Relay and check its source.`;
+    } else {
+      const source = result.source;
+      summary.textContent = `${source.title} · ${source.id} · version ${source.version} · ${source.visibility} access. ${result.chunks.length} chunks; no embedding requests yet.`;
+      for (const [index, chunk] of result.chunks.entries()) {
+        const card = document.createElement('article');
+        card.className = 'passage';
+        const heading = document.createElement('h3');
+        heading.textContent = `Chunk ${index + 1}`;
+        const text = document.createElement('p');
+        text.textContent = chunk.excerpt;
+        card.append(heading, text);
+        passages.append(card);
+      }
+    }
     previewed = select.value;
     status.textContent = execute
       ? 'Imported. Open the resolution desk and check the cited answer.'
@@ -60,3 +85,21 @@ async function run(execute) {
 }
 document.querySelector('#preview').addEventListener('click', () => run(false));
 importButton.addEventListener('click', () => run(true));
+
+let copyFeedbackTimer;
+document.querySelectorAll('[data-code-location]').forEach((button) => {
+  button.addEventListener('click', async () => {
+    const feedback = document.querySelector('#code-copy-status');
+    clearTimeout(copyFeedbackTimer);
+    feedback.hidden = false;
+    try {
+      await navigator.clipboard.writeText(button.dataset.codeLocation);
+      feedback.textContent = `Copied ${button.dataset.codeLocation}`;
+      copyFeedbackTimer = setTimeout(() => {
+        feedback.hidden = true;
+      }, 4000);
+    } catch {
+      feedback.textContent = `Copy this location: ${button.dataset.codeLocation}`;
+    }
+  });
+});

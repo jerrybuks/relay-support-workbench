@@ -6,7 +6,7 @@
 !workbench/src/
 !workbench/src/**
 !workbench/teaching/
-!workbench/teaching/*.py
+!workbench/teaching/**
 !workbench/scripts/
 !workbench/scripts/serve_workshop.py
 **/__pycache__/

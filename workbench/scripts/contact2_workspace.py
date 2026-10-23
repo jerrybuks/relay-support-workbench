@@ -25,7 +25,8 @@ def main():
     for name in ["review-change", "browser-smoke-check"]:
         destination = target / ".agents/skills" / name
         destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copytree(target / "workbench/teaching/contact2/skills" / name, destination)
+        if not destination.exists():
+            shutil.copytree(target / "workbench/teaching/contact2/skills" / name, destination)
     subprocess.run(
         ["uv", "sync", "--project", str(target / "workbench"), "--locked", "--extra", "references"],
         check=True,

@@ -101,7 +101,9 @@ class Citation(BaseModel):
     chunk_id: str | None = None
     start: int | None = None
     end: int | None = None
+    pages: list[int] = Field(default_factory=list)
     score: float | None = None
+    vector_score: float | None = None
 
 
 class Investigation(BaseModel):
@@ -111,6 +113,7 @@ class Investigation(BaseModel):
     status: Literal["supported", "insufficient_evidence", "unavailable"]
     answer: str
     citations: list[Citation]
+    retrieved_passages: list[Citation] = Field(default_factory=list)
     tools: list[dict[str, Any]]
     suggested_credit_naira: int | None
     trace: dict[str, Any]

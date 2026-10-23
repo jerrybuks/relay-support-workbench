@@ -1,285 +1,456 @@
 # Contact 2 rehearsal guide
 
-Teach one task over 120 minutes: give Relay a new approved policy and prove that its answers use the right evidence. Follow the document through ingestion, then follow a question through retrieval and generation. Use Codex to implement the missing ingestion path with repository instructions, skills, scoped tools, tests and review.
+**Goal:** teach learners to investigate, build, verify and review an AI application with Codex. Relay’s PDF assistant is the practical example, not the whole lesson.
 
-**Status on 22 October 2026: technical preparation verified.** The reference ingestion pipeline, independent parser checks, real OpenRouter answers, MCP lookup, browser journeys, bounded Codex repair and read-only permission denial have recorded evidence. The live parser is intentionally unfinished. Your remaining task is the timed teaching rehearsal. Native Goal support is detected in the installed CLI; practise its lifecycle and the Plan-mode controls in your teaching client before delivery. No cloud/SDK execution or two-hour facilitator rehearsal is claimed.
+**Duration:** two hours. Use the app and editor for most of the session. Open a slide only when a concept needs a short explanation: five RAG support slides and fifteen Codex engineering slides.
 
-This replaces the older 60-minute duplicate-event exercise as the main Contact 2 session. The duplicate-event fixtures remain optional practice. Contact 2 now has two hours; Contacts 1, 3 and 4 retain their existing allocations unless separately changed. With three other one-hour contacts, total facilitated time becomes five hours.
+**Preparation status:** the PDF demo and page-number reference are verified. The class checkout stays in the before state; a separate completed checkout is at `~/projects/relay-contact2-reference`. You can start Section 3 in `~/projects/relay-contact2-class` on its current branch. The full timed instructor rehearsal is still yours to do. The old Markdown parser exercise is separate practice.
 
-## Outcome and assignment
+## Before you begin
 
-Read aloud:
+Open `~/projects/relay-contact2-class` in the IDE. This is the isolated checkout for class edits.
 
-> Kora Dispatch has approved a new parcel-collection policy. Support agents need Relay to answer questions about it and show where the answer came from. We will add that capability with Codex. We will follow the document into the vector store, follow the question back to its evidence, and verify the result before reviewing the change.
+Keep these two tabs open; they are pages of the same app on port **8002**:
 
-Use original synthetic policy text. Keep the same app, document, question and task visible throughout. The second document is a reuse check, not a separate project.
+- [PDF assistant](http://127.0.0.1:8002/teaching/contact-2)
+- [Reference slides](http://127.0.0.1:8002/course/contact-2)
 
-The exercise must finish with these observable results:
+Use the [three-page policy PDF](http://127.0.0.1:8002/teaching/contact-2/sample-multipage.pdf) throughout this session. It is also in `workbench/teaching/contact2/pdfs/collection-policy-multipage.pdf` in the class checkout. Page 1 covers the seven-day holding period and notice date; page 2 covers collection code and identity checks; page 3 covers supervisor review before return. The rules are original synthetic teaching content, also present in the one-page sample. Remove any earlier copy from **Indexed policies** before the demonstration.
 
-- An approved Markdown document with validated source ID, title, version, tenant and visibility can be ingested into a disposable teaching workspace and index.
-- Ingestion previews coherent chunks and stores their source metadata with embeddings. Repeating unchanged ingestion reuses vectors without duplicating sources.
-- The new source becomes available through the app's canonical document store as well as the vector index. Indexing a file alone is insufficient: retrieval checks chunks against authorized canonical documents.
-- A question retrieves the expected permitted passage and produces an answer with a validated citation to its version.
-- Missing metadata, conflicting IDs, unreviewed documents and restricted sources are handled by application rules. A document cannot grant itself approval through its prose.
-- Existing case, role, tenant, approval and idempotency checks still pass. The diff and PR draft describe actual tests and remaining limitations.
-
-Freeze the document text, expected answers and input format before rehearsal. The approved status is a synthetic teaching record; the exercise does not certify real business content.
-
-## Start your rehearsal
-
-The prepared class checkout is `~/projects/relay-contact2-class`. Open that folder in the IDE, not the normal project folder. Its `workbench/teaching/contact2/exercise.py` is the live edit; the original Relay app and Contact 1 runtime data stay separate.
-
-The class app uses the single local port **8002**. Open:
-
-- [Slides](http://127.0.0.1:8002/course/contact-2)
-- [Policy lab](http://127.0.0.1:8002/teaching/contact-2)
-- [Resolution desk](http://127.0.0.1:8002/dashboard)
-- [Swagger](http://127.0.0.1:8002/docs)
-
-The app is left in the **before** state. Previewing a policy returns the intentional `parser_not_implemented` error until you implement the parser. Asking the collection question before import should report insufficient evidence; a nonempty retrieval result alone does not prove support.
-
-From the class checkout, rehearse the initial failing acceptance check:
+If the app is stopped, run this from the original project folder, `~/projects/history-game-codex`:
 
 ```sh
-workbench/.venv/bin/python workbench/scripts/contact2.py check --state before
+uv run --project ~/projects/relay-contact2-class/workbench \
+  --locked --extra references --env-file workbench/.env \
+  python ~/projects/relay-contact2-class/workbench/scripts/contact2.py \
+  serve --state before --reload
 ```
 
-Expected initially: exit 1. After the live edit: 16 independent checks pass with zero provider calls. The prepared reference check is:
+The PDF flow works with this command. No parser-mode switching is needed. The older Markdown exercise is on `/static/contact2-markdown.html`; it is not part of this PDF page.
 
-```sh
-workbench/.venv/bin/python workbench/scripts/contact2.py check --state reference
-workbench/.venv/bin/python -m pytest workbench/tests/test_contact2_ingestion.py -q
-```
+### Check these before starting the timer
 
-Use the policy lab to preview and import. Preview makes no model request. Import requires a separate approval record, supervisor demo session and the billable-confirmation checkbox. The lab executes under the app's vector lock, so you do not need another server or a second index process.
+- In the class folder, confirm `git status --short` and `git branch --show-current`. The prepared class baseline is saved as a local commit. Confirm the working tree is clean before the exercise. Keep the separate verified checkout `~/projects/relay-contact2-reference` for recovery. Do not reset or clean this checkout to hide preparation changes.
+- In the original project's ignored `workbench/.env`, check locally that `RELAY_AI_PROVIDER=openrouter`, `RELAY_ALLOW_LIVE=1` and a funded `OPENROUTER_API_KEY` are configured. The prepared model IDs are `OPENROUTER_MODEL=openai/gpt-4o` and `OPENROUTER_EMBEDDING_MODEL=openai/text-embedding-3-small`. Do not display the key. Codex's login/model settings are separate from Relay's provider credentials. Local Qdrant requires no service key.
+- Open the PDF assistant and confirm **Indexed policies**, below the question area, loads. Check `http://127.0.0.1:8002/api/health`; HTTP 200 establishes server health, not provider credit or answer quality. Use the launch command above only if the app is stopped. `pnpm dev` starts the baseline, not this class profile.
+- Download and open both sample PDFs before class. Practise the complete three-page upload, review, index and question journey once; check the cited source ID against the uploaded document. The saved live PDF evidence currently covers the **one-page** sample, not this three-page run.
+- Confirm both general skills appear in Codex, the browser tools can actually operate the local PDF UI, and the documentation MCP connection works. Terminal Playwright tests alone do not establish that the Codex UI has browser tools.
+- Run the ingestion tests in block 6. The opt-in page-reference acceptance checks are intentionally red in this before state and green in the completed reference. A green existing suite does not prove the new feature works.
+- Keep a terminal and the guide beside the editor. Use the same class checkout for all coding/test commands below. The server launch is the exception: it runs from the original folder to load its ignored environment file.
 
-If the server is stopped, run from the original project root:
+If dependencies are missing in the class checkout, run `uv sync --project workbench --locked --extra references`, `pnpm install --frozen-lockfile` and `pnpm exec playwright install chromium` there before rehearsal.
 
-```sh
-uv run --project ~/projects/relay-contact2-class/workbench --locked --extra references --env-file workbench/.env python ~/projects/relay-contact2-class/workbench/scripts/contact2.py serve --state before --reload
-```
+### Files to have ready
 
-Do not run a second server if port 8002 is occupied. The reloader picks up parser edits. For recovery, stop that server and use the same command with `--state reference` instead of `--state before --reload`. The reference parser uses the same app, UI and teaching database. Nothing resets automatically.
+All paths below are relative to the class checkout unless stated otherwise. Open files directly; do not rely on remembering a previous chat.
 
-To launch Codex in the class checkout with the external documentation server available only for that invocation:
+| Item                 | Location and use                                                                                                                                                                                                                                                                                       |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Live task            | `workbench/teaching/contact2/PAGE_REFERENCE_TASK.md` — acceptance criteria. The completed solution is in the separate reference checkout; `artifacts/PAGE_REFERENCES.patch` is a checked recovery patch.                                                                                               |
+| Repository guidance  | Root `AGENTS.md`, then `workbench/teaching/contact2/AGENTS.md` — explain root and directory scope.                                                                                                                                                                                                     |
+| First PDF            | `workbench/teaching/contact2/pdfs/collection-policy-multipage.pdf` — three-page walkthrough and coding task.                                                                                                                                                                                           |
+| Skill reuse PDF      | `workbench/teaching/contact2/pdfs/collection-policy.pdf` — one-page version; instructions below prevent duplicate-source confusion.                                                                                                                                                                    |
+| General skills       | `.agents/skills/review-change/SKILL.md` and `.agents/skills/browser-smoke-check/SKILL.md` — installed in the class checkout. Their tracked teaching copies are under `workbench/teaching/contact2/skills/`.                                                                                            |
+| PDF recording        | `workbench/evidence/contact2-pdf-preparation.json` — recorded real-provider one-page result, including answer, passages and citations.                                                                                                                                                                 |
+| Codex recording      | `workbench/evidence/contact2-preparation.json` — `codex.permission` for denied write, `codex.token_usage` for caching, `codex.first_attempt` / `corrective_attempt` for repair feedback, and `mcp` for the earlier remote documentation call. These are recorded results from the older Markdown task. |
+| Automation artifacts | `workbench/teaching/contact2/artifacts/CODEX_REPAIR.patch` and `result-schema.json` — inspect the recorded Markdown repair and expected output shape. `codex_sdk_reference.py` is an unexecuted SDK reference.                                                                                         |
+| Delivery templates   | `workbench/teaching/contact2/artifacts/HANDOVER.md` and `PR_DRAFT.md` — older-task examples; rewrite for the page-reference change rather than presenting their Markdown wording as today's result.                                                                                                    |
 
-```sh
-codex -C ~/projects/relay-contact2-class -c 'mcp_servers.openaiDeveloperDocs.url="https://developers.openai.com/mcp"'
-```
+**Ready to rehearse the whole session means:** the before state, completed page-reference fallback, three-page answer, browser-enabled skill run and actual Codex UI controls have all been checked. The before/reference exercise pair is now prepared. Before class, still practise the Codex UI controls, browser-enabled skill and MCP connection in the client you will present.
 
-Use the client model/effort controls, then Plan mode and the task prompt below. `/mcp` should list the documentation connection. For the prepared non-interactive example, inspect the recorded CLI events/result and actual repair patch at `workbench/teaching/contact2/artifacts/CODEX_REPAIR.patch`. The verification record includes real cached-token counts from Codex, separate from Relay's reported cached input.
+## 1. Introduce the assignment · 0–5 minutes
 
-The two general skills are installed under the class checkout's `.agents/skills`. The third skill reference is `workbench/teaching/contact2/skills/ingest-approved-policy/SKILL.md`; author it during the exercise, or copy it into `.agents/skills/ingest-approved-policy/` for recovery. Never install it globally for this class.
-
-For a **fresh** additional checkout, run `pnpm contact2:setup --path ~/projects/relay-contact2-another` from the original repository. The setup refuses an existing destination. It installs locked dependencies and the two skills; it copies no credentials. A seed-only Contact 2 index can be reused without another API request. If a seed index cannot be reused, explicitly initialize the new teaching home with `contact2.py init --confirm-billable` before serving; never run it on Contact 1 data.
-
-## Prepared assets and evidence
-
-| Asset                      | Location and verification                                                                                                                                          |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Narrow live task           | `workbench/teaching/contact2/TASK.md`; implement the parser only                                                                                                   |
-| Reference parser           | `workbench/teaching/contact2/parser_reference.py`; 16 independent offline acceptance checks                                                                        |
-| Integration                | `workbench/teaching/contact2/pipeline.py`; canonical storage, matching review hash, index reuse and rollback tests                                                 |
-| Policy fixtures            | `workbench/teaching/contact2/policies/`; two reusable team policies, one supervisor-only policy and three rejection examples                                       |
-| Engineering skills         | `workbench/teaching/contact2/skills/`; all three pass skill validation; review skill exercised through Codex                                                       |
-| External MCP               | `pnpm contact2:mcp`; actual remote tool discovery/search recorded                                                                                                  |
-| Live preflight             | `pnpm contact2:preflight --confirm-billable`; disposable original synthetic data only                                                                              |
-| Browser checks             | `pnpm contact2:browser`; `--ask` explicitly enables a real model request                                                                                           |
-| Automation and permissions | `workbench/evidence/contact2-preparation.json`; actual CLI repair, corrective iteration, review and denied write                                                   |
-| Slides                     | `/course/contact-2`; 22 slides, speaker notes, keyboard controls and AST-verified code references; printable PDF in `workbench/evidence/contact2-presentation.pdf` |
-| Handover and PR draft      | `workbench/teaching/contact2/artifacts/`; fill with observed results before review                                                                                 |
-
-Detailed local run logs, live answers, screenshots and MCP output are in ignored `workbench/.runtime/contact2/evidence/` in the original repository. The public evidence summary excludes credentials, session tokens and owner paths. It distinguishes provider, fixture and CLI results.
-
-The installed CLI reports version 0.162.1, signed-in ChatGPT access and Goals enabled. Check the actual client controls during your rehearsal. We did not activate a persistent Goal in your current session or change global model/permission settings.
-
-## Session timetable
-
-| Minutes    | Activity                                                       | What learners must see                                                   |
-| ---------- | -------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| 0 to 10    | Establish the task and current evidence gap                    | One question, missing source, acceptance criteria                        |
-| 10 to 35   | Trace ingestion and the answering path                         | Real functions with their actual inputs and outputs                      |
-| 35 to 55   | Orient Codex controls and set up governed work                 | Prompt, `AGENTS.md`, skills, worktree, MCP and permissions               |
-| 55 to 85   | Implement the bounded file-ingestion feature                   | Plan, failing acceptance check, patch, tests and data flow               |
-| 85 to 100  | Package and reuse the ingestion skill                          | Existing pipeline called by the skill for a second document              |
-| 100 to 110 | Verify and review                                              | Browser journey, restricted input, general review skill and bounded loop |
-| 110 to 120 | Explain handover and usage, inspect automation, take questions | Fresh-task context, cache distinctions, PR draft and next steps          |
-
-Take short questions at the end of each code path. Use native Goals for continuation; keep Ralph-style orchestration as an optional comparison. If time slips, leave cloud/SDK/Windsurf comparisons as annotated references; preserve the RAG walkthrough, governance, browser verification and review.
-
-## Minutes 0 to 10 establish the evidence gap
-
-Open `/dashboard`. State that the user is a support agent, not the customer. Show the prepared question: “How long can a parcel stay at a collection point, when does that period start, and who reviews return to the sender?” The new policy is absent from the fresh teaching corpus. Use a fresh checkout for another full before-to-after run; do not reset the owner database. If unrelated passages are retrieved, explain that retrieval returning something is not proof of relevance.
+**Goal:** give the class one business problem and one engineering task.
 
 Say:
 
-> The model can write fluent text already. Our job is to give it approved evidence and check that its answer is supported. We will keep this question unchanged so we can see what our change actually achieved.
+> Kora Dispatch’s policy team has sent us a PDF. Support agents need answers grounded in that policy. First, we’ll see how Relay reads it and answers questions. Then we’ll use Codex to improve the source references so an agent can find the supporting page in the original PDF.
 
-Show the task contract and expected source/version. Do not manufacture a failure by disabling the working RAG implementation. The missing feature is approved-file ingestion, not embeddings or retrieval.
+Show the PDF assistant and the sample policy. Establish the finish line: a working answer with a source, then a reviewed code change that adds the correct page number.
 
-## Minutes 10 to 35 follow the code
-
-Keep two simple paths visible:
+The walkthrough code is grouped by job:
 
 ```text
-Document -> metadata validation -> chunks -> embeddings -> Qdrant plus source metadata
-Question -> API and access checks -> query embedding -> permitted search results
-         -> model input and shipment tool -> streamed answer -> validation -> citation
+workbench/teaching/contact2/
+├── config.py
+├── document_service.py  # upload/review records and removal
+├── policy_store.py      # canonical sources and transactional publication
+├── indexing/
+│   ├── parsing.py        # PDF → exact text and pages (pypdf)
+│   ├── chunking.py       # text → passages (LangChain or existing native splitter)
+│   ├── embeddings.py     # passages/question → vectors (OpenAI SDK)
+│   ├── vector_store.py   # vectors + passages → Qdrant
+│   └── pipeline.py       # START HERE: preview_pdf() and build_index()
+└── querying/
+    ├── pipeline.py       # START HERE: answer_question()
+    ├── retrieval.py      # question → permitted supporting passages
+    └── answer.py         # evidence → grounded answer + validated citations
 ```
 
-Open each definition using editor symbol search. Explain what calls it before moving into its body. Show one input and one output rather than reading every line.
+**Start at [workbench/teaching/contact2/indexing/pipeline.py:20](../../workbench/teaching/contact2/indexing/pipeline.py#L20).** It contains just two short functions:
 
-| Step                     | Existing source and symbol                                                                                            | What to show and say                                                                                                                                                                                                     |
-| ------------------------ | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Select canonical sources | `workbench/scripts/contact1_index.py`, `main`; `workbench/src/relay/store.py`, `Store.documents`                      | The current indexing command reads published seeded policies from a disposable store. It is not a general file uploader. Access rules determine eligible documents.                                                      |
-| Split text               | `workbench/teaching/rag_reference.py`, `native_chunks`, `chunks`, `RagConfig`                                         | Show text, chunk boundaries, overlap and exact source offsets. Current defaults are 320 characters and 64-character target overlap. Words, characters and tokens are different units.                                    |
-| Optional splitter        | Same module, `chunks`                                                                                                 | Inspect `RecursiveCharacterTextSplitter`, loaded only for the LangChain option. Current code uses its default separators. The old custom sentence-separator list is not configured here.                                 |
-| Embed                    | Same module, `VectorRag._embed_request`                                                                               | Show input strings, model, dimensions and response validation. The route is OpenAI embeddings through OpenRouter. Default embedding is `openai/text-embedding-3-small`, 1536 dimensions. Do not print the entire vector. |
-| Build the index          | Same module, `VectorRag.build`                                                                                        | Show cosine collection configuration, payload, source hashes, unchanged-vector reuse and manifest replacement. The current method builds a collection; the new task must also maintain canonical sources.                |
-| Receive a question       | `workbench/teaching/contact1_live.py`, `create_app.rag_search`; `workbench/src/relay/main.py`, `create_app.run_query` | Distinguish the direct retrieval inspection endpoint from the full investigation endpoint. Show session, CSRF and role checks.                                                                                           |
-| Retrieve                 | `workbench/teaching/rag_reference.py`, `VectorRag.search`                                                             | Show query embedding, permitted IDs, tenant/state filter, top-k, vector threshold and keyword fusion. Current defaults include top-k 3 and vector cutoff 0.4; the cutoff is not calibrated.                              |
-| Assemble evidence        | `workbench/teaching/investigation_reference.py`, `retrieve_evidence`                                                  | Check source offsets against canonical text. Retrieved text remains evidence, not instructions that override application rules.                                                                                          |
-| Generate and validate    | Same module, `make_investigator`, nested `generate_stage`, `invoke`, `validate_stage`                                 | Show the actual question/evidence payload, bounded shipment-tool call and structured final answer. Trace `responses.create`, `responses.stream` or `responses.parse` according to the actual selected path.              |
-| Display                  | `workbench/src/relay/static/app.js` and dashboard                                                                     | Expand the citation and Inspect AI. Show retrieved text, source/version and embedding/generation usage separately.                                                                                                       |
+- `preview_pdf()` calls **parse → chunk**, returning the exact text and chunks for human review. No provider request.
+- `build_index()` calls **chunk → embed → store** on the reviewed source text. This is the indexing entry point. Chunking runs again against canonical text so the indexed passages match what retrieval verifies.
 
-Read aloud at the retrieval boundary:
+Follow the calls in that file from top to bottom. `parsing.py`, `chunking.py`, `embeddings.py` and `vector_store.py` implement the steps; storage no longer coordinates chunking or embedding.
 
-> Metadata filtering decides which documents this person may use. Vector search ranks meaning. Keyword search helps with exact wording. Our hybrid path combines rankings. These are separate jobs.
+The HTTP entry is `contact2_app.py`: **Upload and inspect** calls `upload_pdf()`, and **Approve and index policy** calls the review and indexing endpoints. Those endpoints use `document_service.py` for upload/review records and `policy_store.py` for transactional publication. These application checks surround the RAG pipeline; there is no SQL or upload-management code in the indexing coordinator.
 
-Show `score` and `vector_score`. In hybrid mode the fused ranking score is not cosine similarity and must not be interpreted using a cosine threshold. Lower distance and higher similarity conventions depend on the configured metric and API. We use Qdrant, not the Chroma conversion from the older project.
+`rag_reference.py` retains imports for Contact 1 callers. The duplicate root `contact2/pipeline.py` and former `pdf_pipeline.py` have been removed. The separate Markdown parser exercise uses `markdown_practice.py`; leave that practice closed during this walkthrough. Querying starts at `querying/pipeline.py` → `answer_question()`. It directly calls `retrieve_passages()`, `generate_answer()` and `validate_answer()` in that order.
 
-Briefly define cosine as vector direction comparison, Euclidean as straight-line distance, and ANN as approximate neighbor search used for scale. Do not claim the small local Qdrant demo proves production ANN behavior or performance. Model, splitter and threshold improvements require evaluation; one attractive chunk or successful answer is insufficient evidence.
+Parsing uses pypdf. Chunking supports LangChain's `RecursiveCharacterTextSplitter`. Embeddings and answers use the OpenAI SDK directly, while vectors use the Qdrant client. This refactor preserves the selected splitter, model, IDs and stored index format. Do not change the splitter in an existing index without preparing a separate rebuilt index.
 
-## Minutes 35 to 55 establish the Codex task
+On the PDF page, expand **How it works · diagrams and code**, then the ingestion or retrieval diagram. The handler paths copy the FastAPI file and line. Ingestion lists upload, review and indexing handlers; retrieval also links to its policy-query operation in Swagger. Keep it collapsed during the upload/answer journey. Show these two maps before opening the code. **Ingestion prepares the policy; retrieval uses it to answer a question.** Each box names the function and its file location. The full relative paths below are the code stops to copy into your editor in the class checkout.
 
-### Orient the model and session controls
+**Ingestion — when we upload and index a policy**
 
-Spend the first eight minutes of this block on the controls visible in the actual Codex client. Use the ingestion assignment for every example. Availability and labels vary by client/version/account; capture the installed controls before rehearsal. Do not change the owner's global settings during preparation.
+```mermaid
+flowchart LR
+    A["PDF → validate + extract text<br/>extract_pdf · indexing/parsing.py:12"] --> B["Split into chunks<br/>chunks · indexing/chunking.py:50"]
+    B --> C["Human review + approval<br/>approve_pdf · document_service.py:86"]
+    C --> D["Embed passages<br/>embed_request · indexing/embeddings.py:26"]
+    D --> E["Store vectors + passages in Qdrant<br/>save · indexing/vector_store.py:65"]
+```
 
-| Control               | Explanation                                                                                                                         | Demonstration                                                                                                                                                                             |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Model                 | Choose a capability/cost tier for the task. Newer does not necessarily mean more expensive.                                         | Inspect the available model picker. Use Sol for the integration and a smaller model for a narrow supporting edit. Distinguish Codex plan limits/credits from Relay's OpenRouter API bill. |
-| Reasoning effort      | Low, Medium and higher levels allocate different reasoning budgets; extra effort is not extra permission or guaranteed correctness. | Explain Low for straightforward edits and Medium for this integration. Use the actual available levels. Avoid running the whole task twice as a benchmark.                                |
-| Plan mode             | Explicitly gather context and resolve the approach before implementation.                                                           | Select Plan mode or use `/plan` where supported, inspect the active indicator, request the plan, then explicitly switch to implementation.                                                |
-| Permissions           | Sandbox scope and approval review are separate controls.                                                                            | Inspect Ask for approval, Approve for me/automatic review, Full access or Custom when available. Explain the current selection; do not enable Full access for class.                      |
-| Goal                  | A persistent objective for the current thread, with continuation and lifecycle controls.                                            | After agreeing the plan, set the bounded teaching objective, inspect it, then demonstrate pause/resume and stopping. Preflight support and budget controls first.                         |
-| Context and status    | Files, conversation and tool output consume context.                                                                                | Show how to attach a relevant file and inspect status/usage where supported. Save detailed handover and caching discussion for the final block.                                           |
-| Steering and stopping | A new message may queue or steer according to the client setting.                                                                   | Point out the current behavior and stop control before starting longer work. Confirm stopping the chat and stopping its background commands are different operations.                     |
+Code stops, left to right:
 
-Saying “plan first and do not edit” is a useful prompt. It does not select the client's Plan mode. Explicit mode selection makes the planning phase visible and applies that mode's behavior; neither approach replaces sandbox permissions. See [Plan mode](https://learn.chatgpt.com/guides/best-practices) and [permissions](https://learn.chatgpt.com/docs/permission-modes).
+1. [workbench/teaching/contact2/indexing/parsing.py:12](../../workbench/teaching/contact2/indexing/parsing.py#L12) — validate the PDF and extract its text.
+2. [workbench/teaching/contact2/indexing/chunking.py:50](../../workbench/teaching/contact2/indexing/chunking.py#L50) — split text into passages with exact offsets.
+3. [workbench/teaching/contact2/document_service.py:86](../../workbench/teaching/contact2/document_service.py#L86) — record the supervisor's review before indexing.
+4. [workbench/teaching/contact2/indexing/embeddings.py:26](../../workbench/teaching/contact2/indexing/embeddings.py#L26) — request passage embeddings.
+5. [workbench/teaching/contact2/indexing/vector_store.py:65](../../workbench/teaching/contact2/indexing/vector_store.py#L65) — build the index, storing vectors and passage metadata in Qdrant. Unchanged vectors can be reused.
 
-Suggested teaching Goal after the plan is accepted:
+**Retrieval + generation — when we ask a question**
+
+```mermaid
+flowchart LR
+    Q["Question → embed question<br/>embed_request · indexing/embeddings.py:26"] --> R["Retrieve permitted passages<br/>retrieve_passages · querying/retrieval.py:14"]
+    R --> G["Generate answer from evidence<br/>generate_answer · querying/answer.py:9"]
+    G --> V["Validate answer + citations<br/>validate_answer · querying/answer.py:36"]
+```
+
+Code stops, left to right:
+
+1. [workbench/teaching/contact2/indexing/embeddings.py:26](../../workbench/teaching/contact2/indexing/embeddings.py#L26) — embed the question using the same embedding model as the passages.
+2. [workbench/teaching/contact2/querying/retrieval.py:14](../../workbench/teaching/contact2/querying/retrieval.py#L14) — apply access checks and search the index; hybrid mode also uses keyword ranking.
+3. [workbench/teaching/contact2/querying/answer.py:9](../../workbench/teaching/contact2/querying/answer.py#L9) — pass retrieved evidence into the answer-generation workflow.
+4. [workbench/teaching/contact2/querying/answer.py:36](../../workbench/teaching/contact2/querying/answer.py#L36) — check the result and citations before returning the final answer.
+
+Say: “We embed the policy passages when indexing. Later, we embed the question to find relevant passages. The answer model then reads those passages; it does not search the PDF by itself.”
+
+## 2. Demonstrate the working RAG flow · 5–30 minutes
+
+**Goal:** learners can follow a document into the index and a question back to its evidence.
+
+**Demo:**
+
+1. Download the **Three-page policy PDF** from the page, select it and click **Upload and inspect**.
+2. Expand **Extracted text**. Compare the PDF with what the parser actually read.
+3. Expand **Text chunks**. Show the boundaries, overlap and source details.
+4. Review the text, check the two confirmations and click **Approve and index policy**.
+5. Expand **Embedding details** and **Qdrant record**. Show vector length, a few actual values and the stored passage.
+6. Ask:
+
+   > How long can a parcel stay at a collection point, when does that period start, and who reviews return to the sender?
+
+7. Inspect **Retrieved passages**, the answer and its expanded source.
+
+The question uses one normal JSON request: `POST /api/v1/policies/query`. The browser waits for the response, then shows retrieved passages, similarity scores, the answer and citations together. No streaming is used in this Contact 2 PDF flow.
+
+For the code walkthrough: `contact2-pdf.js` → `contact2_app.py` (`query_policy`) → `querying/pipeline.py` (`answer_question`). Open that last function and follow its three calls: `retrieve_passages` → `generate_answer` → `validate_answer`. There is no case ID, investigator callback, shipment tool, conversation history or stream on this path. Retrieved passages and the final answer return in one JSON response.
+
+The answer should explain seven calendar days from the first collection notice, with supervisor review before return. Check the supporting text rather than accepting a confident answer.
+
+To repeat the demo, find the PDF under **Indexed policies**, click **Remove policy** and confirm. This removes that PDF from the shared teaching corpus and Qdrant, without a model call. Other policies stay in place. Upload the PDF again and repeat the steps; re-indexing can make new embedding requests.
+
+Keep the editor beside the UI. Follow these code stops in order:
+
+Click a code reference in the PDF page to copy its relative `file.py:line` location, then paste it into the editor’s file search. The chunking slide explains why we chunk and compares fixed-size, recursive and semantic strategies.
+
+| What you show                                | Code under `workbench/teaching/contact2/`                       |
+| -------------------------------------------- | --------------------------------------------------------------- |
+| PDF extraction                               | `indexing/parsing.py` → `extract_pdf`                           |
+| Chunking                                     | `indexing/chunking.py` → `chunks`                               |
+| Embeddings                                   | `indexing/embeddings.py` → `EmbeddingModel.embed_request`       |
+| Qdrant storage                               | `indexing/vector_store.py` → `VectorStore.save`                 |
+| Indexing coordinator                         | `indexing/pipeline.py` → `preview_pdf`, `build_index`           |
+| Upload and source review                     | `document_service.py` → `stage_pdf`, `approve_pdf`, `index_pdf` |
+| Query embedding, retrieval and source checks | `querying/retrieval.py` → `retrieve_passages`                   |
+| Grounded generation and citation checks      | `querying/answer.py` → `generate_answer`, `validate_answer`     |
+
+Use the five RAG slides only to explain model choices, dimensions, chunking, retrieval settings and grounding. PDF extraction versus OCR and the current library choices are in the notes. Do not repeat the UI journey as a slide presentation.
+
+**Learners should see:** extracted text → chunks → embeddings → Qdrant → retrieved passages → an answer with evidence.
+
+## 3. Set up the Codex engineering task · 30–45 minutes
+
+**Goal:** show how to give an agent enough context and a clear boundary before it edits code.
+
+**Demo:**
+
+1. Briefly confirm the class folder and branch. This is Git orientation, not a Git lesson; assume learners already know branches and worktrees.
+2. Use the model/effort slide for a short explanation, then show your selected values in Codex. Do not repeat the explanation in the UI.
+3. Use the repository-context slide to distinguish `AGENTS.md` from the task prompt, then open the actual instructions in the editor.
+4. Use the permissions slide briefly, then point out the active sandbox/approval settings. Apply the boundary to this task.
+5. Use the prompting/Plan-mode slide, then submit the task below in Plan mode. Read the proposed plan before switching to implementation.
+
+**Teach prompting through this task:** this is a **structured zero-shot engineering prompt**. It gives no worked examples. Point out the objective, task context, constraints, acceptance criteria and expected verification. “Investigate and plan first” stages the workflow. Adding one worked input/output example makes it one-shot; several examples make it few-shot. Specifying an output format controls the result’s structure. Those are techniques to choose deliberately, not separate rituals to run for every task.
+
+**Task prompt:**
 
 ```text
-Implement approved Markdown policy ingestion in the isolated teaching workspace. Verify ingestion, unchanged reruns, access checks and cited answers. Preserve existing security invariants. Stop for missing credentials or approvals; do not publish or deploy. Follow the task contract and report actual test evidence.
+Improve Relay’s PDF assistant so retrieved passages and answer citations show
+which original PDF page or pages support them.
+
+Investigate the existing extraction-to-citation flow and propose a plan first.
+Read the root AGENTS.md and all applicable nested AGENTS.md files for the
+code you inspect or edit, including workbench/teaching/contact2/AGENTS.md.
+Then read workbench/teaching/contact2/PAGE_REFERENCE_TASK.md.
+Preserve exact extracted text, access checks, review requirements and existing
+citations. Derive page numbers from source metadata, not from the model.
+
+Acceptance: a passage on page 2 shows page 2; a passage spanning pages shows
+the correct range; existing PDF ingestion and permission checks still pass.
+Verify the visible result and report the actual tests. No external writes
+or deployment.
 ```
 
-Where supported, `/goal <objective>` sets it and `/goal pause`, `/goal resume` and `/goal clear` manage it. This example is teaching text, not authorization to activate a Goal in the owner's current session. A Goal is thread state, not global memory. It continues within lifecycle and budget constraints; it grants no additional permissions. See [Goals](https://developers.openai.com/cookbook/examples/codex/using_goals_in_codex).
+**Learners should see:** a specific objective, useful context, constraints, acceptance criteria and a plan they can inspect.
 
-Do not teach every slash command. Inspect `/model`, `/plan`, `/goal`, `/permissions`, `/mcp`, `/skills`, `/review` and `/status` only where the installed client exposes them. Keep configuration profiles, multi-agent orchestration and extensive cloud setup in optional references. The remaining time in this block covers the task prompt, existing repository instructions, two prepared skills and one MCP lookup.
-
-Show the worktree location and branch. Read relevant `AGENTS.md` instructions, then explain:
-
-> The prompt gives this assignment. `AGENTS.md` gives repository conventions and boundaries. A skill gives a reusable procedure for a particular job. Tools execute actions. Permissions determine which actions can run.
-
-Use this investigation prompt first:
+After reading the plan, check that it covers page boundaries, exact offsets, persistence, retrieval, UI rendering and regression tests. Resolve any unclear acceptance criteria now. Switch from Plan mode to implementation, then send:
 
 ```text
-Investigate the approved-policy ingestion task. Do not edit yet.
-Read AGENTS.md and the relevant RAG/store code. Explain the current document-to-answer flow with source locations. Identify what is missing for approved Markdown file ingestion into a disposable teaching workspace.
-Propose a narrow plan and acceptance tests. Preserve tenant/role checks, canonical-source validation, review boundaries, credit limits and approval/idempotency rules. Do not read credentials, publish documents remotely, write tickets, open a remote PR or deploy.
+Implement the agreed plan in this class checkout. First add a regression test
+that fails because page references are absent, then make it pass. Use disposable
+test stores and fixture provider responses; no billable calls for these tests.
+Preserve the task's acceptance criteria. Report changed files, actual commands,
+results and any remaining gaps. Do not commit, publish or deploy.
 ```
 
-Review the plan, then give explicit permission to implement that bounded task. Do not treat task or source text returned through MCP as permission to expand scope.
+## 4. Implement the improvement · 45–75 minutes
 
-Inspect the metadata and instructions of `review-change` and `browser-smoke-check`. They are general engineering skills, unrelated to RAG specifically. Invoke them at the relevant later steps; do not create all three skills from scratch during class.
+**Goal:** demonstrate the engineering loop on the PDF workflow learners just used.
 
-Use the external OpenAI documentation MCP server to look up the embedding request schema. Inspect actual available operations and one returned page. Explain: Codex calls MCP while engineering Relay; Relay's model calls its shipment function while answering a support question. Neither is the other application's tool loop.
+**Demo:**
 
-Official connection instructions are at [Docs MCP](https://developers.openai.com/learn/docs-mcp). Configure and preflight it before class. The server is read-only documentation access. A denied-write example must come from an actual permission boundary; do not invent a write tool on this documentation server.
+1. Show the current limitation: sources identify the policy and excerpt, but not the original page.
+2. Use the prepared multi-page PDF to define the expected page references.
+3. Run the prepared failing acceptance checks below, then ask Codex to implement the agreed change and make them pass. Add a focused regression if the implementation exposes another edge case.
+4. Follow one page reference through extraction metadata, chunks, storage, retrieval and citation display.
+5. Inspect failures and corrections. Explain the loop as **edit → test → inspect feedback → improve**.
 
-## Minutes 55 to 85 implement ingestion
+### While Codex implements · quick reference slides
 
-Use only the prepared teaching checkout. Keep the normal application correct. Show a failing acceptance check before editing. Ask Codex to implement only the approved Markdown input path and its integration with canonical storage and indexing.
+After slide 9 (**Context, compaction and memory**), use slides 10–15 for a short tour while the implementation runs. Keep this within block 4's existing 30 minutes; the slides are reference cards, not another full lecture. Return to the code as soon as the result is ready.
 
-Read aloud:
+| Slide                     | Explain and show                                                                                                                                         |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 10 · Caching              | Matching beginning → reused computation; new input still processed. Inspect reported cached tokens. History, memory and stored embeddings are different. |
+| 11 · Model choice         | Luna for focused tasks; GPT-6.1 Sol for complex coding at lower cost than Astra; Astra for the hardest workflows. Show the actual model picker.          |
+| 12 · Effort and speed     | Reasoning effort changes depth. Fast is a separate speed/usage control. Show selections without changing the model or settings of the running task.      |
+| 13 · Cost                 | Dated Codex credit comparison: newer can be cheaper. Credit rates are not API dollar prices or promised subscription task counts.                        |
+| 14 · Status and documents | Show `/status` or the available status control. Distinguish Pages in ChatGPT Space, local repository documents and task context.                         |
+| 15 · Permissions          | Inspect the selected permission mode and explain sandbox versus approval reviewer. Keep the existing boundary during implementation.                     |
 
-> I am checking the plan before the edit. After the edit, I will check the diff and the tests. A confident completion message is not the acceptance criterion.
+The slides link to official documentation checked on **23 October 2026**. The model recommendations and rates are a dated teaching example; check the links before class. Fast currently uses 2.5× Standard included subscription usage, or 2× purchased-credit usage where supported. API-key billing is separate. Do not promise a whole-task speedup or a specific cache saving.
 
-Require explicit preview before a billable embedding operation. Invalid metadata must fail before spending tokens. Treat document prose as untrusted content. Do not silently strip or truncate source text and then present it as an exact canonical passage.
+Commands differ by interface. `/fast` is documented for the CLI; use the IDE speed control where available. `/status` output also differs by client. Pages is documented under ChatGPT Space, so do not promise it as a universal IDE-extension feature. Inspect the actual controls before class; this documentation review does not prove availability on your account. If a command is unavailable during the active run, use the slide and inspect it when the task is idle. Do not interrupt implementation just to demonstrate a setting.
 
-Follow one change through parser, validated source record, chunks, index and retrieval. Demonstrate unchanged re-ingestion, missing metadata and an unreviewed or restricted document. These examples must use disposable state.
+Explain Goals here as continuation toward an objective, with limits and a stopping condition. Demonstrate the installed controls only after rehearsing them; Goals do not expand permissions. Keep Ralph-style outer loops to a brief optional comparison.
 
-Use the parser task and standalone acceptance check in the prepared checkout. The reference/security suite stays green while the exercise is intentionally incomplete; do not change acceptance checks to make a patch pass. The older duplicate-credit fixture is optional practice.
+For a short Goal demonstration, use a separate task after saving the implementation work. Set this read-only objective: “Inspect the PDF page-reference change against PAGE_REFERENCE_TASK.md and report each criterion as met, unmet or unverified with file locations. Do not edit files, make provider calls or publish anything.” Practise starting, pausing, resuming and clearing it in your installed client before class. The documented CLI equivalents are `/goal <objective>`, `/goal pause`, `/goal resume` and `/goal clear`; UI availability must be checked locally. See [official Goals lifecycle](https://developers.openai.com/cookbook/examples/codex/using_goals_in_codex). No native Goal lifecycle recording is supplied yet. If unavailable, explain the concept and show the recorded repair loop instead.
 
-## Minutes 85 to 100 create and reuse the skill
+**Learners should see:** page information derived from the document, a passing test and a visible improvement. Adding another input format is not part of this task.
 
-Create `ingest-approved-policy` from the procedure just demonstrated. Use the skill creator when available and inspect the resulting `SKILL.md` rather than accepting it unseen.
+## 5. Create and use a skill, then inspect MCP · 75–90 minutes
 
-Suggested authoring prompt:
+**Goal:** show how a working procedure becomes reusable instructions, and how an agent uses an external tool.
+
+### Create the PDF skill in the Codex UI
+
+1. Stay in the Codex project for `~/projects/relay-contact2-class`. Use implementation mode for creating the file.
+2. Show the existing `.agents/skills/review-change/SKILL.md` and `.agents/skills/browser-smoke-check/SKILL.md`. Explain their `name`, `description` and instructions; invoke them in block 6.
+3. In the Codex composer, select Skill Creator by typing `$skill-creator`, then paste:
 
 ```text
-Package the verified approved-policy ingestion procedure as a repository skill named ingest-approved-policy. Reuse the existing pipeline; do not duplicate its Python implementation.
-Specify required inputs, metadata validation, preview, authorized billable execution, retrieval checks and the final report. Stop on missing approval, invalid metadata, incompatible index configuration or provider failure. The skill cannot approve a document or change application permissions.
-Use only the disposable teaching database and index. Do not install it globally or write to external services.
+$skill-creator
+Create an instruction-only repository skill named ingest-policy-pdf at
+.agents/skills/ingest-policy-pdf/SKILL.md in this class checkout.
+
+It should reuse Relay's existing PDF assistant at
+http://127.0.0.1:8002/teaching/contact-2, not implement another pipeline.
+
+Inputs: PDF path, policy title, test question and expected supporting facts.
+Use the project's browser tools to upload and preview the PDF. Report the
+extracted text and chunks, then stop for my source-review and billable-call
+confirmation unless I have already explicitly provided it for this file.
+Only then index it, ask the question and inspect the supporting citation.
+Check page references if the page-number feature is available; otherwise
+report that limitation. Report the source ID, result and actual evidence.
+
+Use local teaching data only. Do not approve source content on my behalf,
+read credentials, remove existing policies, install globally or deploy.
+Do not run ingestion while authoring the skill. Create only the skill file.
 ```
 
-Invoke it on the second prepared document. Show which command actually runs and which checks determine success. Repeat unchanged ingestion and inspect embedding reuse. This is the reuse demonstration, not prompt caching.
+4. Open the generated `SKILL.md`. Confirm it has YAML `name` and `description`, followed by a short procedure. It should call the existing UI/API through available browser tools, not contain a copy of the Python pipeline. If browser tools are unavailable, it should report the missing capability rather than invent an execution result.
+5. Type `$ingest-policy-pdf` in a new message to select the skill. Codex detects local skill changes automatically; restart Codex if it does not appear. See [official skill authoring and discovery](https://learn.chatgpt.com/docs/build-skills).
 
-## Minutes 100 to 110 verify and review
+**Invoke it with a concrete input:** the three-page PDF was the first demo; the existing one-page version is the second file for this reuse check. It contains the same rules with different pagination.
 
-Invoke `browser-smoke-check` to open the teaching dashboard, ask the prepared question, expand the cited source and verify version/text. Keep local fixture, intercepted browser response and actual provider output clearly distinguished.
+Before this reuse check, record the three-page result, then use **Remove policy** yourself to remove that earlier sample and any other rehearsal copy of the same collection policy. Do not delete unrelated policies. The one-page question must cite the newly uploaded source ID; citing an older copy would not verify this file's ingestion. The skill itself receives no removal permission.
 
-Invoke `review-change` on the diff. Ask for correctness problems, missing tests, permission regressions and unnecessary changes. The review skill cannot certify its own findings; inspect important claims against code and tests.
+```text
+$ingest-policy-pdf
+PDF: workbench/teaching/contact2/pdfs/collection-policy.pdf
+Title: Parcel collection and return policy
+Question: What must the recipient present when collecting a parcel?
+Expected facts: the collection code and a matching identity document.
 
-Explain the loop and continuation controls using this task:
+Upload and preview only. Show me the extracted text and chunks, and stop
+before indexing or asking the model.
+```
 
-1. Relay's application tool loop requests permitted shipment facts.
-2. Codex's engineering loop edits, runs tools, observes results and repairs failures.
-3. Native Goals retain the objective across turns and can continue work at safe boundaries.
-4. A Ralph-style outer controller is an optional orchestration comparison, not required for the live task.
+Read the preview, then give this follow-up if it is correct:
 
-Prefer the preflighted native Goal demonstration over building an outer runner during class. Pause or stop at the segment deadline; a Goal does not guarantee an arbitrary iteration limit unless a separate controller enforces it. Stop for credentials, approvals or provider outages. Success must come from unchanged acceptance checks and reviewed evidence. Native Goals are a presenter-controlled demonstration; the recorded two-attempt CLI repair is evidence of bounded iteration, not proof of Goal lifecycle execution. No custom Ralph runner is required.
+```text
+I have reviewed this extracted policy and confirm permission for its teaching
+use. Continue with indexing and one answer request using the configured
+provider, then verify the source citation. Do not remove other policies.
+```
 
-Prepare a PR draft with the problem, behavior, verification commands/results and remaining risks. No remote PR, ticket comment, merge or deployment is part of this local rehearsal.
+Show which tool or Playwright command actually ran and what it returned. The skill itself is instructions; the browser/API tools do the work. A valid skill file is not proof that its workflow has executed.
 
-## Minutes 110 to 120 explain context and finish
+### Connect the documentation MCP server in the Codex UI
 
-Create a short handover with objective, changed files, commands already run, results, next step and open risks. Open a fresh task and supply it. Explain that saved conversation history, repository files, persistent instructions and actually supplied model context are distinct.
+**Do this setup before class.** During the session, show the saved connection and one tool call. The earlier `codex -C ... -c ...` command launches a separate CLI session; it does not configure an already-open Codex UI.
 
-Compare these mechanisms:
+1. In the desktop client, open **Settings → MCP servers → Add server**. In the Codex IDE extension, use its **gear menu → MCP servers → Add server**.
+2. Fill in:
 
-| Mechanism            | What is reused                                                | What to inspect                                                                                                          |
-| -------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| Prompt caching       | Repeated eligible model input prefixes                        | Actual reported cached-token fields when available; no guaranteed live hit through the selected route                    |
-| Embedding reuse      | Previously indexed unchanged chunks under compatible settings | Index source hashes, reused chunk count and new embedding calls                                                          |
-| Conversation storage | Saved exchanges                                               | Whether history is explicitly supplied to the next request                                                               |
-| Answer caching       | A previously generated answer                                 | Not added for this exercise; validity would need permissions, source versions and configuration, not question text alone |
+   | Field          | Value                               |
+   | -------------- | ----------------------------------- |
+   | Name           | `openaiDeveloperDocs`               |
+   | Transport/type | **Streamable HTTP**                 |
+   | URL            | `https://developers.openai.com/mcp` |
 
-Use a prepared, clearly dated usage record if the live route does not report caching. Do not change providers or billing routes mid-class to chase a cache hit.
+3. Save and select **Restart** for the desktop connection, or **Restart extension** in the IDE. These are Codex connection controls; do not restart Relay.
+4. Check the MCP server list or `/mcp` for the connection and its actual tools. This public server searches and reads documentation; it does not make OpenAI model API calls.
 
-Inspect the recorded non-interactive CLI repair and the repository CI workflow `.github/workflows/ci.yml`, which runs local verification on pushes/PRs. The CLI run is actual execution; the CI file is configuration unless a specific run result is shown. An example command alone is not execution evidence. For the SDK comparison, open `workbench/teaching/contact2/artifacts/codex_sdk_reference.py`: it illustrates the official Python SDK starting a read-only thread. It is inspect-only; the separate SDK package is not installed or executed for this class. See [official SDK documentation](https://learn.chatgpt.com/docs/codex-sdk).
+These steps follow [official MCP UI setup](https://learn.chatgpt.com/docs/extend/mcp) and the [OpenAI Docs MCP server](https://developers.openai.com/learn/docs-mcp). A hosted browser chat has a different plugin setup; these instructions are for the local desktop/IDE Codex client.
 
-Keep cloud and Windsurf comparisons to the same task contract: where execution happens, what repository/context is supplied, which permissions apply and which acceptance checks provide evidence. No cloud execution or Windsurf result is claimed. These comparisons are optional orientation if time permits.
+**Tool-call prompt:**
 
-Ask learners to explain where chunks come from, where access is checked, what enters the model, and how they know the change works. Take questions. Keep Temporal, schedules, source revocation and full publication governance for Contact 3.
+```text
+Use the openaiDeveloperDocs MCP server to find the embeddings request's
+`dimensions` parameter. Read the relevant page and explain what changes
+when we choose a smaller embedding vector. Include the documentation link.
+```
 
-## Recovery and readiness
+Expand the actual tool call and result. If the server is unavailable or Codex answered without calling it, say so; a plausible answer is not proof of MCP usage. A read-only docs server cannot demonstrate a denied write: show the prepared sandbox-denial example separately.
 
-If the implementation runs long, switch to the prepared reference at minute 85 and explain that switch. If the provider fails, inspect saved results explicitly as recorded evidence. If MCP fails, show a previously captured tool exchange and its source page; do not call the replay live. Never rebuild or reset the owner's database to recover a demonstration.
+For that denial, open `workbench/evidence/contact2-preparation.json` at `codex.permission` and `permission_probe_exists`. Explain: a recorded read-only sandbox rejected a file write, and the probe file was not created. This is a sandbox denial, not a human approval rejection or a denied MCP operation. Do not attempt writes to real protected directories just to recreate it.
 
-Before calling the class ready, record the exact worktree/revisions, document IDs and versions, commands, input fixtures, regression results, browser results, live answer/usage receipt, skill invocations, MCP lookup, permission denial, automation run and elapsed rehearsal time. Keep secrets and owner runtime data out of evidence.
+**Learners should see:** a skill file created and explicitly invoked, a source-review pause, the actual workflow result and one external MCP call. The full skill run still needs rehearsing before class.
 
-For repository verification, use `pnpm verify` after installing locked dependencies. These local fixture/contract/browser checks are separate from the explicitly recorded real provider preflight. Your final timed rehearsal remains necessary for pacing and questions.
+## 6. Verify, review and prepare delivery · 90–110 minutes
 
-## Official references
+**Goal:** show what makes an agent’s change ready for human review.
 
-- [OpenAI embeddings](https://developers.openai.com/api/docs/guides/embeddings)
-- [Codex skills](https://learn.chatgpt.com/docs/build-skills)
-- [OpenAI documentation MCP](https://developers.openai.com/learn/docs-mcp)
-- [Codex commands and mode controls](https://learn.chatgpt.com/docs/developer-commands)
-- [Codex permissions](https://learn.chatgpt.com/docs/permission-modes)
-- [Native Goals](https://developers.openai.com/cookbook/examples/codex/using_goals_in_codex)
-- [Codex iterative execution](https://developers.openai.com/blog/run-long-horizon-tasks-with-codex)
-- [Recursive text splitting](https://docs.langchain.com/oss/python/integrations/splitters/recursive_text_splitter)
-- [Qdrant hybrid ranking](https://qdrant.tech/documentation/search/hybrid-queries/)
+**Demo:**
+
+1. Invoke `browser-smoke-check` on the PDF journey. Check a page-2 passage, a passage spanning pages and the expanded answer source.
+2. Confirm access restrictions and existing ingestion behavior still work.
+3. Invoke `review-change` on the actual diff. Inspect its findings against code and test results.
+4. Prepare a local PR draft describing the problem, resulting behavior, tests and remaining limits.
+
+Existing ingestion checks can be run from the class checkout with:
+
+```sh
+workbench/.venv/bin/python -m pytest workbench/tests/test_contact2_ingestion.py -q
+```
+
+Run the page-reference acceptance from the class checkout:
+
+```sh
+workbench/.venv/bin/python -m pytest -c workbench/pyproject.toml \
+  workbench/teaching/contact2/reference_tests/page_reference_acceptance.py -q
+```
+
+Expected before implementation: **five failures**, with zero provider calls. Expected after: **five passes**. These opt-in checks are outside the normal green starter suite. They cover exact page boundaries, page 2, cross-page passages, metadata freshness, Qdrant persistence and API citations. Keep their acceptance criteria unchanged while implementing the fix.
+
+After adding the feature, regenerate the copyable locations with `workbench/.venv/bin/python workbench/scripts/contact1_references.py --write`; format the affected HTML with Prettier. Remove the old sample through **Indexed policies**, then upload and review it again: previously saved policies do not contain page metadata. This is a deliberate source update, not a database reset.
+
+Use these prompts for the two installed skills:
+
+```text
+$browser-smoke-check
+Verify the PDF page-reference task at http://127.0.0.1:8002/teaching/contact-2
+against workbench/teaching/contact2/PAGE_REFERENCE_TASK.md. Use a disposable
+browser context and fixture-backed checks where possible. Report a passage
+within page 2, a passage spanning pages and the expanded answer citation.
+Do not index, remove policies or make billable calls without my confirmation.
+Report what could not be checked and label fixture versus live evidence.
+```
+
+```text
+$review-change
+Review the current exercise diff against
+workbench/teaching/contact2/PAGE_REFERENCE_TASK.md. Inspect relevant callers
+and tests. Report concrete findings with file locations and unverified criteria.
+Do not patch, commit or publish anything.
+```
+
+The existing fixture PDF browser check is `pnpm exec playwright test --config workbench/playwright.config.ts --grep 'PDF RAG'`. It manages its own test server; it is not a live provider check and currently does not assert the proposed page-number feature. Do not use `pnpm contact2:browser` or `contact2:check` as page-reference acceptance: those commands still target the older Markdown exercise.
+
+Before reviewing, run `git diff --stat`, `git diff --check` and `git status --short`; inspect newly created files too, since ordinary `git diff` omits untracked content. Rewrite the local PR draft around the page-reference problem, resulting behavior, actual checks and limits. Keep that draft outside the code diff if convenient.
+
+**Learners should see:** tests, browser evidence and a scoped diff supporting the PR—not just an agent completion message. Publishing a remote PR or deploying is outside this demonstration.
+
+## 7. Explain reuse and hand over · 110–120 minutes
+
+**Goal:** connect the engineering task to context, caching and repeatable automation.
+
+**Demo:**
+
+1. Write a short handover: objective, changed files, checks run, results and next step. Explain what a fresh task needs to receive.
+2. Open **Context, compaction and memory**. Context is what enters the current request. Compaction condenses earlier thread state to fit the context limit; it can lose details. Local Codex memory, when enabled, carries useful context between chats. Keep required rules in `AGENTS.md` and exact results in the handover.
+3. Briefly recap **Reuse the beginning. Process what changes.** using the recorded cached-token evidence; the mechanism was explained while implementation ran. Contrast provider prompt caching with Relay reusing stored embeddings. Neither is a saved-answer cache.
+4. Inspect the prepared non-interactive Codex CLI run and its result. It demonstrates automation mechanics; its recorded Markdown task is not evidence for the new page-reference feature.
+5. Take questions. Keep SDK/cloud/Windsurf comparisons optional. Temporal, scheduling and the full publication workflow remain Contact 3.
+
+**Learners should leave able to explain:** what entered the model, what the agent could do, how its change was verified and how another engineer could continue the work.
+
+For the handover, ask: “Summarize this task for a fresh Codex conversation: objective, class folder and branch, changed files, actual verification results, evidence paths, unfinished work and permission boundaries.” Paste it into a fresh task with the relevant files; saving it alone does not supply context automatically.
+
+**Memory controls:** local Codex memories are off by default. Where supported, inspect `/memories` and Settings → Personalization → Enable Codex memories without changing the setting during the demonstration. Enabled memory is generated from eligible prior chats in the background; “remember this” does not guarantee an immediate save. For a required repository rule, ask Codex to update the applicable `AGENTS.md`, then review the diff. See the [official memory documentation](https://learn.chatgpt.com/docs/customization/memories).
+
+**Plan-mode explanation:** the Plan slide now uses the PDF page-number task. Normal mode can honor “propose a plan only; do not edit; wait for my instruction.” “Plan first” alongside a build request may mean plan, then implement. Plan mode makes the planning workflow explicit; sandbox and approval settings control file/network permissions separately. See [official planning guidance](https://learn.chatgpt.com/guides/best-practices).
+
+**Rehearsal example:** normal mode returned a short plan without edits. Plan mode produced a detailed plan, ran the unchanged offline acceptance checks (five expected failures) and offered “Implement this plan?”. Show this as the observed benefit of a dedicated review step, not a guarantee of better output. A plan panel with an Open button does not by itself prove a repository Markdown file was created; check the actual path or Git status before saying it did.
+
+**What Plan mode limits:** defer implementation edits until the implementation step. Investigation can include commands and tests, which may create temporary files, caches or reports. Do not claim that Plan mode physically disables every write tool or automatically selects a read-only filesystem sandbox. Sandbox and approval controls provide the separate permission boundary. Inspect Git status before and after planning. The [official Plan-mode explanation](https://developers.openai.com/blog/run-long-horizon-tasks-with-codex) describes planning before changes; the [permissions documentation](https://learn.chatgpt.com/docs/permission-modes) describes enforcement controls separately.
+
+**Caching explanation:** eligible matching input can reuse computation, potentially reducing latency and input cost. It still uses context space. Changing earlier input or compacting history can reduce reuse. Model/provider rules differ; API pricing is not a guarantee of Codex subscription quota savings. See [official caching guidance](https://developers.openai.com/api/docs/guides/prompt-caching).
+
+In the recorded Codex evidence, the first repair run reports 207,728 input tokens, including 183,808 cached input tokens. These are aggregate usage for that recorded run, not a guaranteed saving for the next prompt. Contrast that with the PDF recording's `repeat_embedding_calls: 0`: unchanged vectors were reused. Relay has no answer cache here. Inspect `CODEX_REPAIR.patch` beside the recorded first/corrective results to explain non-interactive automation; the SDK example has not been executed.
+
+### Recovery and timing
+
+- **Extraction fails:** confirm the supplied text PDF opens locally. Scanned/image-only PDFs need OCR, which this demo does not implement. Use the prepared sample rather than adding another parser live.
+- **Provider/auth/rate-limit failure:** keep extraction/chunk inspection offline, show the recorded one-page answer and its citations, and label it recorded. Check the local environment/account after the demonstration; do not expose credentials or substitute a fabricated answer.
+- **Edit outside the reload watcher:** `--reload` watches Python under `workbench/teaching/contact2/`. Changes elsewhere may require restarting the same class server; browser reload picks up static assets. Stop only that server with Ctrl-C, then use the launch command above. Do not start a second index process against its open Qdrant store.
+- **Repeated upload problem:** remove the intended indexed PDF through the UI and upload again. Preview limits are ten per workspace per day; removing an indexed PDF clears its matching staged previews. If unindexed previews exhaust the quota, stop and investigate instead of deleting the database.
+- **Coding runs past minute 75:** open the completed `~/projects/relay-contact2-reference` checkout to inspect the solution and its passing checks. To show its UI, stop the class server with Ctrl-C and launch the reference with the same command from “Before you begin”, replacing both occurrences of `relay-contact2-class` with `relay-contact2-reference`. Keep port 8002 as the only app server. The reference has its own runtime data; upload, review and index the sample there explicitly. A new corpus may require embedding calls. If the provider is unavailable, use `workbench/evidence/desktop-contact2-page-reference.png` and label it a recorded browser fixture.
+- **Patch recovery:** `artifacts/PAGE_REFERENCES.patch` applies to the unchanged before state. Run `git apply --check workbench/teaching/contact2/artifacts/PAGE_REFERENCES.patch` before applying. If your live edits conflict, inspect the separate reference instead; do not reset or overwrite your work to force the patch.
+- **Protect the rest of the lesson:** preconfigure MCP before class. If time slips, use a rehearsed generated skill rather than authoring it from scratch; still show its instructions, explicit invocation and review pause. Cut optional Ralph, SDK and alternative-editor discussion first. Keep verification, diff review and handover.
+
+## Before you teach
+
+Section 3 is ready to rehearse. Stay in `~/projects/relay-contact2-class` on `relay/contact2-rehearsal`; no branch change is needed. The completed solution is saved separately on `relay/contact2-pages-reference` in `~/projects/relay-contact2-reference`.
+
+Preparation evidence is `workbench/evidence/contact2-page-reference-preparation.json`: five expected before failures, five reference passes, 197 passing regression checks with two optional skips, and two passing desktop/mobile browser fixture checks. The reference has not been live-provider verified or timed by the instructor.
+
+Still rehearse the PDF skill's second-file run and configure/check MCP in your actual Codex UI before teaching block 5. A terminal MCP test does not establish the connection in your UI. Rehearse the full two-hour timing after those checks.
+
+The saved PDF run predates the direct policy-query route; it is not live verification of that new route. If the provider fails during class, show the saved PDF run at `workbench/evidence/contact2-pdf-preparation.json` and label it as recorded evidence. Use **Remove policy** for a repeat demonstration rather than resetting the database. Rehearse the full two hours after the replacement exercise is prepared.
