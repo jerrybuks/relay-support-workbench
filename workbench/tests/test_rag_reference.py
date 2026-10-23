@@ -207,6 +207,35 @@ def test_failed_build_preserves_previous_index_and_dimension_validation(tmp_path
         rag.close()
 
 
+def test_storage_failure_keeps_previous_index_and_cleans_partial_collection(
+    tmp_path, sdk, monkeypatch
+):
+    from teaching.contact2.indexing.pipeline import build_index
+
+    client, _, _ = sdk
+    rag = VectorRag(client, tmp_path, CONFIG)
+    try:
+        original = build_index(rag, TEAM)
+        changed = copy.deepcopy(TEAM)
+        changed[0]["text"] += " Changed policy passage."
+        collections = {c.name for c in rag.db.get_collections().collections}
+        upsert = rag.db.upsert
+
+        def unavailable(*args, **kwargs):
+            raise RuntimeError("simulated local storage failure")
+
+        with monkeypatch.context() as patch:
+            patch.setattr(rag.db, "upsert", unavailable)
+            with pytest.raises(RuntimeError, match="simulated local storage failure"):
+                build_index(rag, changed)
+        assert rag.db.upsert == upsert
+        assert rag.manifest()["collection"] == original["collection"]
+        assert {c.name for c in rag.db.get_collections().collections} == collections
+        assert rag.search(TEAM, "remedy", ACTOR)[0]
+    finally:
+        rag.close()
+
+
 def test_hybrid_exposes_separate_rrf_and_cosine_scores(tmp_path, sdk):
     client, _, _ = sdk
     rag = VectorRag(client, tmp_path, replace(CONFIG, mode="hybrid"))
@@ -263,6 +292,11 @@ def test_full_api_embedding_qdrant_tool_structured_answer_and_fail_closed(tmp_pa
         citation = run["citations"][0]
         doc = next(d for d in TEAM if d["id"] == citation["id"])
         assert citation["chunk_id"]
+        assert citation["vector_score"] >= CONFIG.min_score
+        assert citation["score"] == citation["vector_score"]
+        assert run["retrieved_passages"]
+        assert citation in run["retrieved_passages"]
+        assert run["trace"]["streamed"] is False
         assert citation["excerpt"] == doc["text"][citation["start"] : citation["end"]]
         assert run["trace"]["embedding_calls"] == 1
         assert run["trace"]["model_calls"] == 2
@@ -384,10 +418,10 @@ def test_gateway_embedding_alias_is_exact_and_provider_scoped(tmp_path, sdk, ret
             provider_name(client) == "openrouter" and returned_model == "text-embedding-3-small"
         )
         if accepted:
-            assert rag._embed_request(["Synthetic express credit"])[0] == [1.0, 0.0, 0.0]
+            assert rag.embeddings.embed_request(["Synthetic express credit"])[0] == [1.0, 0.0, 0.0]
         else:
             with pytest.raises(RagFailure, match="embedding_model_mismatch"):
-                rag._embed_request(["Synthetic express credit"])
+                rag.embeddings.embed_request(["Synthetic express credit"])
     finally:
         rag.close()
 

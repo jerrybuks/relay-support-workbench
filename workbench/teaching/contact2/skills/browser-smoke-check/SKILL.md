@@ -9,4 +9,4 @@ Exercise the stated journey with meaningful assertions: visible result, navigati
 
 Report the URL, fixture/replay/live mode, steps, assertions, result and evidence paths. Do not label intercepted or saved model responses as live. A screenshot alone is not proof that the journey passed.
 
-Do not execute billable AI requests or externally mutating actions unless authorized. For Relay's local Contact 2 rehearsal, use `node workbench/scripts/contact2_browser.mjs --base http://127.0.0.1:8002`; `--ask` is the explicit billable variant. This supporting command does not replace inspecting the requested journey.
+Do not execute billable AI requests or externally mutating actions unless authorized. For Relay's local Contact 2 rehearsal, use the PDF journey at `/teaching/contact-2`. Inspect the provided task and use the existing Playwright setup or available browser tools. The older `contact2_browser.mjs` helper follows the Markdown exercise; it is not the PDF/page-reference browser check. The `PDF RAG` Playwright test uses intercepted provider responses and must be reported as a fixture check, not a live provider run.

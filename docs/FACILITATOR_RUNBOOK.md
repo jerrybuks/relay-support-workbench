@@ -84,23 +84,25 @@ The main walkthrough uses one live RAG app; title-only and FTS fixtures are opti
 
 Follow-up reference: prompt/context versions, stateless/stateful strategies, caching/model comparisons, deeper hybrid tuning/reranking and deployment controls. These have guided exercises rather than extra live build time.
 
-## Contact 2 — RAG implementation and governed Codex engineering
+## Contact 2 — practical AI engineering with governed Codex
 
 Contact 2 now has **120 minutes**, replacing the older 60-minute duplicate-event repair demonstration. Use the [Contact 2 rehearsal guide](teaching/CONTACT_2_REHEARSAL_GUIDE.md) for the talk track, code paths, task prompts, timing, recovery and readiness gates. This is the session-specific override to the original four-hour plan; if the other three contacts remain one hour, total facilitated time is five hours.
 
+Begin with the working PDF upload demonstration in the policy lab: upload → inspect extracted text → inspect chunks → review/index → inspect actual embeddings/Qdrant records → ask and expand the source. Keep one page visible beside the code. The replacement Codex task adds original PDF page references to passages and citations. Its reference implementation still needs preparation; a three-page sample PDF is provided. Separately, the old Markdown parser exercise is no longer in the main session.
+
 The task is to ingest an approved policy into a disposable Relay teaching workspace and verify its retrieval, answer and citation. Trace the existing pipeline first, then demonstrate prompting, `AGENTS.md`, two general engineering skills, a reusable ingestion skill, external documentation MCP, permissions, context, caching, browser verification and PR review through that one assignment.
 
-Technical preparation is recorded in `workbench/evidence/contact2-preparation.json`. The guide includes the prepared worktree, real provider/browser/MCP checks and actual bounded Codex repair. Presenter timing and client-specific Plan/Goal practice remain rehearsal tasks. Keep the duplicate-event fixtures as optional practice; do not introduce their intentional defect into the normal application.
+Earlier technical preparation is recorded in `workbench/evidence/contact2-preparation.json`; the PDF run is in `workbench/evidence/contact2-pdf-preparation.json`. Those records do not verify the replacement page-reference exercise. Prepare that exercise and its PDF skill reuse before the timed rehearsal. Keep the older parser and duplicate-event fixtures as separate practice.
 
-| Minutes | Action                                                                                |
-| ------- | ------------------------------------------------------------------------------------- |
-| 0–10    | Establish task and missing evidence                                                   |
-| 10–35   | Trace document ingestion, retrieval and generation through code                       |
-| 35–55   | Orient model/effort, Plan mode, Goals, permissions, then task context, skills and MCP |
-| 55–85   | Implement the bounded approved-file ingestion feature                                 |
-| 85–100  | Create and reuse the ingestion skill                                                  |
-| 100–110 | Verify browser behavior, review the change and explain bounded loops                  |
-| 110–120 | Explain handover/cache usage, inspect prepared automation and take questions          |
+| Minutes | Action                                                                        |
+| ------- | ----------------------------------------------------------------------------- |
+| 0–5     | Introduce the business problem and engineering assignment                     |
+| 5–30    | Demonstrate PDF ingestion, retrieval and a cited answer alongside the code    |
+| 30–45   | Set up model/effort, prompting, Plan mode, repository context and permissions |
+| 45–75   | Add PDF page references through a visible test/patch/feedback loop            |
+| 75–90   | Demonstrate three skills and a read-only external MCP lookup                  |
+| 90–110  | Verify the browser journey, review the diff and prepare a local PR draft      |
+| 110–120 | Explain context/cache reuse, inspect prepared automation and take questions   |
 
 The full review/publication lifecycle, source revocation, Temporal and scheduled automation remain in Contact 3. Local drafts and recorded results must not be presented as actual remote writes or live executions.
 

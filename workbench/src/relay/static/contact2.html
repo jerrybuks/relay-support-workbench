@@ -6,20 +6,21 @@
     <meta name="theme-color" content="#080b12" />
     <meta
       name="description"
-      content="Contact 2: grounded AI application engineering. A two-hour code walkthrough and governed Codex implementation session."
+      content="Contact 2: grounded AI application engineering. Short explanations of the choices and settings behind the live demonstration."
     />
-    <title>Contact 2 — RAG implementation and governed Codex · Relay</title>
+    <title>Contact 2 — Demo reference concepts · Relay</title>
     <link rel="stylesheet" href="/static/contact1.css" />
+    <link rel="stylesheet" href="/static/contact2.css" />
     <script src="/static/contact1.js" defer></script>
   </head>
-  <body>
+  <body data-contact="2" data-deck-mode="reference">
     <a class="skip-link" href="#deck">Skip to presentation</a>
     <header class="deck-toolbar">
       <a class="deck-brand" href="/" aria-label="Back to course overview"
         ><span aria-hidden="true">r.</span><strong>relay</strong><small>Contact 02</small></a
       >
       <div class="slide-position">
-        <span id="phase-label">Concepts</span><span id="slide-counter">1 / 22</span
+        <span id="phase-label">Concepts</span><span id="slide-counter">1 / 15</span
         ><span id="planned-time">00–00:30 min</span>
       </div>
       <div class="rehearsal">
@@ -38,7 +39,7 @@
         <button id="print-button" type="button">Print / PDF</button>
       </nav>
     </header>
-    <progress id="deck-progress" max="22" value="1" aria-label="Slide progress"></progress>
+    <progress id="deck-progress" max="15" value="1" aria-label="Slide progress"></progress>
     <main id="deck" aria-label="Contact 2 presentation">
       <noscript
         ><p class="fallback">
@@ -46,657 +47,688 @@
         </p></noscript
       >
       <section
-        class="slide cover"
-        id="task"
-        data-phase="Walkthrough"
-        data-time="00–10 min"
-        data-title="One policy. Evidence all the way through."
-      >
-        <div class="slide-top"><span>Contact 02 / 01</span><span>00–10 min</span></div>
-        <div class="cover-layout">
-          <p class="eyebrow">RAG + governed Codex</p>
-          <h1>One policy. Evidence all the way through.</h1>
-          <p class="lead">
-            Kora has a new parcel-collection policy. Make it available to the support assistant,
-            then prove the answer uses it.
-          </p>
-        </div>
-        <aside class="speaker-notes" hidden>
-          <h3>Speaker notes</h3>
-          <p>
-            Today we follow the code more slowly. We will use one policy and one question. Codex
-            will help us add the missing ingestion path, but we remain responsible for checking the
-            result.
-          </p>
-        </aside>
-      </section>
-      <section
         class="slide"
-        id="success"
-        data-phase="Walkthrough"
-        data-time="00–10 min"
-        data-title="Define what done means."
+        id="models"
+        data-phase="RAG support"
+        data-time="Reference"
+        data-title="Two models power the RAG pipeline."
       >
-        <div class="slide-top"><span>Contact 02 / 02</span><span>00–10 min</span></div>
-        <div class="cover-layout">
-          <p class="eyebrow">RAG + governed Codex</p>
-          <h2>Define what done means.</h2>
-          <p class="lead">
-            Approved input. Canonical source. Searchable chunks. A supported answer with the right
-            citation. Existing boundaries still pass.
-          </p>
+        <div class="slide-top"><span>Contact 02 / 01</span><span>Use when needed</span></div>
+        <p class="eyebrow">RAG support</p>
+        <h1>Two models power the RAG pipeline.</h1>
+        <div class="reference-grid">
+          <article>
+            <h3>Embedding model</h3>
+            <p>Converts passages and questions into vectors for search.</p>
+          </article>
+          <article>
+            <h3>Generation model</h3>
+            <p>Uses the retrieved passages to write an answer.</p>
+          </article>
+          <article>
+            <h3>Model selection</h3>
+            <p>Compare retrieval and answer quality, latency, usage and cost.</p>
+          </article>
         </div>
-        <aside class="speaker-notes" hidden>
-          <h3>Speaker notes</h3>
-          <p>
-            Our question is: how many days can a parcel stay at a collection point before return? We
-            expect seven calendar days from the first collection notice, and supervisor review
-            before return. The new source is absent in the before corpus.
-          </p>
-        </aside>
-      </section>
-      <section
-        class="slide"
-        id="ingestion"
-        data-phase="Walkthrough"
-        data-time="10–20 min"
-        data-title="Follow the document."
-      >
-        <div class="slide-top"><span>Contact 02 / 03</span><span>10–20 min</span></div>
-        <div class="cover-layout">
-          <p class="eyebrow">RAG + governed Codex</p>
-          <h2>Follow the document.</h2>
-          <p class="lead">
-            Text → metadata → chunks → embeddings → Qdrant. Keep source ID, version, exact offsets
-            and permissions attached.
-          </p>
-        </div>
+        <p class="anchor-line">
+          Codex is our engineering tool. Its model choice is separate from these two runtime roles.
+        </p>
         <div class="code-footnote" aria-label="Code references">
           <span>Code · click to copy</span
           ><button
             type="button"
-            data-code-location="workbench/scripts/contact1_index.py:17"
-            title="Copy location for main"
+            data-code-location="workbench/teaching/provider_connection.py:19"
+            title="Copy location for model_setting"
           >
-            workbench/scripts/contact1_index.py:17</button
-          ><button
-            type="button"
-            data-code-location="workbench/teaching/contact2/pipeline.py:52"
-            title="Copy location for preview"
-          >
-            workbench/teaching/contact2/pipeline.py:52
+            workbench/teaching/provider_connection.py:19
           </button>
         </div>
         <aside class="speaker-notes" hidden>
           <h3>Speaker notes</h3>
           <p>
-            Let us open contact1_index.main first. Today it reads seeded documents. We will inspect
-            the actual dictionary, then enter chunks and build. I will show the input and output
-            before moving to the next function.
+            The RAG app uses an embedding model to find related passages and a generation model to
+            write the answer. Our verified configuration used text-embedding-3-small and gpt-4o
+            through OpenRouter. These are working choices, not a claim that they are always best.
+            Compare embedding models on retrieval cases and generation models on supported answers.
+            Keep the same questions and grading when comparing latency, usage and dated prices.
+            Codex helps us change the code; it is not a third model in the RAG request.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide"
+        id="dimensions"
+        data-phase="RAG support"
+        data-time="Reference"
+        data-title="What does 1,536 dimensions mean?"
+      >
+        <div class="slide-top"><span>Contact 02 / 02</span><span>Use when needed</span></div>
+        <p class="eyebrow">RAG support</p>
+        <h2>What does 1,536 dimensions mean?</h2>
+        <div class="reference-grid">
+          <article>
+            <h3>A vector is a list</h3>
+            <p>1,536 dimensions means 1,536 numbers for each passage or question.</p>
+          </article>
+          <article>
+            <h3>One compatible space</h3>
+            <p>Use the same embedding model and dimension setting for both.</p>
+          </article>
+          <article>
+            <h3>Storage and quality</h3>
+            <p>More dimensions use more vector storage. Measure the retrieval benefit.</p>
+          </article>
+        </div>
+        <p class="anchor-line">Dimensions measure vector length. Tokens measure text.</p>
+        <div class="code-footnote" aria-label="Code references">
+          <span>Code · click to copy</span
+          ><button
+            type="button"
+            data-code-location="workbench/teaching/contact2/config.py:20"
+            title="Copy location for RagConfig"
+          >
+            workbench/teaching/contact2/config.py:20
+          </button>
+        </div>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            In the demo, the six displayed numbers are a preview of a full 1,536-number vector.
+            text-embedding-3-small defaults to 1,536 dimensions; text-embedding-3-large defaults to
+            3,072. The third-generation models support shorter vectors through the dimensions
+            parameter. The embedding output must match the Qdrant collection configuration. A
+            different embedding model needs its own rebuilt index even if its vector length happens
+            to be the same. Relay rejects incompatible index settings; reducing dimensions is an
+            experiment to evaluate, not an automatic improvement.
           </p>
         </aside>
       </section>
       <section
         class="slide"
         id="chunks"
-        data-phase="Walkthrough"
-        data-time="10–20 min"
-        data-title="A chunk is a retrieval unit."
+        data-phase="RAG support"
+        data-time="Reference"
+        data-title="Why chunk, and how should we split?"
       >
-        <div class="slide-top"><span>Contact 02 / 04</span><span>10–20 min</span></div>
-        <div class="cover-layout">
-          <p class="eyebrow">RAG + governed Codex</p>
-          <h2>A chunk is a retrieval unit.</h2>
-          <p class="lead">
-            Start with actual text. Inspect boundaries and overlap. Characters, words and tokens are
-            different units.
-          </p>
+        <div class="slide-top"><span>Contact 02 / 03</span><span>Use when needed</span></div>
+        <p class="eyebrow">RAG support</p>
+        <h2>Why chunk, and how should we split?</h2>
+        <p class="lead">
+          Retrieve the relevant passage, keep useful context and avoid sending the whole document.
+        </p>
+        <div class="reference-grid">
+          <article>
+            <h3>Fixed-size</h3>
+            <p>
+              Split by a character or token limit, often with overlap. Simple; can cut across a
+              rule.
+            </p>
+          </article>
+          <article>
+            <h3>Recursive</h3>
+            <p>
+              Try paragraph, line and word boundaries before smaller splits, within a size limit.
+            </p>
+          </article>
+          <article>
+            <h3>Semantic</h3>
+            <p>
+              Use meaning or topic changes to choose boundaries. More processing; quality needs
+              testing.
+            </p>
+          </article>
         </div>
+        <p class="anchor-line">
+          Demo: size-based, word-aware chunks · 320 characters · 64-character target overlap.
+        </p>
         <div class="code-footnote" aria-label="Code references">
           <span>Code · click to copy</span
           ><button
             type="button"
-            data-code-location="workbench/teaching/rag_reference.py:154"
+            data-code-location="workbench/teaching/contact2/indexing/chunking.py:50"
             title="Copy location for chunks"
           >
-            workbench/teaching/rag_reference.py:154
+            workbench/teaching/contact2/indexing/chunking.py:50
           </button>
         </div>
         <aside class="speaker-notes" hidden>
           <h3>Speaker notes</h3>
           <p>
-            The current configuration uses 320 characters and 64-character target overlap. There is
-            also a recursive LangChain splitter option. Neither setting is ideal by definition. Look
-            at whether the relevant rule stays readable, then test retrieval.
+            We chunk so retrieval can select a focused passage instead of treating the whole PDF as
+            one item or sending everything to the answer model. The passage must still retain enough
+            context to support the answer. Fixed-size splitting uses a chosen character or token
+            count; overlap repeats nearby text at boundaries. Recursive splitting tries larger
+            natural boundaries first, then smaller ones until the text fits. Semantic chunking uses
+            changes in meaning, often with sentence embeddings, to choose boundaries; that extra
+            processing is not automatically a quality improvement. Our default is a size-based
+            splitter that avoids cutting words. The optional LangChain recursive splitter is
+            implemented; semantic chunking is an explanation here, not an implemented option. The
+            displayed settings use characters, not words or tokens. Check actual chunks and evaluate
+            retrieval before choosing a strategy. PDF extraction happens before chunking; scanned
+            pages need OCR, which this demo does not implement.
           </p>
-        </aside>
-      </section>
-      <section
-        class="slide"
-        id="embeddings"
-        data-phase="Walkthrough"
-        data-time="10–20 min"
-        data-title="Meaning becomes a vector."
-      >
-        <div class="slide-top"><span>Contact 02 / 05</span><span>10–20 min</span></div>
-        <div class="cover-layout">
-          <p class="eyebrow">RAG + governed Codex</p>
-          <h2>Meaning becomes a vector.</h2>
-          <p class="lead">
-            One embedding model for documents and questions. Our route: OpenRouter → OpenAI
-            text-embedding-3-small. Default: 1,536 dimensions.
-          </p>
-        </div>
-        <div class="code-footnote" aria-label="Code references">
-          <span>Code · click to copy</span
-          ><button
-            type="button"
-            data-code-location="workbench/teaching/rag_reference.py:217"
-            title="Copy location for VectorRag._embed_request"
-          >
-            workbench/teaching/rag_reference.py:217
-          </button>
-        </div>
-        <aside class="speaker-notes" hidden>
-          <h3>Speaker notes</h3>
           <p>
-            Here is embeddings.create. We send chunk strings and validate returned dimensions and
-            model identity. We store the vector with its source metadata. A different embedding
-            model or configuration needs a compatible rebuilt index.
-          </p>
-        </aside>
-      </section>
-      <section
-        class="slide"
-        id="index"
-        data-phase="Walkthrough"
-        data-time="10–20 min"
-        data-title="Store evidence and provenance."
-      >
-        <div class="slide-top"><span>Contact 02 / 06</span><span>10–20 min</span></div>
-        <div class="cover-layout">
-          <p class="eyebrow">RAG + governed Codex</p>
-          <h2>Store evidence and provenance.</h2>
-          <p class="lead">
-            Vector + source identity + version + scope. Reuse unchanged vectors. Replace an index
-            only after a successful build.
-          </p>
-        </div>
-        <div class="code-footnote" aria-label="Code references">
-          <span>Code · click to copy</span
-          ><button
-            type="button"
-            data-code-location="workbench/teaching/rag_reference.py:273"
-            title="Copy location for VectorRag.build"
-          >
-            workbench/teaching/rag_reference.py:273
-          </button>
-        </div>
-        <aside class="speaker-notes" hidden>
-          <h3>Speaker notes</h3>
-          <p>
-            Now inspect build. Source hashes and chunk IDs let us reuse embeddings. The manifest
-            tracks configuration. The new feature must update canonical storage too; a vector
-            database alone cannot establish permitted canonical text.
-          </p>
-        </aside>
-      </section>
-      <section
-        class="slide"
-        id="query"
-        data-phase="Walkthrough"
-        data-time="20–35 min"
-        data-title="Follow the question."
-      >
-        <div class="slide-top"><span>Contact 02 / 07</span><span>20–35 min</span></div>
-        <div class="cover-layout">
-          <p class="eyebrow">RAG + governed Codex</p>
-          <h2>Follow the question.</h2>
-          <p class="lead">
-            API → authorize → embed → search → passages → model → validate → citation.
-          </p>
-        </div>
-        <div class="code-footnote" aria-label="Code references">
-          <span>Code · click to copy</span
-          ><button
-            type="button"
-            data-code-location="workbench/teaching/investigation_reference.py:38"
-            title="Copy location for retrieve_evidence"
-          >
-            workbench/teaching/investigation_reference.py:38
-          </button>
-        </div>
-        <aside class="speaker-notes" hidden>
-          <h3>Speaker notes</h3>
-          <p>
-            I will open the request route, then retrieve_evidence, then search. The direct RAG
-            endpoint shows retrieval only. The investigation endpoint continues into the model and
-            shipment tool. These are two inspection views of one system.
+            References:
+            <a
+              href="https://docs.langchain.com/oss/python/integrations/splitters/recursive_text_splitter"
+              target="_blank"
+              rel="noreferrer"
+              >LangChain recursive splitting</a
+            >;
+            <a
+              href="https://learn.microsoft.com/en-us/azure/architecture/ai-ml/guide/rag/rag-chunking-phase"
+              target="_blank"
+              rel="noreferrer"
+              >RAG chunking strategies</a
+            >.
           </p>
         </aside>
       </section>
       <section
         class="slide"
         id="ranking"
-        data-phase="Walkthrough"
-        data-time="20–35 min"
-        data-title="Rank meaning. Enforce scope."
+        data-phase="RAG support"
+        data-time="Reference"
+        data-title="Similarity, top-k and hybrid search."
       >
-        <div class="slide-top"><span>Contact 02 / 08</span><span>20–35 min</span></div>
-        <div class="cover-layout">
-          <p class="eyebrow">RAG + governed Codex</p>
-          <h2>Rank meaning. Enforce scope.</h2>
-          <p class="lead">
-            Cosine ranks vector direction. Metadata filters enforce scope. Hybrid adds keyword
-            results using rank fusion.
-          </p>
+        <div class="slide-top"><span>Contact 02 / 04</span><span>Use when needed</span></div>
+        <p class="eyebrow">RAG support</p>
+        <h2>Similarity, top-k and hybrid search.</h2>
+        <div class="reference-grid">
+          <article>
+            <h3>Cosine + threshold</h3>
+            <p>Higher cosine means more similar. The cutoff rejects weak vector matches.</p>
+          </article>
+          <article>
+            <h3>Top-k + hybrid</h3>
+            <p>Top-k limits results. Hybrid combines vector and keyword rankings.</p>
+          </article>
+          <article>
+            <h3>Access filters</h3>
+            <p>Tenant and role checks restrict which passages can be returned.</p>
+          </article>
         </div>
+        <p class="anchor-line">
+          Demo: top-k 3 · cosine cutoff 0.4, uncalibrated. A hybrid score is not cosine.
+        </p>
         <div class="code-footnote" aria-label="Code references">
           <span>Code · click to copy</span
           ><button
             type="button"
-            data-code-location="workbench/teaching/rag_reference.py:348"
-            title="Copy location for VectorRag.search"
+            data-code-location="workbench/teaching/contact2/querying/retrieval.py:14"
+            title="Copy location for retrieve_passages"
           >
-            workbench/teaching/rag_reference.py:348
+            workbench/teaching/contact2/querying/retrieval.py:14
           </button>
         </div>
         <aside class="speaker-notes" hidden>
           <h3>Speaker notes</h3>
           <p>
-            Cosine similarity and Euclidean distance are different measures. Thresholds need
-            evaluation. Our hybrid score is a fused ranking score, not cosine. ANN is an efficiency
-            technique at scale; this tiny local index is not a production performance benchmark.
+            Cosine compares vector direction; it is not a probability that an answer is correct.
+            Euclidean distance compares straight-line distance, where lower is better. A high
+            threshold can lose useful passages and a low one can admit noise; calibrate with
+            reviewed questions. Relay combines vector and SQLite keyword rankings using reciprocal
+            rank fusion. The fused score is not the cosine value. Authorized keyword results can
+            enter independently of the vector cutoff. Metadata access filters apply to both paths.
+            ANN is a technique used for efficient search at scale; this tiny local index does not
+            demonstrate production performance.
           </p>
         </aside>
       </section>
       <section
         class="slide"
-        id="generation"
-        data-phase="Walkthrough"
-        data-time="20–35 min"
-        data-title="See what the model actually receives."
+        id="grounding"
+        data-phase="RAG support"
+        data-time="Reference"
+        data-title="Retrieved does not mean supported."
       >
-        <div class="slide-top"><span>Contact 02 / 09</span><span>20–35 min</span></div>
-        <div class="cover-layout">
-          <p class="eyebrow">RAG + governed Codex</p>
-          <h2>See what the model actually receives.</h2>
-          <p class="lead">
-            Question + permitted passages + source versions + shipment tool. Stream progress;
-            validate the final structure and citations.
-          </p>
+        <div class="slide-top"><span>Contact 02 / 05</span><span>Use when needed</span></div>
+        <p class="eyebrow">RAG support</p>
+        <h2>Retrieved does not mean supported.</h2>
+        <div class="reference-grid">
+          <article>
+            <h3>Relevance</h3>
+            <p>A similar passage may still omit the rule the question needs.</p>
+          </article>
+          <article>
+            <h3>Context budget</h3>
+            <p>Instructions, history, tools, passages and output all need room.</p>
+          </article>
+          <article>
+            <h3>Evidence checks</h3>
+            <p>Check the source, version and passage behind the answer.</p>
+          </article>
         </div>
+        <p class="anchor-line">A citation matters only when its text supports the claim.</p>
         <div class="code-footnote" aria-label="Code references">
           <span>Code · click to copy</span
           ><button
             type="button"
-            data-code-location="workbench/teaching/investigation_reference.py:236"
-            title="Copy location for make_investigator.investigate.generate_stage"
+            data-code-location="workbench/teaching/contact2/querying/answer.py:9"
+            title="Copy location for generate_answer"
           >
-            workbench/teaching/investigation_reference.py:236
+            workbench/teaching/contact2/querying/answer.py:9
           </button>
         </div>
         <aside class="speaker-notes" hidden>
           <h3>Speaker notes</h3>
           <p>
-            Here is the evidence JSON in generate_stage. We pass it as data, not new instructions.
-            Follow invoke into create, then the function result, then the final structured request
-            or stream. Expand the returned citation and compare its excerpt to the canonical text.
+            The context window is the total space available to the request and response; it is not
+            the vector dimension count. More retrieved text can crowd out useful context and raise
+            latency or cost. Relay checks cited IDs and source excerpts against permitted canonical
+            text, but those checks alone do not prove that every sentence is entailed by the policy.
+            We still inspect answers and use evaluation cases. If the retrieved policy cannot
+            support the answer, the assistant should say the evidence is insufficient. Keep input
+            and output token usage separate.
           </p>
         </aside>
       </section>
       <section
         class="slide"
         id="controls"
-        data-phase="Codex"
-        data-time="35–43 min"
-        data-title="Choose capability and effort deliberately."
+        data-phase="Codex engineering"
+        data-time="Reference"
+        data-title="Choose the model and reasoning effort."
       >
-        <div class="slide-top"><span>Contact 02 / 10</span><span>35–43 min</span></div>
-        <div class="cover-layout">
-          <p class="eyebrow">RAG + governed Codex</p>
-          <h2>Choose capability and effort deliberately.</h2>
-          <p class="lead">
-            Model: which capability tier? Effort: how much reasoning budget? Neither changes tool
-            permissions.
-          </p>
+        <div class="slide-top"><span>Contact 02 / 06</span><span>Use when needed</span></div>
+        <p class="eyebrow">Codex engineering</p>
+        <h2>Choose the model and reasoning effort.</h2>
+        <div class="reference-grid">
+          <article>
+            <h3>Model</h3>
+            <p>Match capability, speed and cost to the engineering task.</p>
+          </article>
+          <article>
+            <h3>Effort</h3>
+            <p>Low / Medium / higher allocate different reasoning budgets, where supported.</p>
+          </article>
+          <article>
+            <h3>Evidence</h3>
+            <p>Judge the patch and checks, not how long the model thought.</p>
+          </article>
         </div>
+        <p class="anchor-line">
+          More reasoning does not grant more permission. Newer does not necessarily mean costlier.
+        </p>
         <aside class="speaker-notes" hidden>
           <h3>Speaker notes</h3>
           <p>
-            Use Sol for integration and a smaller model for narrow support work. Older does not
-            necessarily mean cheaper. Codex allowance and Relay OpenRouter billing are separate.
-            Show available levels; more effort is not guaranteed correctness. Inspect usage rather
-            than promising savings.
+            This model choice is for Codex, separate from the embedding and generation models inside
+            Relay. A narrow edit and a change spanning API, storage and security may need different
+            levels of capability and effort. Use the actual options in the installed client. Higher
+            effort can take longer and consume more usage, without guaranteeing correctness. Check
+            current pricing rather than judging by model age. Codex account limits and credits are
+            separate from the OpenRouter API requests made by Relay.
           </p>
         </aside>
       </section>
       <section
         class="slide"
         id="plan"
-        data-phase="Codex"
-        data-time="35–43 min"
-        data-title="Plan the approach. Set the outcome."
+        data-phase="Codex engineering"
+        data-time="Reference"
+        data-title="A clear task before an implementation."
       >
-        <div class="slide-top"><span>Contact 02 / 11</span><span>35–43 min</span></div>
-        <div class="cover-layout">
-          <p class="eyebrow">RAG + governed Codex</p>
-          <h2>Plan the approach. Set the outcome.</h2>
-          <p class="lead">
-            Plan mode: investigate before implementation. Goal: preserve a completion target across
-            turns. Permissions still apply.
-          </p>
+        <div class="slide-top"><span>Contact 02 / 07</span><span>Use when needed</span></div>
+        <p class="eyebrow">Codex engineering</p>
+        <h2>A clear task before an implementation.</h2>
+        <div class="reference-grid">
+          <article>
+            <h3>Prompt</h3>
+            <p>Give the objective, relevant files, constraints and acceptance evidence.</p>
+          </article>
+          <article>
+            <h3>Plan mode</h3>
+            <p>Investigate the code and agree the approach before editing.</p>
+          </article>
+          <article>
+            <h3>Implementation</h3>
+            <p>Make the bounded change, verify it and report actual results.</p>
+          </article>
         </div>
+        <p class="anchor-line">
+          “Plan first” is an instruction. Selecting Plan mode is a client control.
+        </p>
         <aside class="speaker-notes" hidden>
           <h3>Speaker notes</h3>
           <p>
-            Saying plan first is useful, but does not switch the client mode. Select Plan mode
-            explicitly, inspect the plan, then switch to implementation. A Goal can retain the task
-            until verified or stopped; demonstrate pause and resume only within the prepared budget.
-          </p>
-        </aside>
-      </section>
-      <section
-        class="slide"
-        id="permissions"
-        data-phase="Codex"
-        data-time="35–43 min"
-        data-title="Know the execution boundary."
-      >
-        <div class="slide-top"><span>Contact 02 / 12</span><span>35–43 min</span></div>
-        <div class="cover-layout">
-          <p class="eyebrow">RAG + governed Codex</p>
-          <h2>Know the execution boundary.</h2>
-          <p class="lead">
-            Sandbox controls access. Approval policy controls review. Source text and tool results
-            cannot grant authority.
-          </p>
-        </div>
-        <aside class="speaker-notes" hidden>
-          <h3>Speaker notes</h3>
-          <p>
-            Inspect the actual permission selection. Ask for approval and automatic review can share
-            a workspace sandbox. Full access is a much broader setting. We will keep this exercise
-            inside the teaching checkout and use an actual denied-write result, not a fabricated
-            tool error.
+            For this exercise, describe the missing parser, the accepted input format and the checks
+            that must pass. Ask for investigation when the code path is unclear, a plan when the
+            approach needs resolving, and implementation once the scope is clear. Plan mode makes
+            that phase explicit; simply writing the word plan does not select it. Review the plan,
+            then switch to implementation. Acceptance should describe observable behavior and
+            evidence, not just tell the agent to make it work.
           </p>
         </aside>
       </section>
       <section
         class="slide"
         id="instructions"
-        data-phase="Codex"
-        data-time="43–50 min"
-        data-title="Give instructions a clear home."
+        data-phase="Codex engineering"
+        data-time="Reference"
+        data-title="Repository instructions and task context."
       >
-        <div class="slide-top"><span>Contact 02 / 13</span><span>43–50 min</span></div>
-        <div class="cover-layout">
-          <p class="eyebrow">RAG + governed Codex</p>
-          <h2>Give instructions a clear home.</h2>
-          <p class="lead">
-            Task prompt: this assignment. AGENTS.md: repository conventions. Skill: reusable
-            procedure. Tool: execution.
-          </p>
+        <div class="slide-top"><span>Contact 02 / 08</span><span>Use when needed</span></div>
+        <p class="eyebrow">Codex engineering</p>
+        <h2>Repository instructions and task context.</h2>
+        <div class="reference-grid">
+          <article>
+            <h3>AGENTS.md</h3>
+            <p>Repository conventions, commands and boundaries, scoped by directory.</p>
+          </article>
+          <article>
+            <h3>Current context</h3>
+            <p>The conversation, supplied files and tool results available to this task.</p>
+          </article>
+          <article>
+            <h3>Handover</h3>
+            <p>Record files, checks, results and the next step for a fresh task.</p>
+          </article>
         </div>
+        <p class="anchor-line">
+          Persistent files help only when their relevant instructions or content are loaded.
+        </p>
         <aside class="speaker-notes" hidden>
           <h3>Speaker notes</h3>
           <p>
-            Read the task contract and the relevant AGENTS file. Inspect review-change and
-            browser-smoke-check: both apply to ordinary engineering, not just RAG. We will package
-            the ingestion procedure as our third skill once it works.
+            AGENTS.md gives repository guidance within its scope; it does not replace the
+            assignment. The current conversation and inspected files supply working context. A fresh
+            task may not have the earlier conversation, so supply a short handover with what
+            changed, what actually passed and what remains. Saved conversation history, repository
+            instructions and a thread Goal are different mechanisms. In Relay itself, requests are
+            stateless by default unless permitted case history is explicitly included. Do not call
+            every saved artifact model memory.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide"
+        id="skills"
+        data-phase="Codex engineering"
+        data-time="Reference"
+        data-title="A skill is a reusable procedure."
+      >
+        <div class="slide-top"><span>Contact 02 / 09</span><span>Use when needed</span></div>
+        <p class="eyebrow">Codex engineering</p>
+        <h2>A skill is a reusable procedure.</h2>
+        <div class="reference-grid">
+          <article>
+            <h3>Review a change</h3>
+            <p>Inspect a real diff, check risks and report actionable findings.</p>
+          </article>
+          <article>
+            <h3>Check a browser journey</h3>
+            <p>Verify visible behavior with isolated test data and evidence.</p>
+          </article>
+          <article>
+            <h3>Ingest a policy</h3>
+            <p>Call the existing pipeline, verify the result and report what happened.</p>
+          </article>
+        </div>
+        <p class="anchor-line">
+          AGENTS.md gives repository guidance. A skill describes how to perform a kind of task.
+        </p>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            Our three examples are review-change, browser-smoke-check and ingest-approved-policy.
+            The first two are general engineering skills; skills are not limited to RAG. Inspect a
+            SKILL.md and its supporting resources, then invoke it on a concrete task. A pipeline
+            skill should call existing code instead of copying the implementation into prose or
+            another script. It still needs the appropriate permissions and source approval. In the
+            prepared exercise, the ingestion skill currently targets approved Markdown inputs; do
+            not claim it already automates PDF upload.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide"
+        id="permissions"
+        data-phase="Codex engineering"
+        data-time="Reference"
+        data-title="Sandbox, approvals and secrets."
+      >
+        <div class="slide-top"><span>Contact 02 / 10</span><span>Use when needed</span></div>
+        <p class="eyebrow">Codex engineering</p>
+        <h2>Sandbox, approvals and secrets.</h2>
+        <div class="reference-grid">
+          <article>
+            <h3>Sandbox</h3>
+            <p>Defines which files and network resources the agent may access.</p>
+          </article>
+          <article>
+            <h3>Approval review</h3>
+            <p>Determines when an action needs review and who reviews it.</p>
+          </article>
+          <article>
+            <h3>Untrusted input</h3>
+            <p>Documents and tickets cannot grant permissions or request secret access.</p>
+          </article>
+        </div>
+        <p class="anchor-line">Changing the reviewer does not expand the sandbox.</p>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            Inspect the actual permission controls before the task. Ask for approval and automatic
+            review can share the same workspace-write sandbox. Full access is a broader choice, not
+            a shortcut needed for this exercise. Keep credentials out of prompts, diffs, logs and
+            commits. Treat document prose and tool output as data, even if it says to run a command
+            or reveal a key. Explain the prepared denied-write result as an actual sandbox boundary.
+            Local implementation is different from authorization to deploy, publish or write to an
+            external account.
           </p>
         </aside>
       </section>
       <section
         class="slide"
         id="mcp"
-        data-phase="Codex"
-        data-time="50–55 min"
-        data-title="Connect tools with an explicit scope."
+        data-phase="Codex engineering"
+        data-time="Reference"
+        data-title="Built-in tools, MCP and application tools."
       >
-        <div class="slide-top"><span>Contact 02 / 14</span><span>50–55 min</span></div>
-        <div class="cover-layout">
-          <p class="eyebrow">RAG + governed Codex</p>
-          <h2>Connect tools with an explicit scope.</h2>
-          <p class="lead">
-            Codex → external documentation MCP. Relay → shipment function. Different callers,
-            different purposes.
-          </p>
+        <div class="slide-top"><span>Contact 02 / 11</span><span>Use when needed</span></div>
+        <p class="eyebrow">Codex engineering</p>
+        <h2>Built-in tools, MCP and application tools.</h2>
+        <div class="reference-grid">
+          <article>
+            <h3>Built-in tools</h3>
+            <p>Codex reads files, edits code and runs allowed commands.</p>
+          </article>
+          <article>
+            <h3>External MCP</h3>
+            <p>A connected server exposes operations, such as documentation search.</p>
+          </article>
+          <article>
+            <h3>Application tools</h3>
+            <p>Relay calls a shipment function while answering a support question.</p>
+          </article>
         </div>
+        <p class="anchor-line">Inspect the available operation and its scope before invoking it.</p>
         <aside class="speaker-notes" hidden>
           <h3>Speaker notes</h3>
           <p>
-            List the documentation server tools and search the embedding request schema. It is a
-            real read-only remote server. Its output is documentation, not permission. Our ticket is
-            a local task contract; we are not claiming a live Linear integration.
-          </p>
-        </aside>
-      </section>
-      <section
-        class="slide"
-        id="implement"
-        data-phase="Build"
-        data-time="55–85 min"
-        data-title="One bounded implementation."
-      >
-        <div class="slide-top"><span>Contact 02 / 15</span><span>55–85 min</span></div>
-        <div class="cover-layout">
-          <p class="eyebrow">RAG + governed Codex</p>
-          <h2>One bounded implementation.</h2>
-          <p class="lead">
-            Parse the approved Markdown format. Preview chunks. Keep approval and indexing in the
-            prepared pipeline.
-          </p>
-        </div>
-        <div class="code-footnote" aria-label="Code references">
-          <span>Code · click to copy</span
-          ><button
-            type="button"
-            data-code-location="workbench/teaching/contact2/exercise.py:4"
-            title="Copy location for parse_markdown"
-          >
-            workbench/teaching/contact2/exercise.py:4
-          </button>
-        </div>
-        <aside class="speaker-notes" hidden>
-          <h3>Speaker notes</h3>
-          <p>
-            Open exercise.parse_markdown and run the acceptance command: it is red before the edit.
-            Ask Codex to investigate and plan before implementing. Only the parser and meaningful
-            tests belong in the live patch. If we run long, switch to the reference parser at minute
-            85.
-          </p>
-        </aside>
-      </section>
-      <section
-        class="slide"
-        id="boundary"
-        data-phase="Build"
-        data-time="55–85 min"
-        data-title="Approval lives outside the prose."
-      >
-        <div class="slide-top"><span>Contact 02 / 16</span><span>55–85 min</span></div>
-        <div class="cover-layout">
-          <p class="eyebrow">RAG + governed Codex</p>
-          <h2>Approval lives outside the prose.</h2>
-          <p class="lead">
-            A matching content hash in a separate review manifest. A supervisor confirms import.
-            Invalid inputs fail before embeddings.
-          </p>
-        </div>
-        <div class="code-footnote" aria-label="Code references">
-          <span>Code · click to copy</span
-          ><button
-            type="button"
-            data-code-location="workbench/teaching/contact2/pipeline.py:52"
-            title="Copy location for preview"
-          >
-            workbench/teaching/contact2/pipeline.py:52</button
-          ><button
-            type="button"
-            data-code-location="workbench/teaching/contact2/pipeline.py:78"
-            title="Copy location for ingest"
-          >
-            workbench/teaching/contact2/pipeline.py:78
-          </button>
-        </div>
-        <aside class="speaker-notes" hidden>
-          <h3>Speaker notes</h3>
-          <p>
-            Try missing metadata, unreviewed text and instruction injection. The document cannot
-            approve itself. The manifest is a synthetic prior review record. The full publication
-            workflow remains Contact 3.
-          </p>
-        </aside>
-      </section>
-      <section
-        class="slide"
-        id="skill"
-        data-phase="Build"
-        data-time="85–100 min"
-        data-title="Turn the procedure into a skill."
-      >
-        <div class="slide-top"><span>Contact 02 / 17</span><span>85–100 min</span></div>
-        <div class="cover-layout">
-          <p class="eyebrow">RAG + governed Codex</p>
-          <h2>Turn the procedure into a skill.</h2>
-          <p class="lead">
-            Inputs → preview → approved execution → verification → report. Call the pipeline; do not
-            duplicate it.
-          </p>
-        </div>
-        <aside class="speaker-notes" hidden>
-          <h3>Speaker notes</h3>
-          <p>
-            Use the skill creator to write ingest-approved-policy. Read the result, including stop
-            conditions. Then use the second approved document. Repeat unchanged ingestion and
-            inspect zero new embedding calls. That is embedding reuse, not prompt caching.
-          </p>
-        </aside>
-      </section>
-      <section
-        class="slide"
-        id="verification"
-        data-phase="Verify"
-        data-time="100–110 min"
-        data-title="Test the outcome in the browser."
-      >
-        <div class="slide-top"><span>Contact 02 / 18</span><span>100–110 min</span></div>
-        <div class="cover-layout">
-          <p class="eyebrow">RAG + governed Codex</p>
-          <h2>Test the outcome in the browser.</h2>
-          <p class="lead">
-            Ask the original question. Check seven days, notice-date rule, supervisor review and
-            POL-COLLECTION-1 v1.0.
-          </p>
-        </div>
-        <aside class="speaker-notes" hidden>
-          <h3>Speaker notes</h3>
-          <p>
-            Use browser-smoke-check on a fresh context. Check the visible answer and expanded
-            citation. Switch to the agent persona and verify the restricted source is absent. Then
-            use review-change on the actual diff and inspect its findings.
+            The documentation MCP server is an external read-only connection used by Codex during
+            engineering. Relay’s shipment function is a different tool used by the application at
+            runtime. A server can expose an operation without the current task authorizing its use.
+            Inspect the operations and a real documentation result; do not invent a write tool on
+            this read-only server. The prepared denied-write example comes from the sandbox.
+            External ticket integration remains a separate permission decision; this exercise does
+            not claim a live Linear write.
           </p>
         </aside>
       </section>
       <section
         class="slide"
         id="loops"
-        data-phase="Verify"
-        data-time="100–110 min"
-        data-title="Repeat with feedback and a finish line."
+        data-phase="Codex engineering"
+        data-time="Reference"
+        data-title="Loops need feedback and a finish line."
       >
-        <div class="slide-top"><span>Contact 02 / 19</span><span>100–110 min</span></div>
-        <div class="cover-layout">
-          <p class="eyebrow">RAG + governed Codex</p>
-          <h2>Repeat with feedback and a finish line.</h2>
-          <p class="lead">
-            Application tool loop. Codex edit/test loop. Native Goal continuation. Ralph-style outer
-            orchestration is optional.
-          </p>
+        <div class="slide-top"><span>Contact 02 / 12</span><span>Use when needed</span></div>
+        <p class="eyebrow">Codex engineering</p>
+        <h2>Loops need feedback and a finish line.</h2>
+        <div class="reference-grid">
+          <article>
+            <h3>Tool loop</h3>
+            <p>Model requests a tool → tool result returns → model continues.</p>
+          </article>
+          <article>
+            <h3>Engineering loop</h3>
+            <p>Reproduce → patch → test → inspect feedback → improve.</p>
+          </article>
+          <article>
+            <h3>Goal continuation</h3>
+            <p>Pursue a thread objective within lifecycle, permission and budget limits.</p>
+          </article>
         </div>
+        <p class="anchor-line">
+          Stop at success, a budget limit, missing approval or an external blocker.
+        </p>
         <aside class="speaker-notes" hidden>
           <h3>Speaker notes</h3>
           <p>
-            The ordinary engineering loop is enough for the main task. Goals can continue across
-            turns, within lifecycle and budget limits. An outer controller is a separate pattern.
-            Stop on credentials, approval requirements or provider outages rather than retrying
-            blindly.
-          </p>
-        </aside>
-      </section>
-      <section
-        class="slide"
-        id="context"
-        data-phase="Verify"
-        data-time="110–115 min"
-        data-title="Saving is not supplying context."
-      >
-        <div class="slide-top"><span>Contact 02 / 20</span><span>110–115 min</span></div>
-        <div class="cover-layout">
-          <p class="eyebrow">RAG + governed Codex</p>
-          <h2>Saving is not supplying context.</h2>
-          <p class="lead">
-            Conversation history. Repository files. AGENTS.md. Explicit handover. A fresh task needs
-            the right context again.
-          </p>
-        </div>
-        <aside class="speaker-notes" hidden>
-          <h3>Speaker notes</h3>
-          <p>
-            Create a short handover with files, checks, results and next step. Open a fresh task and
-            supply it. Persistent instructions and global memory are not the same as a thread Goal.
-            Do not claim the model recalls context that was not supplied.
+            A tool loop takes place inside a run. The engineering loop uses test or browser feedback
+            to improve a change. A native Goal can continue work across turns, but it is not
+            permission to act beyond the task. Set an observable finish condition; inspect pause,
+            resume and stopping in the installed client. Practise those controls before teaching
+            them. Ralph-style outer orchestration is an optional pattern, not a dependency of this
+            demo. The prepared evidence records bounded repair attempts, not a rehearsed native Goal
+            lifecycle.
           </p>
         </aside>
       </section>
       <section
         class="slide"
         id="cache"
-        data-phase="Verify"
-        data-time="110–115 min"
-        data-title="Three different kinds of reuse."
+        data-phase="Codex engineering"
+        data-time="Reference"
+        data-title="Caching is not conversation memory."
       >
-        <div class="slide-top"><span>Contact 02 / 21</span><span>110–115 min</span></div>
-        <div class="cover-layout">
-          <p class="eyebrow">RAG + governed Codex</p>
-          <h2>Three different kinds of reuse.</h2>
-          <p class="lead">
-            Prompt cache: repeated eligible input. Embedding reuse: unchanged chunks. Answer cache:
-            a separate validity problem.
-          </p>
+        <div class="slide-top"><span>Contact 02 / 13</span><span>Use when needed</span></div>
+        <p class="eyebrow">Codex engineering</p>
+        <h2>Caching is not conversation memory.</h2>
+        <div class="reference-grid">
+          <article>
+            <h3>Prompt cache</h3>
+            <p>The provider may reuse eligible repeated input. Check reported cached tokens.</p>
+          </article>
+          <article>
+            <h3>Embedding reuse</h3>
+            <p>Relay reuses vectors for unchanged chunks during a repeat import.</p>
+          </article>
+          <article>
+            <h3>History and state</h3>
+            <p>Earlier turns affect a request only when supplied or explicitly continued.</p>
+          </article>
+        </div>
+        <p class="anchor-line">
+          An answer cache is another mechanism. Relay does not implement one here.
+        </p>
+        <div class="code-footnote" aria-label="Code references">
+          <span>Code · click to copy</span
+          ><button
+            type="button"
+            data-code-location="workbench/teaching/contact2/indexing/pipeline.py:20"
+            title="Copy location for build_index"
+          >
+            workbench/teaching/contact2/indexing/pipeline.py:20</button
+          ><button
+            type="button"
+            data-code-location="workbench/teaching/memory_reference.py:9"
+            title="Copy location for conversation_context"
+          >
+            workbench/teaching/memory_reference.py:9
+          </button>
         </div>
         <aside class="speaker-notes" hidden>
           <h3>Speaker notes</h3>
           <p>
-            Inspect a dated usage record for cached input where available. Do not promise a live
-            cache hit. A cached answer would need tenant, permissions, versions and configuration
-            checks. We are not adding answer caching today.
+            Use the recorded cached-token usage from the prepared Codex run to make prompt caching
+            concrete. A live hit is not guaranteed: eligibility depends on the model, route and
+            matching input. In Relay, zero new document-embedding calls on repeat import is our own
+            vector reuse, not a prompt-cache hit. Saved history is different again; it must be
+            included or continued to influence a request. Stateful and stateless describe how
+            context is supplied across requests. An answer cache would need source-version, tenant,
+            permissions and configuration checks.
           </p>
         </aside>
       </section>
       <section
         class="slide"
-        id="review"
-        data-phase="Verify"
-        data-time="115–120 min"
-        data-title="Ship evidence with the change."
+        id="evidence"
+        data-phase="Codex engineering"
+        data-time="Reference"
+        data-title="From an isolated change to a reviewable PR."
       >
-        <div class="slide-top"><span>Contact 02 / 22</span><span>115–120 min</span></div>
-        <div class="cover-layout">
-          <p class="eyebrow">RAG + governed Codex</p>
-          <h2>Ship evidence with the change.</h2>
-          <p class="lead">
-            Scoped diff. Passing checks. Browser evidence. Honest PR draft. One prepared
-            non-interactive execution.
-          </p>
+        <div class="slide-top"><span>Contact 02 / 14</span><span>Use when needed</span></div>
+        <p class="eyebrow">Codex engineering</p>
+        <h2>From an isolated change to a reviewable PR.</h2>
+        <div class="reference-grid">
+          <article>
+            <h3>Worktree + tests</h3>
+            <p>Keep live edits isolated. Reproduce the issue and check behavior and boundaries.</p>
+          </article>
+          <article>
+            <h3>Browser verification</h3>
+            <p>Exercise the visible journey using disposable data and inspect its result.</p>
+          </article>
+          <article>
+            <h3>Diff + PR</h3>
+            <p>Review scope, checks and remaining limits before proposing the change.</p>
+          </article>
         </div>
+        <p class="anchor-line">
+          The sequence is plan → reproduce → test → patch → browser check → diff review → PR.
+        </p>
         <aside class="speaker-notes" hidden>
           <h3>Speaker notes</h3>
           <p>
-            Inspect the actual automation output and revision. A command on a slide is not execution
-            evidence. Do not merge or publish a remote PR in this local rehearsal. Questions now:
-            where is approval checked, what enters the model, and what proves the change works?
+            The class worktree protects normal code and runtime data from live edits; it is not
+            another product or a new permission boundary. A passing unit test does not prove the UI
+            is usable, so verify the real journey too. Review the actual diff and describe the final
+            behavior and evidence in the PR draft. Distinguish mocked provider responses, recorded
+            evidence and live calls. A confident completion message is not acceptance evidence, and
+            preparing a draft is different from publishing a remote PR.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide"
+        id="automation"
+        data-phase="Codex engineering"
+        data-time="Reference"
+        data-title="The same task can run non-interactively."
+      >
+        <div class="slide-top"><span>Contact 02 / 15</span><span>Use when needed</span></div>
+        <p class="eyebrow">Codex engineering</p>
+        <h2>The same task can run non-interactively.</h2>
+        <div class="reference-grid">
+          <article>
+            <h3>Bounded input</h3>
+            <p>Supply a concrete objective, repository context and acceptance criteria.</p>
+          </article>
+          <article>
+            <h3>Controlled execution</h3>
+            <p>Keep permissions, budgets and stopping conditions explicit.</p>
+          </article>
+          <article>
+            <h3>Reviewable output</h3>
+            <p>Capture the result, diff and actual verification evidence.</p>
+          </article>
+        </div>
+        <p class="anchor-line">
+          The prepared CLI run is executed evidence. SDK/cloud examples are reference material.
+        </p>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            Inspect the prepared non-interactive Codex CLI result and repair patch. This is one
+            recorded bounded automation example, not a claim that every SDK or cloud integration was
+            executed. A reusable prompt, AGENTS.md and skills can support repeatable work, but the
+            environment and permissions still matter. Schedules and durable workflows remain Contact
+            3. Windsurf and other clients can be compared briefly as interfaces, without adding
+            another tool setup or another demonstration to this session. Finish with a handover,
+            including what remains unverified.
           </p>
         </aside>
       </section>
@@ -715,12 +747,12 @@
     <dialog id="outline" aria-labelledby="outline-title">
       <div class="outline-heading">
         <div>
-          <p class="eyebrow">Contact 2 / 120 minutes</p>
+          <p class="eyebrow">Contact 2 / demo reference</p>
           <h2 id="outline-title">Presentation contents</h2>
         </div>
         <button id="close-outline" type="button" aria-label="Close contents">✕</button>
       </div>
-      <p>One task · actual code flow · verified engineering</p>
+      <p>5 RAG support topics · 10 Codex engineering topics · open a topic when needed</p>
       <nav id="outline-list" aria-label="Slide selection"></nav>
     </dialog>
     <output id="code-copy-status" class="code-copy-status" role="status" hidden></output>

@@ -11,7 +11,9 @@ sys.path.insert(0, str(ROOT))
 
 from relay.service import Problem  # noqa: E402
 from teaching.contact2 import exercise, parser_reference  # noqa: E402
-from teaching.contact2.pipeline import PolicyStore, ingest, preview  # noqa: E402
+from teaching.contact2.markdown_practice import preview  # noqa: E402
+from teaching.contact2.policy_store import PolicyStore  # noqa: E402
+from teaching.contact2.policy_store import publish_source as ingest  # noqa: E402
 from teaching.rag_reference import RagConfig, VectorRag  # noqa: E402
 
 

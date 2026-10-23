@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Approved policy ingestion · Relay</title>
     <link rel="stylesheet" href="/static/contact2-lab.css" />
-    <script src="/static/contact2-lab.js" defer></script>
+    <script src="/static/code-references.js" defer></script>
+    <script src="/static/contact2-pdf.js" defer></script>
   </head>
   <body>
     <header>
@@ -17,65 +18,381 @@
     </header>
     <main>
       <p class="eyebrow">Contact 2 · isolated teaching corpus</p>
-      <h1>One policy. Follow every step.</h1>
-      <p class="intro">
-        Preview an approved document, inspect its chunks, then import it. Use the resolution desk to
-        ask a question and inspect its citation.
-      </p>
-      <ol class="flow" aria-label="Document flow">
-        <li>Document</li>
-        <li>Validate</li>
-        <li>Chunk</li>
-        <li>Embed</li>
-        <li>Store</li>
-        <li>Retrieve</li>
-        <li>Answer + cite</li>
+      <h1>From policy PDF to an answer.</h1>
+      <p class="intro">Upload a policy PDF, review its text, then index it and ask a question.</p>
+      <ol class="flow" aria-label="Your next steps">
+        <li>1. Upload PDF</li>
+        <li>2. Review text</li>
+        <li>3. Index policy</li>
+        <li>4. Ask a question</li>
       </ol>
+      <details class="panel" id="code-walkthrough">
+        <summary>How it works · diagrams and code</summary>
+        <details class="panel pipeline-map">
+          <summary>Ingestion pipeline</summary>
+          <p class="hint">
+            <strong>Upload and inspect</strong><br /><button
+              type="button"
+              class="code-reference"
+              data-code-symbol="upload"
+              data-code-location="workbench/teaching/contact2_app.py:106"
+              title="Copy workbench/teaching/contact2_app.py:106"
+            >
+              workbench/teaching/contact2_app.py:106
+            </button>
+          </p>
+          <p class="hint">
+            <strong>Record review</strong><br /><button
+              type="button"
+              class="code-reference"
+              data-code-symbol="review-route"
+              data-code-location="workbench/teaching/contact2_app.py:135"
+              title="Copy workbench/teaching/contact2_app.py:135"
+            >
+              workbench/teaching/contact2_app.py:135
+            </button>
+          </p>
+          <p class="hint">
+            <strong>Build the index</strong><br /><button
+              type="button"
+              class="code-reference"
+              data-code-symbol="index-route"
+              data-code-location="workbench/teaching/contact2_app.py:145"
+              title="Copy workbench/teaching/contact2_app.py:145"
+            >
+              workbench/teaching/contact2_app.py:145
+            </button>
+          </p>
+          <div
+            class="pipeline-scroll"
+            role="region"
+            aria-label="Ingestion pipeline code flow"
+            tabindex="0"
+          >
+            <ol class="pipeline-steps">
+              <li>
+                <h3>PDF → validate + extract</h3>
+                <code>extract_pdf()</code
+                ><button
+                  type="button"
+                  class="code-reference"
+                  data-code-symbol="extract"
+                  data-code-location="workbench/teaching/contact2/indexing/parsing.py:12"
+                  title="Copy workbench/teaching/contact2/indexing/parsing.py:12"
+                >
+                  workbench/teaching/contact2/indexing/parsing.py:12
+                </button>
+              </li>
+              <li>
+                <h3>Split into chunks</h3>
+                <code>chunks()</code
+                ><button
+                  type="button"
+                  class="code-reference"
+                  data-code-symbol="chunks"
+                  data-code-location="workbench/teaching/contact2/indexing/chunking.py:50"
+                  title="Copy workbench/teaching/contact2/indexing/chunking.py:50"
+                >
+                  workbench/teaching/contact2/indexing/chunking.py:50
+                </button>
+              </li>
+              <li>
+                <h3>Human review + approval</h3>
+                <code>approve_pdf()</code
+                ><button
+                  type="button"
+                  class="code-reference"
+                  data-code-symbol="review"
+                  data-code-location="workbench/teaching/contact2/document_service.py:86"
+                  title="Copy workbench/teaching/contact2/document_service.py:86"
+                >
+                  workbench/teaching/contact2/document_service.py:86
+                </button>
+              </li>
+              <li>
+                <h3>Embed passages</h3>
+                <code>embed_request()</code
+                ><button
+                  type="button"
+                  class="code-reference"
+                  data-code-symbol="embed"
+                  data-code-location="workbench/teaching/contact2/indexing/embeddings.py:26"
+                  title="Copy workbench/teaching/contact2/indexing/embeddings.py:26"
+                >
+                  workbench/teaching/contact2/indexing/embeddings.py:26
+                </button>
+              </li>
+              <li>
+                <h3>Store in Qdrant</h3>
+                <code>save()</code
+                ><button
+                  type="button"
+                  class="code-reference"
+                  data-code-symbol="store"
+                  data-code-location="workbench/teaching/contact2/indexing/vector_store.py:65"
+                  title="Copy workbench/teaching/contact2/indexing/vector_store.py:65"
+                >
+                  workbench/teaching/contact2/indexing/vector_store.py:65
+                </button>
+              </li>
+            </ol>
+          </div>
+        </details>
+        <details class="panel pipeline-map">
+          <summary>Retrieval + answer</summary>
+          <p class="hint">
+            <a href="/docs#/Contact%202%3A%20policy%20query/query_policy_api_v1_policies_query_post"
+              >POST /api/v1/policies/query ↗</a
+            >
+            →
+            <button
+              type="button"
+              class="code-reference"
+              data-code-symbol="query-route"
+              data-code-location="workbench/teaching/contact2_app.py:160"
+              title="Copy workbench/teaching/contact2_app.py:160"
+            >
+              workbench/teaching/contact2_app.py:160
+            </button>
+            →
+            <button
+              type="button"
+              class="code-reference"
+              data-code-symbol="query-pipeline"
+              data-code-location="workbench/teaching/contact2/querying/pipeline.py:22"
+              title="Copy workbench/teaching/contact2/querying/pipeline.py:22"
+            >
+              workbench/teaching/contact2/querying/pipeline.py:22</button
+            >. Read answer_question() from top to bottom: retrieve → generate → validate.
+          </p>
+          <p class="hint">
+            When a support agent asks a question. Click a code path to copy its file and line.
+          </p>
+          <div
+            class="pipeline-scroll"
+            role="region"
+            aria-label="Retrieval + answer code flow"
+            tabindex="0"
+          >
+            <ol class="pipeline-steps">
+              <li>
+                <h3>Question → embed</h3>
+                <code>embed_request()</code
+                ><button
+                  type="button"
+                  class="code-reference"
+                  data-code-symbol="embed"
+                  data-code-location="workbench/teaching/contact2/indexing/embeddings.py:26"
+                  title="Copy workbench/teaching/contact2/indexing/embeddings.py:26"
+                >
+                  workbench/teaching/contact2/indexing/embeddings.py:26
+                </button>
+              </li>
+              <li>
+                <h3>Retrieve permitted passages</h3>
+                <code>retrieve_passages()</code
+                ><button
+                  type="button"
+                  class="code-reference"
+                  data-code-symbol="retrieve"
+                  data-code-location="workbench/teaching/contact2/querying/retrieval.py:14"
+                  title="Copy workbench/teaching/contact2/querying/retrieval.py:14"
+                >
+                  workbench/teaching/contact2/querying/retrieval.py:14
+                </button>
+              </li>
+              <li>
+                <h3>Generate from evidence</h3>
+                <code>generate_answer()</code
+                ><button
+                  type="button"
+                  class="code-reference"
+                  data-code-symbol="answer"
+                  data-code-location="workbench/teaching/contact2/querying/answer.py:9"
+                  title="Copy workbench/teaching/contact2/querying/answer.py:9"
+                >
+                  workbench/teaching/contact2/querying/answer.py:9
+                </button>
+              </li>
+              <li>
+                <h3>Validate answer + citations</h3>
+                <code>validate_answer()</code
+                ><button
+                  type="button"
+                  class="code-reference"
+                  data-code-symbol="validate"
+                  data-code-location="workbench/teaching/contact2/querying/answer.py:36"
+                  title="Copy workbench/teaching/contact2/querying/answer.py:36"
+                >
+                  workbench/teaching/contact2/querying/answer.py:36
+                </button>
+              </li>
+            </ol>
+          </div>
+        </details>
+      </details>
       <section class="panel">
-        <h2>1. Inspect the policy</h2>
-        <label for="document">Teaching document</label
-        ><select id="document">
-          <option value="collection.md">Parcel collection and return</option>
-          <option value="redelivery.md">Missed collection redelivery</option>
-          <option value="restricted.md">Supervisor-only escalation</option>
-          <option value="missing-metadata.md">Missing metadata · reject</option>
-          <option value="unreviewed.md">Unreviewed policy · reject</option>
-          <option value="injection.md">Instruction injection · reject</option></select
-        ><button id="preview">Preview document and chunks</button>
+        <h2>Upload PDF</h2>
+        <p>
+          <a href="/teaching/contact-2/sample.pdf" download>Download the sample policy PDF ↓</a>
+          · <a href="/teaching/contact-2/sample-multipage.pdf" download>Three-page policy PDF ↓</a>
+        </p>
+        <form id="pdf-form">
+          <label for="pdf-file">Policy PDF</label>
+          <input id="pdf-file" type="file" accept="application/pdf,.pdf" required />
+          <label for="pdf-title">Policy title</label>
+          <input
+            id="pdf-title"
+            value="Parcel collection and return policy"
+            minlength="5"
+            maxlength="150"
+            required
+          />
+          <label for="pdf-access">Who may use this policy?</label>
+          <select id="pdf-access">
+            <option value="team">Support team</option>
+            <option value="supervisor">Supervisors only</option>
+          </select>
+          <button id="pdf-upload" type="submit">Upload and inspect</button>
+        </form>
         <p class="hint">
-          Preview makes no model call. This lab uses a supervisor demo session. Demo personas are
-          not production authentication.
+          Text PDFs · up to 2 MiB / 10 pages. Upload and preview run locally, without a model call.
+          This workshop uses demo roles.
         </p>
       </section>
-      <section class="panel">
-        <h2>2. Confirm the import</h2>
-        <label class="confirm"
-          ><input id="billable" type="checkbox" />I authorize embedding this approved synthetic
-          policy using the configured provider.</label
-        ><button id="ingest" disabled>Import policy</button>
-        <p class="hint">
-          The server verifies a separate content-hash approval record. Source text cannot approve
-          itself.
-        </p>
+      <p id="pdf-status" role="status" aria-live="polite">Choose the PDF to begin.</p>
+      <section id="pdf-pipeline" hidden aria-label="PDF ingestion stages">
+        <details class="panel" id="pdf-extraction">
+          <summary>Extracted text <span id="pdf-extract-state">Waiting</span></summary>
+          <p class="hint">The text read from your PDF, before splitting.</p>
+          <pre id="pdf-text"></pre>
+          <p class="hint">
+            Code:
+            <button
+              type="button"
+              class="code-reference"
+              data-code-symbol="extract"
+              data-code-location="workbench/teaching/contact2/indexing/parsing.py:12"
+              title="Copy workbench/teaching/contact2/indexing/parsing.py:12"
+            >
+              workbench/teaching/contact2/indexing/parsing.py:12
+            </button>
+          </p>
+        </details>
+        <details class="panel" id="pdf-chunking">
+          <summary>Text chunks <span id="pdf-chunk-state">Waiting</span></summary>
+          <p id="pdf-chunk-settings" class="hint"></p>
+          <div id="pdf-chunks"></div>
+          <p class="hint">
+            Code:
+            <button
+              type="button"
+              class="code-reference"
+              data-code-symbol="chunks"
+              data-code-location="workbench/teaching/contact2/indexing/chunking.py:50"
+              title="Copy workbench/teaching/contact2/indexing/chunking.py:50"
+            >
+              workbench/teaching/contact2/indexing/chunking.py:50
+            </button>
+          </p>
+        </details>
+        <section class="panel" id="pdf-review">
+          <h2>Review and index</h2>
+          <label class="confirm"
+            ><input type="checkbox" id="pdf-reviewed" />I reviewed the extracted text and confirm
+            this policy may be used for the teaching demo.</label
+          >
+          <label class="confirm"
+            ><input type="checkbox" id="pdf-billable" />Allow the embedding request through the
+            configured provider.</label
+          >
+          <button id="pdf-index" disabled>Approve and index policy</button>
+        </section>
+        <details class="panel" id="pdf-embedding">
+          <summary>Embedding details <span id="pdf-embed-state">Not started</span></summary>
+          <p id="pdf-embedding-info">Each chunk will be converted into a vector.</p>
+          <pre id="pdf-vector"></pre>
+          <p class="hint">
+            Code:
+            <button
+              type="button"
+              class="code-reference"
+              data-code-symbol="embed"
+              data-code-location="workbench/teaching/contact2/indexing/embeddings.py:26"
+              title="Copy workbench/teaching/contact2/indexing/embeddings.py:26"
+            >
+              workbench/teaching/contact2/indexing/embeddings.py:26
+            </button>
+          </p>
+        </details>
+        <details class="panel" id="pdf-storage">
+          <summary>Qdrant record <span id="pdf-store-state">Not started</span></summary>
+          <p id="pdf-storage-info">Vectors, passages and policy details will be stored together.</p>
+          <pre id="pdf-stored-record"></pre>
+          <p class="hint">
+            Code:
+            <button
+              type="button"
+              class="code-reference"
+              data-code-symbol="store"
+              data-code-location="workbench/teaching/contact2/indexing/vector_store.py:65"
+              title="Copy workbench/teaching/contact2/indexing/vector_store.py:65"
+            >
+              workbench/teaching/contact2/indexing/vector_store.py:65
+            </button>
+          </p>
+        </details>
       </section>
-      <p id="status" role="status" aria-live="polite">Ready to preview.</p>
-      <section class="panel" id="output" hidden>
-        <h2>Input and output</h2>
-        <pre id="result"></pre>
-      </section>
-      <section class="panel">
-        <h2>3. Ask and verify</h2>
-        <p>In the resolution desk, open RY-1042 and ask:</p>
-        <blockquote>
-          How long can a parcel stay at a collection point, when does that period start, and who
-          reviews return to the sender?
-        </blockquote>
-        <a class="button" href="/dashboard">Ask in Relay ↗</a>
-        <p class="hint">
-          Check “seven calendar days”, the notice-date rule, supervisor review and citation to
-          POL-COLLECTION-1. Return to the support-agent persona to check access filtering.
+      <section class="panel" id="pdf-question-panel" hidden>
+        <h2>Ask a question</h2>
+        <p>
+          Retrieve passages from the permitted policy corpus, then generate an answer from them.
         </p>
+        <label for="pdf-question">Your question</label>
+        <textarea id="pdf-question" rows="3" maxlength="1500">
+How long can a parcel stay at a collection point, when does that period start, and who reviews return to the sender?</textarea>
+        <button id="pdf-ask">Retrieve and answer</button>
+        <div id="pdf-answer"></div>
+        <p class="hint">
+          Answer code:
+          <button
+            type="button"
+            class="code-reference"
+            data-code-symbol="answer"
+            data-code-location="workbench/teaching/contact2/querying/answer.py:9"
+            title="Copy workbench/teaching/contact2/querying/answer.py:9"
+          >
+            workbench/teaching/contact2/querying/answer.py:9
+          </button>
+        </p>
+        <details id="pdf-retrieval" hidden>
+          <summary>Retrieved passages</summary>
+          <div id="pdf-hits"></div>
+          <p class="hint">
+            Retrieval code:
+            <button
+              type="button"
+              class="code-reference"
+              data-code-symbol="retrieve"
+              data-code-location="workbench/teaching/contact2/querying/retrieval.py:14"
+              title="Copy workbench/teaching/contact2/querying/retrieval.py:14"
+            >
+              workbench/teaching/contact2/querying/retrieval.py:14
+            </button>
+          </p>
+        </details>
+      </section>
+
+      <section class="panel" aria-labelledby="indexed-policies-title">
+        <h2 id="indexed-policies-title">Indexed policies</h2>
+        <p class="hint">
+          Remove a PDF policy from this shared teaching corpus to repeat its upload and indexing.
+          Original starter policies stay in place.
+        </p>
+        <div id="pdf-indexed-list">Loading indexed policies…</div>
+        <button type="button" id="pdf-refresh">Refresh list</button>
       </section>
     </main>
+    <p id="code-copy-status" class="hint" role="status" aria-live="polite" hidden></p>
   </body>
 </html>

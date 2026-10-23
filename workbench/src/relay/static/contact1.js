@@ -9,6 +9,8 @@ if (!['127.0.0.1', 'localhost', '[::1]'].includes(location.hostname)) {
   });
 }
 const conceptsOnly = document.body.dataset.deckMode === 'concepts';
+const referenceOnly = document.body.dataset.deckMode === 'reference';
+const contactNumber = document.body.dataset.contact || '1';
 const slides = [...document.querySelectorAll('.slide')];
 const outline = document.querySelector('#outline');
 const outlineList = document.querySelector('#outline-list');
@@ -55,7 +57,7 @@ function render(focus = false) {
     if (button.dataset.slide === slide.id) button.setAttribute('aria-current', 'true');
     else button.removeAttribute('aria-current');
   });
-  document.title = `${slide.dataset.title} — Contact 1${conceptsOnly ? ' concepts' : ''} · Relay`;
+  document.title = `${slide.dataset.title} — Contact ${contactNumber}${conceptsOnly ? ' concepts' : ''} · Relay`;
   announce(
     `Slide ${current + 1} of ${slides.length}. ${slide.dataset.phase}. ${slide.dataset.title}.`,
   );
@@ -117,13 +119,15 @@ slides.forEach((slide, index) => {
   if (slide.dataset.phase !== lastPhase) {
     const heading = document.createElement('h3');
     heading.className = 'outline-group';
-    heading.textContent = conceptsOnly
-      ? 'Contact 1 / Concepts'
-      : slide.dataset.phase === 'Concepts'
-        ? 'Concepts / 00–15 min'
-        : slide.dataset.phase === 'Demo'
-          ? 'Guided demonstration / 15–60 min'
-          : 'Appendix / reference outside the timed sequence';
+    heading.textContent = referenceOnly
+      ? slide.dataset.phase
+      : conceptsOnly
+        ? 'Contact 1 / Concepts'
+        : slide.dataset.phase === 'Concepts'
+          ? 'Concepts / 00–15 min'
+          : slide.dataset.phase === 'Demo'
+            ? 'Guided demonstration / 15–60 min'
+            : 'Appendix / reference outside the timed sequence';
     outlineList.append(heading);
     lastPhase = slide.dataset.phase;
   }

@@ -20,12 +20,12 @@ REFERENCES = {
         ("teaching/responses_reference.py", "GroundedAnswer"),
     ],
     "rag": [
-        ("teaching/rag_reference.py", "VectorRag._embed_request"),
-        ("teaching/rag_reference.py", "VectorRag.search"),
+        ("teaching/contact2/indexing/embeddings.py", "EmbeddingModel.embed_request"),
+        ("teaching/contact2/querying/retrieval.py", "retrieve_passages"),
     ],
     "evidence": [
-        ("teaching/investigation_reference.py", "retrieve_evidence"),
-        ("teaching/investigation_reference.py", "make_investigator.investigate.validate_stage"),
+        ("teaching/investigation_retrieval.py", "retrieve_evidence"),
+        ("teaching/investigation_answer.py", "validate_answer"),
     ],
     "tools": [
         ("teaching/agent_harness.py", "execute_tools"),
@@ -49,9 +49,9 @@ REFERENCES = {
         ("teaching/runtime_graph.py", "execute_graph"),
         ("teaching/provider_settings.py", "provider_options"),
     ],
-    "demo-baseline": [("teaching/rag_reference.py", "VectorRag.search")],
+    "demo-baseline": [("teaching/contact2/querying/retrieval.py", "retrieve_passages")],
     "demo-rag": [
-        ("teaching/rag_reference.py", "VectorRag.search"),
+        ("teaching/contact2/querying/retrieval.py", "retrieve_passages"),
         ("teaching/investigation_reference.py", "make_investigator.investigate.invoke"),
     ],
     "demo-boundaries": [
@@ -65,8 +65,8 @@ REFERENCES = {
     ],
     "setup": [("scripts/contact1_preflight.py", "configuration")],
     "indexing": [
-        ("teaching/rag_reference.py", "native_chunks"),
-        ("teaching/rag_reference.py", "VectorRag.build"),
+        ("teaching/contact2/indexing/chunking.py", "native_chunks"),
+        ("teaching/contact2/indexing/pipeline.py", "build_index"),
     ],
     "openai-state": [("teaching/openai_state_reference.py", "compare_state")],
     "stream-events": [("teaching/streaming_reference.py", "install_streaming")],
@@ -146,10 +146,78 @@ def process_deck(deck, required, *, write=False, references=None):
     )
 
 
+def process_lab(*, write=False):
+    """Keep the demo's copyable locations tied to actual Python definitions."""
+    lab = DECK.with_name("contact2-lab.html")
+    references = {
+        "extract": ("teaching/contact2/indexing/parsing.py", "extract_pdf"),
+        "review": ("teaching/contact2/document_service.py", "approve_pdf"),
+        "query-pipeline": ("teaching/contact2/querying/pipeline.py", "answer_question"),
+        "query-route": ("teaching/contact2_app.py", "create_app.query_policy"),
+        "upload": ("teaching/contact2_app.py", "create_app.upload_pdf"),
+        "review-route": ("teaching/contact2_app.py", "create_app.review_pdf"),
+        "index-route": ("teaching/contact2_app.py", "create_app.build_pdf_index"),
+        "validate": (
+            "teaching/contact2/querying/answer.py",
+            "validate_answer",
+        ),
+        "chunks": ("teaching/contact2/indexing/chunking.py", "chunks"),
+        "embed": ("teaching/contact2/indexing/embeddings.py", "EmbeddingModel.embed_request"),
+        "store": ("teaching/contact2/indexing/vector_store.py", "VectorStore.save"),
+        "answer": (
+            "teaching/contact2/querying/answer.py",
+            "generate_answer",
+        ),
+        "retrieve": ("teaching/contact2/querying/retrieval.py", "retrieve_passages"),
+    }
+    found = []
+
+    def replace(match):
+        symbol = match.group(1)
+        loc = location(*references[symbol])
+        found.append(symbol)
+        if not write:
+            actual = re.search(r'data-code-location="([^"]+)"', match.group()).group(1)
+            if actual != loc:
+                raise SystemExit("Stale lab code reference; run contact1_references.py --write.")
+            return match.group()
+        return (
+            '<button type="button" class="code-reference" '
+            f'data-code-symbol="{symbol}" data-code-location="{loc}" '
+            f'title="Copy {loc}">{loc}</button>'
+        )
+
+    result = re.sub(
+        r'<button\b[^>]*data-code-symbol="([^"]+)"[^>]*>.*?</button\s*>',
+        replace,
+        lab.read_text(),
+        flags=re.S,
+    )
+
+    def caption(match):
+        expected = references[match.group(2)][1].split(".")[-1] + "()"
+        if not write and match.group(1) != expected:
+            raise SystemExit("Stale flow function label; run contact1_references.py --write.")
+        return match.group().replace(match.group(1), expected, 1)
+
+    result = re.sub(
+        r'<code>([^<]+)</code\s*>\s*<button\b[^>]*data-code-symbol="([^"]+)"',
+        caption,
+        result,
+        flags=re.S,
+    )
+    if set(found) != set(references):
+        raise SystemExit("Missing lab code reference.")
+    if write:
+        lab.write_text(result)
+    print(f"contact2-lab.html: {'updated' if write else 'verified'} {len(found)} code locations")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--write", action="store_true")
     args = parser.parse_args()
+    process_lab(write=args.write)
     concept_ids = {
         "why",
         "outcomes",
@@ -168,22 +236,14 @@ def main():
         "choices",
     }
     c2 = {
-        "ingestion": [
-            ("scripts/contact1_index.py", "main"),
-            ("teaching/contact2/pipeline.py", "preview"),
-        ],
-        "chunks": [("teaching/rag_reference.py", "chunks")],
-        "embeddings": [("teaching/rag_reference.py", "VectorRag._embed_request")],
-        "index": [("teaching/rag_reference.py", "VectorRag.build")],
-        "query": [("teaching/investigation_reference.py", "retrieve_evidence")],
-        "ranking": [("teaching/rag_reference.py", "VectorRag.search")],
-        "generation": [
-            ("teaching/investigation_reference.py", "make_investigator.investigate.generate_stage")
-        ],
-        "implement": [("teaching/contact2/exercise.py", "parse_markdown")],
-        "boundary": [
-            ("teaching/contact2/pipeline.py", "preview"),
-            ("teaching/contact2/pipeline.py", "ingest"),
+        "models": [("teaching/provider_connection.py", "model_setting")],
+        "dimensions": [("teaching/contact2/config.py", "RagConfig")],
+        "chunks": [("teaching/contact2/indexing/chunking.py", "chunks")],
+        "ranking": [("teaching/contact2/querying/retrieval.py", "retrieve_passages")],
+        "grounding": [("teaching/contact2/querying/answer.py", "generate_answer")],
+        "cache": [
+            ("teaching/contact2/indexing/pipeline.py", "build_index"),
+            ("teaching/memory_reference.py", "conversation_context"),
         ],
     }
     process_deck(DECK.with_name("contact2.html"), set(c2), write=args.write, references=c2)

@@ -12,7 +12,9 @@ from relay.models import Actor
 from relay.service import Problem
 from teaching.contact2 import parser_reference
 from teaching.contact2.acceptance import check
-from teaching.contact2.pipeline import ROOT, PolicyStore, ingest, preview
+from teaching.contact2.markdown_practice import ROOT, preview
+from teaching.contact2.policy_store import PolicyStore
+from teaching.contact2.policy_store import publish_source as ingest
 from teaching.contact2_app import create_app
 from teaching.rag_reference import RagConfig, VectorRag
 
@@ -223,3 +225,240 @@ def test_lab_api_permissions_preview_confirm_and_live_search(tmp_path, provider,
             json={"document": "redelivery.md", "execute": True, "confirm_billable": True},
         )
         assert response.status_code == 503 and "PRIVATE" not in response.text
+
+
+def pdf_bytes():
+    from pathlib import Path
+
+    return (Path(__file__).parents[1] / "teaching/contact2/pdfs/collection-policy.pdf").read_bytes()
+
+
+def test_pdf_extraction_preserves_rules_and_rejects_unreadable_inputs():
+    from teaching.contact2.indexing.parsing import extract_pdf
+
+    text, pages = extract_pdf(pdf_bytes())
+    assert len(pages) == 1 and "seven calendar days" in text
+    readable = " ".join(text.split())
+    assert "notice date" in readable and "supervisor reviews" in readable
+    for raw in (b"not a PDF", b"%PDF-1.7 broken", b"%PDF-" + b"x" * (2 * 1024 * 1024)):
+        with pytest.raises(Problem):
+            extract_pdf(raw)
+    import io
+
+    from pypdf import PdfWriter
+
+    writer = PdfWriter()
+    writer.add_blank_page(width=595, height=842)
+    output = io.BytesIO()
+    writer.write(output)
+    with pytest.raises(Problem) as error:
+        extract_pdf(output.getvalue())
+    assert error.value.code == "pdf_needs_ocr"
+    writer.encrypt("not-readable")
+    output = io.BytesIO()
+    writer.write(output)
+    with pytest.raises(Problem) as error:
+        extract_pdf(output.getvalue())
+    assert error.value.code == "invalid_pdf"
+
+
+@pytest.mark.parametrize("visibility", ["team", "supervisor"])
+def test_pdf_ui_api_upload_review_index_real_qdrant_and_rerun(tmp_path, provider, visibility):
+    sdk, calls, failure = provider
+    app = create_app(
+        tmp_path / "pdf.sqlite",
+        client=sdk,
+        model="fixture",
+        vector_path=tmp_path / "vectors",
+        rag_config=CONFIG,
+        state="before",
+    )
+    with TestClient(app, base_url="http://127.0.0.1") as browser:
+        url = "/api/v1/teaching/pdf?title=Parcel%20collection%20policy&visibility=" + visibility
+        login(browser, "agent")
+        assert (
+            browser.post(
+                url, content=pdf_bytes(), headers={"Content-Type": "application/pdf"}
+            ).status_code
+            == 403
+        )
+        login(browser, "supervisor")
+        assert (
+            browser.post(
+                url,
+                content=pdf_bytes(),
+                headers={"Content-Type": "application/pdf", "X-CSRF-Token": "bad"},
+            ).status_code
+            == 403
+        )
+        assert (
+            browser.post(
+                url,
+                content=b"x" * (2 * 1024 * 1024 + 1),
+                headers={"Content-Type": "application/pdf"},
+            ).status_code
+            == 413
+        )
+        # The larger file allowance never applies to ordinary API bodies.
+        assert browser.post("/api/v1/teaching/policies", content=b"x" * 17000).status_code == 413
+        result = browser.post(url, content=pdf_bytes(), headers={"Content-Type": "application/pdf"})
+        assert result.status_code == 200, result.text
+        previewed = result.json()
+        assert calls == [] and previewed["chunks"] and previewed["source"]["state"] == "candidate"
+        path = "/api/v1/teaching/pdf/" + previewed["upload_id"]
+        assert browser.post(path + "/index", json={"confirm_billable": True}).status_code == 403
+        assert browser.post(path + "/review", json={"confirm_reviewed": False}).status_code == 422
+        other = TestClient(app, base_url="http://127.0.0.1")
+        login(other, "supervisor")
+        assert other.post(path + "/review", json={"confirm_reviewed": True}).status_code == 404
+        other.close()
+        assert browser.post(path + "/review", json={"confirm_reviewed": True}).status_code == 200
+        assert browser.post(path + "/index", json={}).status_code == 422
+        result = browser.post(path + "/index", json={"confirm_billable": True})
+        assert result.status_code == 200, result.text
+        indexed = result.json()
+        assert indexed["stored_chunks"] == len(previewed["chunks"])
+        assert indexed["records"][0]["dimensions"] == 3
+        vector = indexed["records"][0]["vector_preview"]
+        assert sum(v * v for v in vector) == pytest.approx(1.0, abs=0.00001)
+        assert indexed["records"][0]["payload"]["visibility"] == visibility
+        count = len(calls)
+        repeat = browser.post(path + "/index", json={"confirm_billable": True})
+        assert repeat.status_code == 200 and repeat.json()["embedding_calls"] == 0
+        assert len(calls) == count
+        login(browser, "agent")
+        result = browser.post(
+            "/api/v1/rag/search", json={"question": "parcel collection seven calendar days"}
+        )
+        found = previewed["source"]["id"] in [h["id"] for h in result.json()["hits"]]
+        assert found is (visibility == "team")
+        assert browser.post(path + "/review", json={"confirm_reviewed": True}).status_code == 403
+        assert browser.get("/api/v1/teaching/pdf").status_code == 403
+        login(browser, "supervisor")
+        listed = browser.get("/api/v1/teaching/pdf").json()["policies"]
+        assert previewed["source"]["id"] in [p["id"] for p in listed]
+        deletion = "/api/v1/teaching/pdf/" + previewed["source"]["id"]
+        assert (
+            browser.request("DELETE", deletion, json={"confirm_remove": False}).status_code == 422
+        )
+        assert (
+            browser.request(
+                "DELETE", deletion, json={"confirm_remove": True}, headers={"X-CSRF-Token": "bad"}
+            ).status_code
+            == 403
+        )
+        count = len(calls)
+        result = browser.request("DELETE", deletion, json={"confirm_remove": True})
+        assert result.status_code == 200 and result.json()["removed"]
+        assert result.json()["embedding_calls"] == 0 and len(calls) == count
+        assert browser.get("/api/v1/teaching/pdf").json()["policies"] == []
+        assert previewed["source"]["id"] not in app.state.rag.manifest()["sources"]
+        assert previewed["source"]["id"] not in [d["id"] for d in app.state.store.corpus()]
+        assert browser.post(path + "/index", json={"confirm_billable": True}).status_code == 404
+        assert (
+            browser.request(
+                "DELETE", "/api/v1/teaching/pdf/POL-DELIVERY-1", json={"confirm_remove": True}
+            ).status_code
+            == 404
+        )
+        uploaded_again = browser.post(
+            url, content=pdf_bytes(), headers={"Content-Type": "application/pdf"}
+        )
+        assert uploaded_again.status_code == 200
+        path = "/api/v1/teaching/pdf/" + uploaded_again.json()["upload_id"]
+        browser.post(path + "/review", json={"confirm_reviewed": True})
+        assert browser.post(path + "/index", json={"confirm_billable": True}).status_code == 200
+
+
+def test_pdf_failed_embedding_does_not_publish_source(tmp_path, provider):
+    from teaching.contact2.document_service import approve_pdf, index_pdf, stage_pdf
+
+    sdk, calls, failure = provider
+    store = PolicyStore(tmp_path / "pdf.sqlite")
+    rag = VectorRag(sdk, tmp_path / "vectors", CONFIG)
+    try:
+        rag.build(store.corpus())
+        old_revision = rag.manifest()["revision"]
+        staged = stage_pdf(store, pdf_bytes(), "New collection policy", "team", ACTOR, CONFIG)
+        approve_pdf(store, staged["upload_id"], ACTOR)
+        failure["fail"] = True
+        with pytest.raises(Exception):
+            index_pdf(store, rag, staged["upload_id"], ACTOR)
+        assert rag.manifest()["revision"] == old_revision
+        assert staged["source"]["id"] not in [d["id"] for d in store.documents(ACTOR)]
+    finally:
+        rag.close()
+        sdk.close()
+
+
+def test_removal_preserves_other_policies_and_never_calls_provider(tmp_path, provider):
+    from teaching.contact2.document_service import approve_pdf, index_pdf, remove_pdf, stage_pdf
+
+    sdk, calls, failure = provider
+    store = PolicyStore(tmp_path / "remove.sqlite")
+    rag = VectorRag(sdk, tmp_path / "vectors", CONFIG)
+    try:
+        policies = []
+        for title in ("First collection policy", "Second collection policy"):
+            staged = stage_pdf(store, pdf_bytes(), title, "team", ACTOR, CONFIG)
+            approve_pdf(store, staged["upload_id"], ACTOR)
+            index_pdf(store, rag, staged["upload_id"], ACTOR)
+            policies.append(staged["source"]["id"])
+        count = len(calls)
+        failure["fail"] = True
+        with pytest.raises(Problem):
+            remove_pdf(store, rag, policies[0], replace_actor(ACTOR, tenant="foreign"))
+        with pytest.raises(Problem):
+            remove_pdf(store, rag, policies[0], replace_actor(ACTOR, role="agent"))
+        remove_pdf(store, rag, policies[0], ACTOR)
+        assert len(calls) == count
+        remaining = {d["id"] for d in store.documents(ACTOR)}
+        assert policies[0] not in remaining and policies[1] in remaining
+        points, _ = rag.db.scroll(rag.manifest()["collection"], limit=1000, with_payload=True)
+        assert policies[0] not in {p.payload["id"] for p in points}
+        assert policies[1] in {p.payload["id"] for p in points}
+    finally:
+        rag.close()
+        sdk.close()
+
+
+def test_removal_rolls_back_if_retained_vectors_are_missing(tmp_path, provider):
+    from qdrant_client import models
+
+    from teaching.contact2.document_service import approve_pdf, index_pdf, remove_pdf, stage_pdf
+    from teaching.rag_reference import RagFailure
+
+    sdk, calls, _ = provider
+    store = PolicyStore(tmp_path / "remove.sqlite")
+    rag = VectorRag(sdk, tmp_path / "vectors", CONFIG)
+    try:
+        staged = stage_pdf(store, pdf_bytes(), "Collection policy", "team", ACTOR, CONFIG)
+        approve_pdf(store, staged["upload_id"], ACTOR)
+        index_pdf(store, rag, staged["upload_id"], ACTOR)
+        original = rag.manifest()
+        points, _ = rag.db.scroll(original["collection"], limit=1000, with_payload=True)
+        seed = next(p for p in points if p.payload["id"] != staged["source"]["id"])
+        rag.db.delete(original["collection"], models.PointIdsList(points=[seed.id]))
+        count = len(calls)
+        with pytest.raises(RagFailure, match="cached_vectors_missing"):
+            remove_pdf(store, rag, staged["source"]["id"], ACTOR)
+        assert len(calls) == count
+        assert rag.manifest()["revision"] == original["revision"]
+        assert staged["source"]["id"] in {d["id"] for d in store.documents(ACTOR)}
+    finally:
+        rag.close()
+        sdk.close()
+
+
+def test_three_page_policy_fixture_keeps_rules_on_known_pages():
+    from teaching.contact2.indexing.parsing import extract_pdf
+
+    raw = (ROOT / "pdfs/collection-policy-multipage.pdf").read_bytes()
+    text, pages = extract_pdf(raw)
+    assert len(pages) == 3
+    page_text = [" ".join(p["text"].split()) for p in pages]
+    assert "seven calendar days" in page_text[0] and "notice date" in page_text[0]
+    assert "collection code" in page_text[1] and "identity document" in page_text[1]
+    assert "supervisor reviews" in page_text[2] and "return to the sender" in page_text[2]
+    assert all(f"Page {i} of 3" in p for i, p in enumerate(page_text, 1))
+    assert text == "\n\n".join(p["text"] for p in pages)

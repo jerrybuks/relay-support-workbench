@@ -1,0 +1,57 @@
+/* Demo reference deck: the existing Relay theme, with compact explanation cards. */
+body[data-deck-mode='reference'] .rehearsal,
+body[data-deck-mode='reference'] #planned-time {
+  display: none;
+}
+.reference-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+.reference-grid article {
+  border-top: 2px solid #65b9ff75;
+  padding: 22px 18px;
+  border-radius: 0 0 8px 8px;
+  background: #65b9ff05;
+}
+.reference-grid h3 {
+  color: var(--ink);
+  font-size: 21px;
+  margin: 0 0 16px;
+}
+.reference-grid p {
+  color: var(--muted);
+  font-size: 17px;
+  margin: 0;
+}
+body[data-deck-mode='reference'] h1 {
+  font-size: 52px;
+}
+body[data-deck-mode='reference'] h2 {
+  font-size: 42px;
+}
+@media (max-width: 700px) {
+  .reference-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .reference-grid article {
+    padding: 16px;
+  }
+  .reference-grid h3 {
+    margin-bottom: 8px;
+    font-size: 19px;
+  }
+  .reference-grid p {
+    font-size: 16px;
+  }
+  body[data-deck-mode='reference'] h1,
+  body[data-deck-mode='reference'] h2 {
+    font-size: 32px;
+  }
+}
+@media print {
+  .reference-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

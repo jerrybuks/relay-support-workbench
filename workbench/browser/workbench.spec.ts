@@ -36,7 +36,7 @@ test('course overview explains the four contacts and supports topic exploration'
     page.getByRole('heading', { name: 'From a model response to a trustworthy application' }),
   ).toBeVisible();
   await expect(
-    page.getByRole('heading', { name: 'Follow the evidence from document to answer' }),
+    page.getByRole('heading', { name: 'Build, verify and review with Codex' }),
   ).toBeVisible();
   await expect(
     page.getByRole('heading', { name: 'Give automation useful capabilities and clear boundaries' }),
@@ -619,6 +619,7 @@ test('Contact 1 presentation supports deep links, keyboard navigation, notes and
     await page.screenshot({ path: `workbench/evidence/${info.project.name}-contact1-${id}.png` });
   }
   await page.screenshot({ path: `workbench/evidence/${info.project.name}-contact1-streaming.png` });
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
   await page.getByRole('button', { name: 'Start timer', exact: true }).click();
   await page.clock.fastForward(61000);
   await expect(page.locator('#timer')).toHaveText('01:01');
@@ -728,19 +729,45 @@ test('hosted presentation links open the current service rather than localhost',
   await expect(page.locator('.demo-links a[href*="127.0.0.1"]')).toHaveCount(0);
 });
 
-test('Contact 2 slides follow the RAG and governed Codex task with readable references', async ({
+test('Contact 2 reference slides explain demo settings without repeating the walkthrough', async ({
   page,
 }, info) => {
   await page.goto('/course/contact-2');
-  await expect(page.locator('#slide-counter')).toHaveText('1 / 22');
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('One policy');
+  await expect(page.locator('#slide-counter')).toHaveText('1 / 15');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Two models');
+  await expect(page).toHaveTitle(/Contact 2/);
+  await expect(page.locator('.slide[data-phase="RAG support"]')).toHaveCount(5);
+  await expect(page.locator('.slide[data-phase="Codex engineering"]')).toHaveCount(10);
+  await expect(page.locator('#models .reference-grid')).not.toContainText('Codex model');
+  for (const id of [
+    'controls',
+    'plan',
+    'instructions',
+    'skills',
+    'permissions',
+    'mcp',
+    'loops',
+    'cache',
+    'evidence',
+    'automation',
+  ]) {
+    await expect(page.locator('#' + id)).toHaveCount(1);
+  }
+  await expect(page.locator('.rehearsal')).not.toBeVisible();
   await page.keyboard.press('g');
-  await expect(page.locator('#outline-list button')).toHaveCount(22);
-  await page.getByRole('button', { name: /Plan the approach/ }).click();
-  await expect(page).toHaveURL(/#plan$/);
+  await expect(page.locator('#outline-list button')).toHaveCount(15);
+  await page.getByRole('button', { name: /What does 1,536 dimensions mean/ }).click();
+  await expect(page).toHaveURL(/#dimensions$/);
   await page.keyboard.press('n');
-  await expect(page.locator('#plan .speaker-notes')).toBeVisible();
+  await expect(page.locator('#dimensions .speaker-notes')).toBeVisible();
   await page.keyboard.press('n');
+  await page.goto('/course/contact-2#chunks');
+  for (const strategy of ['Fixed-size', 'Recursive', 'Semantic']) {
+    await expect(
+      page.locator('#chunks').getByRole('heading', { name: strategy, exact: true }),
+    ).toBeVisible();
+  }
+  await expect(page.locator('#chunks .lead')).toContainText('whole document');
   const ids = await page.locator('.slide').evaluateAll((items) => items.map((s) => s.id));
   for (const id of ids) {
     await page.goto('/course/contact-2#' + id);
@@ -753,11 +780,11 @@ test('Contact 2 slides follow the RAG and governed Codex task with readable refe
       expect(footer!.y + footer!.height, id).toBeLessThanOrEqual(720);
     }
   }
-  await page.goto('/course/contact-2#ingestion');
-  await expect(page.locator('#ingestion [data-code-location]')).toHaveCount(2);
+  await page.goto('/course/contact-2#dimensions');
+  await expect(page.locator('#dimensions [data-code-location]')).toHaveCount(1);
   await page.screenshot({ path: `workbench/evidence/${info.project.name}-contact2-ingestion.png` });
   await page.emulateMedia({ media: 'print' });
-  await expect(page.locator('.slide:visible')).toHaveCount(22);
+  await expect(page.locator('.slide:visible')).toHaveCount(15);
   if (info.project.name === 'desktop')
     await page.pdf({
       path: 'workbench/evidence/contact2-presentation.pdf',
@@ -788,28 +815,193 @@ test('Contact 2 lab previews before enabling a separately confirmed import', asy
       }
       await route.fulfill({
         json: body.execute
-          ? { embedding_calls: 1 }
+          ? { source_id: 'POL-COLLECTION-1', source_version: '1.0', embedding_calls: 1 }
           : {
-              source: { id: 'POL-COLLECTION-1' },
-              chunks: [{ excerpt: 'seven calendar days' }],
+              source: {
+                id: 'POL-COLLECTION-1',
+                title: 'Parcel collection and return policy',
+                version: '1.0',
+                visibility: 'team',
+              },
+              chunks: [
+                { excerpt: 'Hold for seven calendar days.' },
+                { excerpt: '<img src=x onerror="window.injected=true"> is document text.' },
+              ],
               embedding_calls: 0,
             },
       });
     }
   });
-  await page.goto('/static/contact2-lab.html');
+  await page.goto('/static/contact2-markdown.html');
+  await page.getByText('Optional Codex exercise · Markdown parser', { exact: true }).click();
   await expect(page.getByRole('button', { name: 'Import policy' })).toBeDisabled();
   await page.getByRole('button', { name: 'Preview document and chunks' }).click();
-  await expect(page.getByRole('status')).toContainText('Preview ready:');
+  await expect(page.locator('#status')).toContainText('Preview ready:');
+  await expect(page.locator('#source-summary')).toContainText('version 1.0 · team access');
+  await expect(page.locator('.passage')).toHaveCount(2);
+  await expect(page.locator('.passage').first()).toContainText('seven calendar days');
+  await expect(page.locator('.passage img')).toHaveCount(0);
+  await expect(page.locator('#result')).not.toBeVisible();
+  await page.getByText('Inspect raw JSON', { exact: true }).click();
+  await expect(page.locator('#result')).toBeVisible();
+  await page.getByText('Inspect raw JSON', { exact: true }).click();
   await expect(page.getByRole('button', { name: 'Import policy' })).toBeDisabled();
-  await page.getByRole('checkbox').check();
+  await page.locator('#billable').check();
   await page.getByRole('button', { name: 'Import policy' }).click();
-  await expect(page.getByRole('status')).toContainText('Imported.');
+  await expect(page.locator('#status')).toContainText('Imported.');
+  await expect(page.locator('#source-summary')).toContainText('1 embedding requests');
   expect(imports).toBe(1);
   await page.getByLabel('Teaching document').selectOption('unreviewed.md');
-  await expect(page.getByRole('checkbox')).not.toBeChecked();
+  await expect(page.locator('#billable')).not.toBeChecked();
   await expect(page.getByRole('button', { name: 'Import policy' })).toBeDisabled();
   await page.getByRole('button', { name: 'Preview document and chunks' }).click();
-  await expect(page.getByRole('status')).toContainText('matching review record');
+  await expect(page.locator('#status')).toContainText('matching review record');
+  await expect(page.locator('.passage')).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test('PDF RAG demo shows extraction, chunks, real-shaped stored vectors and cited answer in one page', async ({
+  page,
+}, info) => {
+  let indexed = false;
+  let reviewed = false;
+  const source = {
+    id: 'POL-PDF-FIXTURE',
+    title: 'Parcel collection and return policy',
+    version: '1.0',
+    text: 'Hold the parcel for seven calendar days after the first collection notice.',
+    visibility: 'team',
+  };
+  const chunk = {
+    ...source,
+    excerpt: source.text,
+    start: 0,
+    end: source.text.length,
+    chunk_id: 'fixture-chunk',
+    score: 0.03279,
+    vector_score: 0.88,
+  };
+  await page.route('**/api/v1/teaching/pdf**', async (route) => {
+    const url = new URL(route.request().url());
+    if (route.request().method() === 'GET') {
+      await route.fulfill({ json: { policies: indexed ? [source] : [] } });
+      return;
+    }
+    expect(route.request().headers()['x-csrf-token']).toBeTruthy();
+    if (route.request().method() === 'DELETE') {
+      expect(route.request().postDataJSON().confirm_remove).toBe(true);
+      indexed = false;
+      await route.fulfill({ json: { removed: true, embedding_calls: 0 } });
+    } else if (url.pathname.endsWith('/review')) {
+      expect(route.request().postDataJSON().confirm_reviewed).toBe(true);
+      reviewed = true;
+      await route.fulfill({ json: { approved: true } });
+    } else if (url.pathname.endsWith('/index')) {
+      expect(reviewed).toBe(true);
+      expect(route.request().postDataJSON().confirm_billable).toBe(true);
+      indexed = true;
+      await route.fulfill({
+        json: {
+          source,
+          model: 'fixture-embedding-model',
+          embedding_calls: 1,
+          stored_chunks: 1,
+          collection: 'fixture-collection',
+          records: [
+            {
+              point_id: 'fixture-chunk',
+              dimensions: 3,
+              vector_preview: [0.1, 0.2, 0.3],
+              payload: chunk,
+            },
+          ],
+        },
+      });
+    } else {
+      expect(route.request().postDataBuffer()!.subarray(0, 5).toString()).toBe('%PDF-');
+      await route.fulfill({
+        json: {
+          upload_id: 'fixture-upload',
+          source,
+          pages: [{ page: 1, text: source.text }],
+          chunks: [chunk],
+          embedding_calls: 0,
+        },
+      });
+    }
+  });
+  await page.route('**/api/v1/policies/query', async (route) => {
+    expect(indexed).toBe(true);
+    expect(route.request().postDataJSON().question).toBeTruthy();
+    await route.fulfill({
+      json: {
+        status: 'supported',
+        answer: 'The parcel is held for seven calendar days.',
+        retrieved_passages: [chunk],
+        citations: [chunk],
+        trace: { retrieval: 'hybrid' },
+      },
+    });
+  });
+  await page.goto('/static/contact2-lab.html');
+  await expect(page.locator('#code-walkthrough')).not.toHaveAttribute('open');
+  await expect(page.locator('#document')).toHaveCount(0);
+
+  await page
+    .getByLabel('Policy PDF', { exact: true })
+    .setInputFiles('workbench/teaching/contact2/pdfs/collection-policy.pdf');
+  await page.getByRole('button', { name: 'Upload and inspect' }).click();
+  await expect(page.locator('#pdf-text')).toContainText('seven calendar days');
+  await page.locator('#pdf-extraction summary').click();
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+  const codeLocation = page.locator('#pdf-extraction [data-code-symbol="extract"]');
+  const relativeLocation = await codeLocation.getAttribute('data-code-location');
+  expect(relativeLocation).toMatch(/^workbench\/teaching\/contact2\/indexing\/parsing\.py:\d+$/);
+  await codeLocation.click();
+  await expect(page.locator('#code-copy-status')).toContainText('Copied ' + relativeLocation);
+  await expect
+    .poll(() => page.evaluate(() => navigator.clipboard.readText()))
+    .toBe(relativeLocation);
+  await expect(page.locator('#pdf-chunks .passage')).toHaveCount(1);
+  await expect(page.getByRole('button', { name: 'Approve and index policy' })).toBeDisabled();
+  expect(indexed).toBe(false);
+  await page.locator('#pdf-reviewed').check();
+  await page.locator('#pdf-billable').check();
+  await page.getByRole('button', { name: 'Approve and index policy' }).click();
+  await expect(page.locator('#pdf-store-state')).toHaveText('Complete');
+  await page.locator('#pdf-embedding summary').click();
+  await page.locator('#pdf-storage summary').click();
+  await expect(page.locator('#pdf-vector')).toContainText('0.2');
+  await expect(page.locator('#pdf-stored-record')).toContainText('fixture-chunk');
+  await page.getByRole('button', { name: 'Retrieve and answer' }).click();
+  await expect(page.locator('#pdf-answer')).toContainText('seven calendar days');
+  await expect(page.locator('#pdf-hits')).toContainText(source.text);
+  await expect(page.locator('#pdf-hits')).toContainText('Cosine similarity: 0.880');
+  await expect(page.locator('#pdf-hits')).toContainText('Hybrid rank (RRF): 0.03279');
+  await page.locator('#pdf-answer summary').click();
+  await expect(page.locator('#pdf-answer blockquote')).toBeVisible();
+  await expect(page.locator('#pdf-answer')).toContainText('Cosine similarity: 0.880');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({
+    path: `workbench/evidence/${info.project.name}-contact2-pdf-fixture.png`,
+    fullPage: true,
+  });
+  await page.getByLabel('Policy title', { exact: true }).fill('Changed policy title');
+  await page.getByLabel('Policy title', { exact: true }).blur();
+  await expect(page.locator('#pdf-pipeline')).not.toBeVisible();
+  await expect(page.locator('#pdf-question-panel')).not.toBeVisible();
+  await page.reload();
+  await expect(page.locator('#pdf-question-panel')).toBeVisible();
+  await expect(
+    page.getByRole('button', { name: 'Remove policy: ' + source.title, exact: true }),
+  ).toBeVisible();
+  page.once('dialog', (dialog) => dialog.accept());
+  await page.getByRole('button', { name: 'Remove policy: ' + source.title, exact: true }).click();
+  await expect(page.locator('#pdf-status')).toContainText('Policy removed');
+  await expect(page.locator('#pdf-indexed-list')).toHaveText('No PDF policies indexed yet.');
+  await page
+    .getByLabel('Policy PDF', { exact: true })
+    .setInputFiles('workbench/teaching/contact2/pdfs/collection-policy.pdf');
+  await page.getByRole('button', { name: 'Upload and inspect' }).click();
+  await expect(page.locator('#pdf-text')).toContainText('seven calendar days');
 });
