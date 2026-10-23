@@ -4,7 +4,22 @@ An API-first support workbench for a fictional Nigerian logistics company, and a
 
 Open a case, investigate shipment and policy evidence, propose a service credit, and review it as a supervisor. The M0 assistant is deterministic and clearly labeled; it needs no OpenAI key. No real messages or payments are sent.
 
-## Run the new app
+## Open the course online
+
+No local setup is needed to read the materials or explore the hosted workbench.
+
+| Material                             | Link                                                                               |
+| ------------------------------------ | ---------------------------------------------------------------------------------- |
+| Course homepage and learning path    | [Open the course](https://relay-workshop.onrender.com/)                            |
+| Contact 1 slides and speaker notes   | [Contact 1](https://relay-workshop.onrender.com/course/contact-1)                  |
+| Contact 1 concepts-only slides       | [Concepts deck](https://relay-workshop.onrender.com/static/contact1-concepts.html) |
+| Contact 2 slides and speaker notes   | [Contact 2](https://relay-workshop.onrender.com/course/contact-2)                  |
+| Resolution desk and policy assistant | [Open the workbench](https://relay-workshop.onrender.com/dashboard)                |
+| Interactive API documentation        | [Swagger](https://relay-workshop.onrender.com/docs)                                |
+
+The hosted AI has shared request limits. The **Contact 2 PDF upload lab runs locally**; its code, sample PDFs and setup are below. The hosted site provides its slides.
+
+## Run locally
 
 Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/).
 
@@ -41,7 +56,7 @@ pnpm contact2:before
 
 Open **http://127.0.0.1:8002/teaching/contact-2** for the PDF assistant and **http://127.0.0.1:8002/course/contact-2** for slides. Upload one of the supplied synthetic PDFs, review its extracted text and confirm indexing before asking a question. Embedding and answer requests consume provider credits. The `before` command name selects the separate, intentionally unfinished Markdown practice; the PDF feature on `main` is complete.
 
-Use tag **`contact-2-before`** in a separate checkout to repeat the original page-number exercise. Tag **`contact-2-complete`** identifies this completed release. Keep each checkout's runtime data separate. The [facilitator guide](docs/teaching/CONTACT_2_REHEARSAL_GUIDE.md) records the class flow; its preparation statuses describe the original rehearsal, not a reset of your current checkout.
+Use tag **`contact-2-before`** in a separate checkout to repeat the original page-number exercise. Tag **`contact-2-complete`** identifies this completed release. Keep each checkout's runtime data separate. The [Contact 2 session guide](docs/teaching/CONTACT_2_REHEARSAL_GUIDE.md) includes the session goals, demo steps, prompts and verification commands.
 
 The hosted service provides the course, slides and resolution desk. The PDF upload lab is a local opt-in teaching app; it is not enabled on the public service.
 
