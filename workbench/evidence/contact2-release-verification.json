@@ -23,5 +23,6 @@
   "isolated_hosted_source_imports": "Passed, including nested RAG modules; no provider calls",
   "docker_image_build": "Not run: local Docker daemon is not running",
   "runtime_data_modified": false,
-  "external_deployment": "Separate from local verification"
+  "external_deployment": "Separate from local verification",
+  "layout_follow_up": "Initial Linux CI found slide clipping at 720px height; compact-height spacing passes targeted desktop/mobile slide checks. CI is rerun on the follow-up commit."
 }
