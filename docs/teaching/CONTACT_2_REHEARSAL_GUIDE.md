@@ -1,12 +1,29 @@
-# Contact 2 · my session guide
+# Contact 2 · session notes
 
 We’ll follow a policy PDF through a working RAG application, then use Codex to improve it. The aim is to understand the code, give the agent a clear task, check its work and leave a change another engineer can review.
 
-This is my two-hour sequence. We’ll spend most of the time in the app and editor. The slides are short explanations to open when we need them: five for RAG and fifteen for Codex engineering.
+These are my notes for the two-hour session. We’ll work in the app and editor, using the slides for short explanations along the way.
 
-## Our starting point
+| Time        | What we’re doing                                                      | What we should have by the end                          |
+| ----------- | --------------------------------------------------------------------- | ------------------------------------------------------- |
+| 0–5 min     | Introduce the support problem and follow the code map.                | A clear picture of ingestion and retrieval.             |
+| 5–30 min    | Upload a PDF, inspect the index and ask a question.                   | An answer we can check against the policy.              |
+| 30–45 min   | Give Codex the page-reference task and review its plan.               | An agreed plan with acceptance criteria.                |
+| 45–75 min   | Implement and test; discuss the Codex controls while it runs.         | Correct page references backed by tests.                |
+| 75–90 min   | Package the procedure as a skill and query the docs through MCP.      | A reusable procedure and an inspected MCP call.         |
+| 90–110 min  | Check the browser result, review the diff and prepare delivery notes. | Evidence that the change works and a reviewable diff.   |
+| 110–120 min | Record the handover and connect context, memory and caching.          | Enough information to continue in a fresh conversation. |
 
-The published `main` branch contains the completed page-reference feature and three repository skills. It is useful for inspecting the finished application. To repeat the original coding exercise, we need the **`contact-2-before`** checkpoint instead. Running `--state before` on `main` does not remove the page-reference feature; that flag controls the separate Markdown practice.
+The commands below run from the checkout we’re working in. The prompts are ready to copy into Codex.
+
+## Before I start
+
+I choose the starting point before opening the app:
+
+- **Follow the finished example:** use `main`. Page references and the three repository skills are already implemented.
+- **Do the coding exercise:** use **`contact-2-before`** in a separate checkout, following the commands below.
+
+The `--state before` flag selects the separate Markdown exercise. It does not undo page references on `main`.
 
 For a fresh practice checkout, I run this from the cloned repository:
 
@@ -19,7 +36,7 @@ pnpm install --frozen-lockfile
 pnpm exec playwright install chromium
 ```
 
-I open that folder in the IDE and use it for the rest of the exercise. If the folder or branch already exists, I inspect and reuse it or choose another name; I don’t reset existing work. My original class folder was `~/projects/relay-contact2-class`. It now contains the changes made during class, so I don’t assume it is still a clean starting point.
+I open that folder in the IDE and use it for the rest of the exercise. If the folder or branch already exists, I inspect and reuse it or choose another name; I don’t reset existing work. For my own repeat run: `~/projects/relay-contact2-class` contains the changes from class. I use the fresh practice checkout above when I want the unfinished exercise.
 
 In a new checkout, I copy `workbench/.env.example` to `workbench/.env`, then configure it locally. I keep an existing configured file rather than overwriting it. For the OpenRouter route used in class, the settings are:
 
@@ -32,7 +49,7 @@ OPENROUTER_MODEL=openai/gpt-4o
 OPENROUTER_EMBEDDING_MODEL=openai/text-embedding-3-small
 ```
 
-These are the class configuration, not a claim that these models are always the best choice. Codex’s account and model selection are separate from Relay’s provider credentials. Local Qdrant needs no service key. I keep the environment file out of Git, screenshots and shared output.
+This is the configuration we used in class. I compare other models on the same task before changing it. Codex’s account and model selection are separate from Relay’s provider credentials. Local Qdrant needs no service key. I keep the environment file out of Git, screenshots and shared output.
 
 From the working checkout, I start the app with:
 
@@ -52,7 +69,7 @@ One server, on **8002**, serves all of these:
 | Swagger         | http://127.0.0.1:8002/docs               |
 | Health          | http://127.0.0.1:8002/api/health         |
 
-The [hosted course](https://relay-workshop.onrender.com) provides the slides and resolution desk after deployment. **Today’s PDF upload lab runs locally.** `pnpm dev` starts the ordinary baseline on 8000, not this PDF teaching app.
+The [course website](https://relay-workshop.onrender.com) has the course overview, [Contact 2 slides](https://relay-workshop.onrender.com/course/contact-2) and [resolution desk](https://relay-workshop.onrender.com/dashboard) once the latest update is deployed. **The PDF lab we used in class runs locally** at the address above. `pnpm dev` starts the ordinary baseline on 8000; I use the Contact 2 command for this session.
 
 Before starting, I check the folder and branch, `git status --short`, the app’s health and the available skills/browser/MCP tools. A successful health response checks the server; it does not prove provider credit or answer quality. I don’t start a second server if 8002 is already occupied.
 
@@ -76,7 +93,7 @@ The lab accepts text PDFs up to **2 MiB, ten pages and 50,000 extracted characte
 
 > Kora Dispatch’s policy team has sent us a PDF. Support agents need answers grounded in that policy. First, we’ll see how Relay reads it and answers questions. Then we’ll use Codex to improve the source references so an agent can find the supporting page in the original PDF.
 
-Our finish line is an answer with supporting evidence, followed by a tested change that adds the correct page reference.
+**Goal:** understand the two pipelines, then improve the answer’s source references. We’ll finish with a tested change that shows the supporting PDF pages.
 
 ### The code map
 
@@ -149,18 +166,20 @@ The coordinator is [querying/pipeline.py:22](../../workbench/teaching/contact2/q
 
 ## 2. Follow the working RAG flow · 5–30 minutes
 
-We’ll use the [three-page PDF](http://127.0.0.1:8002/teaching/contact-2/sample-multipage.pdf) from the PDF assistant.
+**Goal:** follow one document from upload to a grounded answer.
 
-1. Select the PDF and choose **Upload and inspect**.
-2. Expand **Extracted text** and compare it with the original PDF.
-3. Expand **Text chunks** and inspect boundaries, overlap and source details.
-4. Review the source and allow the embedding request using the two confirmations, then choose **Approve and index policy**.
-5. Expand **Embedding details** and **Qdrant record**. Check the vector length, sample values, passage text and metadata.
-6. Ask:
+I use the [three-page PDF](http://127.0.0.1:8002/teaching/contact-2/sample-multipage.pdf) from the PDF assistant. My demo sequence is:
+
+1. I select the PDF and choose **Upload and inspect**.
+2. I expand **Extracted text** and compare it with the original PDF.
+3. I expand **Text chunks** and inspect boundaries, overlap and source details.
+4. I review the source, confirm permission for the embedding request and choose **Approve and index policy**.
+5. I expand **Embedding details** and **Qdrant record**. We check the vector length, sample values, passage text and metadata.
+6. I ask:
 
    > How long can a parcel stay at a collection point, when does that period start, and who reviews return to the sender?
 
-7. Compare the answer with **Retrieved passages** and the expanded source citations.
+7. We compare the answer with **Retrieved passages** and the expanded source citations.
 
 We expect seven calendar days from the first collection notice, with supervisor review before return. We check those facts against the passages rather than accepting the answer because it sounds confident.
 
@@ -172,7 +191,9 @@ To repeat the upload, I use **Indexed policies → Remove policy**, confirm the 
 
 ## 3. Give Codex a clear task · 30–45 minutes
 
-I briefly confirm the working folder and branch, then open the root and applicable nested `AGENTS.md` files. The project instructions describe how we work; the task prompt describes what we want changed.
+**Goal:** turn a product requirement into a task Codex can investigate, plan and verify.
+
+I confirm the working folder and branch, then open the root and applicable nested `AGENTS.md` files. The project instructions describe how we work; the task prompt describes what we want changed.
 
 I check the selected model, reasoning effort and permissions. Then I select **Plan mode** and send:
 
@@ -211,7 +232,9 @@ results and any remaining gaps. Do not commit, publish or deploy.
 
 ## 4. Build and check the improvement · 45–75 minutes
 
-We start with a source that identifies the policy and excerpt but not the supporting PDF page. We want **Page 2** for a passage on that page and **Pages 1–2** for one spanning the boundary.
+**Goal:** carry trusted page metadata through the existing flow and prove it reaches the UI.
+
+At the before checkpoint, the source identifies the policy and excerpt but not the supporting PDF page. We want **Page 2** for a passage on that page and **Pages 1–2** for one spanning the boundary.
 
 From the working checkout, I run the unchanged acceptance checks:
 
@@ -263,7 +286,9 @@ Where available, the CLI controls are `/goal <objective>`, `/goal pause`, `/goal
 
 ### Repository skills
 
-We already have `review-change` and `browser-smoke-check`: general engineering procedures, not RAG implementations. Each has a `SKILL.md` with a name, description and instructions.
+**Goal:** reuse instructions through a skill, then inspect a real external tool call through MCP.
+
+We already have `review-change` and `browser-smoke-check`: general engineering procedures we can use on other changes too. Each has a `SKILL.md` with a name, description and instructions.
 
 Codex discovers repository skills in `.agents/skills/` within the applicable directory scope. It initially sees their names and descriptions, then reads the full instructions when it uses a skill. **`$skill-name` invokes a skill; `/skills` opens the selector.** A skill can be invoked on its own, with extra task details when we want to narrow its focus. [Skill discovery](https://learn.chatgpt.com/docs/build-skills)
 
@@ -343,6 +368,8 @@ For a permission-denial example, I use the recorded `codex.permission` and `perm
 
 ## 6. Verify, review and prepare delivery · 90–110 minutes
 
+**Goal:** establish what works, what we checked and what still needs attention.
+
 We check the visible result, existing boundaries and the actual diff before describing the change as ready.
 
 I run the ingestion checks and page-reference acceptance:
@@ -396,6 +423,8 @@ Our local PR draft explains the problem, resulting behavior, actual checks and r
 
 ## 7. Leave a useful handover · 110–120 minutes
 
+**Goal:** leave enough context for someone else—or a fresh Codex conversation—to continue.
+
 I finish with:
 
 ```text
@@ -419,7 +448,7 @@ For caching, the recorded Codex run reports **207,728 input tokens**, including 
 
 The prepared non-interactive CLI result and `CODEX_REPAIR.patch` demonstrate automation mechanics using the older Markdown task. The SDK example is reference code, not an executed run. Temporal, scheduling and the full publication workflow remain for Contact 3.
 
-## If something gets in the way
+## If I get stuck
 
 | Situation                                 | My next step                                                                                                                                                                                              |
 | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -434,7 +463,7 @@ The prepared non-interactive CLI result and `CODEX_REPAIR.patch` demonstrate aut
 
 The optional Markdown parser is at `/static/contact2-markdown.html`. It stays separate from this PDF task.
 
-### Evidence I can refer to
+### Recorded evidence
 
 | File                                                          | What it establishes                                                                                                                        |
 | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |

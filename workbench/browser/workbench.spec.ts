@@ -9,7 +9,9 @@ test('course overview explains the four contacts and supports topic exploration'
   await expect(page.getByRole('heading', { level: 1 })).toContainText('AI engineering');
   await expect(page.getByText('4 contacts · Contact 2 is 2 hours', { exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await page.screenshot({ path: `workbench/evidence/${info.project.name}-course.png` });
+  await page.screenshot({
+    path: `workbench/.runtime/browser-evidence/${info.project.name}-course.png`,
+  });
   const contextButton = page.getByRole('button', {
     name: 'Read the Kora Dispatch project context',
   });
@@ -21,7 +23,9 @@ test('course overview explains the four contacts and supports topic exploration'
   await expect(context.locator('.context-modal-body p')).toHaveCount(4);
   await expect(context).not.toContainText('Your assignment is');
   expect(await context.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
-  await page.screenshot({ path: `workbench/evidence/${info.project.name}-course-context.png` });
+  await page.screenshot({
+    path: `workbench/.runtime/browser-evidence/${info.project.name}-course-context.png`,
+  });
   await page.getByRole('button', { name: 'Close project context', exact: true }).click();
   await expect(context).not.toBeVisible();
   await expect(contextButton).toBeFocused();
@@ -82,7 +86,9 @@ test('concepts-only deck explains the existing topics without demonstration inst
   await expect(page.locator('.slide[data-phase="Demo"], .slide.appendix')).toHaveCount(0);
   await expect(page.locator('a[href^="http://127.0.0.1:800"]')).toHaveCount(0);
   await expect(page.locator('#why')).toContainText('Concepts explained');
-  await page.screenshot({ path: `workbench/evidence/${info.project.name}-contact1-concepts.png` });
+  await page.screenshot({
+    path: `workbench/.runtime/browser-evidence/${info.project.name}-contact1-concepts.png`,
+  });
   await page.keyboard.press('g');
   await expect(page.locator('#outline-list')).toContainText('Contact 1 / Concepts');
   await expect(page.locator('#outline-list')).not.toContainText('00–15');
@@ -127,7 +133,7 @@ test('concepts-only deck explains the existing topics without demonstration inst
   expect(clipped).toEqual([]);
   if (info.project.name === 'desktop') {
     await page.pdf({
-      path: 'workbench/evidence/contact1-concepts.pdf',
+      path: 'workbench/.runtime/browser-evidence/contact1-concepts.pdf',
       preferCSSPageSize: true,
       printBackground: true,
     });
@@ -153,7 +159,7 @@ test('investigate, inspect, propose, review and persist a resolution', async ({ 
   await page.evaluate(() => window.scrollTo(0, 0));
   await expect(page.locator('#notice')).toBeEmpty({ timeout: 7000 });
   await page.screenshot({
-    path: `workbench/evidence/${info.project.name}-investigation.png`,
+    path: `workbench/.runtime/browser-evidence/${info.project.name}-investigation.png`,
     fullPage: true,
   });
   await page.getByRole('button', { name: 'Propose a service credit', exact: true }).click();
@@ -171,7 +177,7 @@ test('investigate, inspect, propose, review and persist a resolution', async ({ 
   await page.evaluate(() => window.scrollTo(0, 0));
   await expect(page.locator('#notice')).toBeEmpty({ timeout: 7000 });
   await page.screenshot({
-    path: `workbench/evidence/${info.project.name}-resolved.png`,
+    path: `workbench/.runtime/browser-evidence/${info.project.name}-resolved.png`,
     fullPage: true,
   });
   await page.getByRole('button', { name: 'Activity', exact: true }).click();
@@ -342,7 +348,9 @@ test('self-hosted Swagger supports sessions, protected reads and CSRF mutations'
   expect(errors).toEqual([]);
   expect(await page.evaluate(() => (window as any).cspViolations)).toEqual([]);
   await page.evaluate(() => window.scrollTo(0, 0));
-  await page.screenshot({ path: `workbench/evidence/${info.project.name}-swagger.png` });
+  await page.screenshot({
+    path: `workbench/.runtime/browser-evidence/${info.project.name}-swagger.png`,
+  });
 });
 
 test('RAG presentation distinguishes embedding usage and exact chunk provenance', async ({
@@ -510,7 +518,7 @@ for (const provider of ['openai', 'openrouter']) {
     await expect(page.locator('.answer-sources')).toContainText('25%');
     await expect(page.locator('.rag-assistant')).not.toContainText('retrieval score');
     await page.screenshot({
-      path: `workbench/evidence/${info.project.name}-${provider}-clean-rag.png`,
+      path: `workbench/.runtime/browser-evidence/${info.project.name}-${provider}-clean-rag.png`,
       fullPage: true,
     });
     await expect(page.locator('.rag-assistant')).not.toContainText('How this answer was prepared');
@@ -527,7 +535,7 @@ for (const provider of ['openai', 'openrouter']) {
     await expect(page.getByLabel('Raw execution record')).toContainText('browser-runtime-fixture');
     await expect(page.locator('#ai-inspector')).not.toContainText('Execution settings');
     await page.screenshot({
-      path: `workbench/evidence/${info.project.name}-${provider}-ai-inspector.png`,
+      path: `workbench/.runtime/browser-evidence/${info.project.name}-${provider}-ai-inspector.png`,
     });
     await page.keyboard.press('Escape');
     await expect(page.locator('#ai-inspector')).not.toBeVisible();
@@ -567,7 +575,9 @@ test('Contact 1 presentation supports deep links, keyboard navigation, notes and
   );
   await expect(page.getByRole('button', { name: 'Previous slide' })).toBeDisabled();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await page.screenshot({ path: `workbench/evidence/${info.project.name}-contact1-cover.png` });
+  await page.screenshot({
+    path: `workbench/.runtime/browser-evidence/${info.project.name}-contact1-cover.png`,
+  });
   await expect(page.locator('#slide-dots button')).toHaveCount(30);
   const ragShortcut = page.getByRole('button', { name: 'Go to slide 7', exact: true });
   await ragShortcut.click();
@@ -586,13 +596,15 @@ test('Contact 1 presentation supports deep links, keyboard navigation, notes and
   await expect(page).toHaveURL(/#harness$/);
   await expect(page.getByRole('img', { name: 'A horse wearing a harness' })).toBeVisible();
   await expect(page.locator('#harness')).toContainText('Evaluation harness = the test runner.');
-  await page.screenshot({ path: `workbench/evidence/${info.project.name}-contact1-harness.png` });
+  await page.screenshot({
+    path: `workbench/.runtime/browser-evidence/${info.project.name}-contact1-harness.png`,
+  });
   await page.keyboard.press('ArrowRight');
   await expect(page).toHaveURL(/#governance$/);
   await expect(page.locator('#governance')).toContainText('People remain accountable.');
   await expect(page.locator('#governance .speaker-notes')).toBeHidden();
   await page.screenshot({
-    path: `workbench/evidence/${info.project.name}-contact1-governance.png`,
+    path: `workbench/.runtime/browser-evidence/${info.project.name}-contact1-governance.png`,
   });
   await page.keyboard.press('ArrowRight');
   await expect(page).toHaveURL(/#request-path$/);
@@ -607,7 +619,9 @@ test('Contact 1 presentation supports deep links, keyboard navigation, notes and
   await expect(page.getByRole('heading', { name: 'RAG has two paths.' })).toBeVisible();
   await page.getByRole('button', { name: /Speaker notes/ }).click();
   await expect(page.locator('#rag .speaker-notes')).toBeHidden();
-  await page.screenshot({ path: `workbench/evidence/${info.project.name}-contact1-rag.png` });
+  await page.screenshot({
+    path: `workbench/.runtime/browser-evidence/${info.project.name}-contact1-rag.png`,
+  });
   for (const [id, heading] of [
     ['responses', 'OpenAI Responses API: the model boundary.'],
     ['memory', 'Conversation state: who keeps the context?'],
@@ -616,9 +630,13 @@ test('Contact 1 presentation supports deep links, keyboard navigation, notes and
     await page.goto(`/course/contact-1#${id}`);
     await expect(page.getByRole('heading', { name: heading, exact: true })).toBeVisible();
     await expect(page.locator(`#${id} .speaker-notes`)).toBeHidden();
-    await page.screenshot({ path: `workbench/evidence/${info.project.name}-contact1-${id}.png` });
+    await page.screenshot({
+      path: `workbench/.runtime/browser-evidence/${info.project.name}-contact1-${id}.png`,
+    });
   }
-  await page.screenshot({ path: `workbench/evidence/${info.project.name}-contact1-streaming.png` });
+  await page.screenshot({
+    path: `workbench/.runtime/browser-evidence/${info.project.name}-contact1-streaming.png`,
+  });
   await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
   await page.getByRole('button', { name: 'Start timer', exact: true }).click();
   await page.clock.fastForward(61000);
@@ -702,7 +720,7 @@ test('Contact 1 print view contains the complete deck without notes or clipped s
   expect(clipped).toEqual([]);
   if (info.project.name === 'desktop') {
     await page.pdf({
-      path: 'workbench/evidence/contact1-presentation.pdf',
+      path: 'workbench/.runtime/browser-evidence/contact1-presentation.pdf',
       preferCSSPageSize: true,
       printBackground: true,
     });
@@ -798,7 +816,9 @@ test('Contact 2 reference slides explain demo settings without repeating the wal
         'permissions',
       ].includes(id)
     ) {
-      await page.screenshot({ path: `workbench/evidence/${info.project.name}-contact2-${id}.png` });
+      await page.screenshot({
+        path: `workbench/.runtime/browser-evidence/${info.project.name}-contact2-${id}.png`,
+      });
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), id).toBe(
       true,
@@ -810,12 +830,14 @@ test('Contact 2 reference slides explain demo settings without repeating the wal
   }
   await page.goto('/course/contact-2#dimensions');
   await expect(page.locator('#dimensions [data-code-location]')).toHaveCount(1);
-  await page.screenshot({ path: `workbench/evidence/${info.project.name}-contact2-ingestion.png` });
+  await page.screenshot({
+    path: `workbench/.runtime/browser-evidence/${info.project.name}-contact2-ingestion.png`,
+  });
   await page.emulateMedia({ media: 'print' });
   await expect(page.locator('.slide:visible')).toHaveCount(20);
   if (info.project.name === 'desktop')
     await page.pdf({
-      path: 'workbench/evidence/contact2-presentation.pdf',
+      path: 'workbench/.runtime/browser-evidence/contact2-presentation.pdf',
       preferCSSPageSize: true,
       printBackground: true,
     });
@@ -1045,7 +1067,7 @@ for (const pages of [[2], [1, 2], []]) {
       true,
     );
     await page.screenshot({
-      path: `workbench/evidence/${info.project.name}-contact2-pdf-${pages.join('-') || 'legacy'}-fixture.png`,
+      path: `workbench/.runtime/browser-evidence/${info.project.name}-contact2-pdf-${pages.join('-') || 'legacy'}-fixture.png`,
       fullPage: true,
     });
     await page.getByLabel('Policy title', { exact: true }).fill('Changed policy title');

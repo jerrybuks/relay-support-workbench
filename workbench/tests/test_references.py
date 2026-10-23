@@ -8,8 +8,8 @@ from fastapi.testclient import TestClient
 from relay.main import create_app
 from relay.seed import DOCUMENTS
 from teaching.contact1_reference import search_reference
-from teaching.contact2_before import apply_event as broken
-from teaching.contact2_reference import apply_event as fixed
+from teaching.idempotency_practice import apply_event_before as broken
+from teaching.idempotency_practice import apply_event_reference as fixed
 from teaching.ingestion_reference import create_app as ingestion_app
 from teaching.responses_reference import GroundedAnswer, grounded_response
 from teaching.tool_loop_reference import run_tool_loop

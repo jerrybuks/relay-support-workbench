@@ -44,16 +44,16 @@ RELAY_ALLOW_LIVE=1 uv run --project workbench --locked --extra references python
 
 The main RAG demonstration is the working PDF upload flow at `/teaching/contact-2`. Start at `contact2/indexing/pipeline.py`: `preview_pdf` calls parsing/chunking for review; `build_index` explicitly calls chunking, embedding and Qdrant storage. Upload/review records and removal live separately in `contact2/document_service.py`; canonical sources and transactional publication are in `contact2/policy_store.py`. Its sibling modules contain PDF parsing, chunking, embedding requests and Qdrant storage. `contact2/querying/pipeline.py` is the direct policy-query entry: `answer_question` calls `retrieve_passages`, `generate_answer` and `validate_answer`. The API is `POST /api/v1/policies/query`; it has no case ID or investigator callback. Retrieval and answer implementations are in sibling `retrieval.py` and `answer.py`. The case-based runtime retains its adapters separately in `investigation_answer.py` and `investigation_retrieval.py`. The former `pdf_pipeline.py` and duplicate root `pipeline.py` have been removed. The separate Markdown preview is in `markdown_practice.py`. The UI shows actual text, chunks, stored vectors, retrieved passages and cited answers on one page. A downloadable original sample is in `contact2/pdfs/`; regenerate it with `scripts/contact2_sample_pdf.py`. `scripts/contact2_pdf_preflight.py --confirm-billable` verifies the real provider using disposable data. The optional Markdown exercise remains incomplete independently of PDF ingestion.
 
-The main session is the [120-minute practical AI engineering and governed Codex rehearsal](../../docs/teaching/CONTACT_2_REHEARSAL_GUIDE.md): a working PDF walkthrough followed by a page-reference improvement. The replacement exercise, completed fallback and PDF skill reuse still need preparation; the three-page sample is available under `contact2/pdfs/`. `contact2/TASK.md` and its parser reference describe the older Markdown exercise, retained as separate practice rather than the current class assignment.
+The main session is the [120-minute practical AI engineering and governed Codex rehearsal](../../docs/teaching/CONTACT_2_REHEARSAL_GUIDE.md): a working PDF walkthrough followed by a page-reference improvement. The page-reference implementation and repository PDF skill are included on `main`; use `contact-2-before` to repeat the exercise. The three-page sample is available under `contact2/pdfs/`. `contact2/TASK.md` and its parser reference describe the older Markdown exercise, retained as separate practice rather than the current class assignment.
 
 The original duplicate-event red/green fixture below remains optional practice, not the main session:
 
 ```sh
-PYTHONPATH=. .venv/bin/python teaching/contact2_regression.py --state before
-PYTHONPATH=. .venv/bin/python teaching/contact2_regression.py --state reference
+PYTHONPATH=. .venv/bin/python teaching/idempotency_practice.py --state before
+PYTHONPATH=. .venv/bin/python teaching/idempotency_practice.py --state reference
 ```
 
-The first command intentionally exits 1 (₦4,000 actual versus ₦2,000 expected); the second exits 0. The actual baseline service never imports the broken fixture. `codex-task.md` is the issue/PR task contract. `mcp_reference.py` exposes one read-only fixture ticket through the actual MCP SDK:
+The first command intentionally exits 1 (₦4,000 actual versus ₦2,000 expected); the second exits 0. The actual baseline service never imports the broken fixture. Both functions and the CLI live in `idempotency_practice.py`. `mcp_reference.py` exposes one read-only fixture ticket through the actual MCP SDK:
 
 ```sh
 PYTHONPATH=. .venv/bin/python -m teaching.mcp_reference

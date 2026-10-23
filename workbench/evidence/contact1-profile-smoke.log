@@ -1,3 +1,0 @@
-{"profile": "before", "port": 8004, "checkpoint": "contact-1-before", "provider": "fixture", "status": "insufficient_evidence", "cookie": "relay_c1_before", "passed": true}
-{"profile": "retrieval", "port": 8001, "checkpoint": "contact-1-lexical-reference", "provider": "fixture", "status": "supported", "cookie": "relay_c1_retrieval", "passed": true}
-{"profile": "live", "missing_configuration": "fails closed before serving", "live_network_calls": false, "passed": true}

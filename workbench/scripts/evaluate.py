@@ -79,8 +79,8 @@ def run():
         "not live generation, embedding quality, semantic entailment or customer acceptance.",
         "results": results,
     }
-    target = ROOT / "evidence"
-    target.mkdir(exist_ok=True)
+    target = ROOT / ".runtime" / "evaluation"
+    target.mkdir(parents=True, exist_ok=True)
     (target / "fixture-evaluation.json").write_text(json.dumps(report, indent=2) + "\n")
     lines = [
         "# Relay fixture evaluation",

@@ -22,23 +22,12 @@ def main():
     subprocess.run(
         ["git", "worktree", "add", "--detach", str(target), "HEAD"], cwd=ROOT, check=True
     )
-    for name in ["review-change", "browser-smoke-check"]:
-        destination = target / ".agents/skills" / name
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        if not destination.exists():
-            shutil.copytree(target / "workbench/teaching/contact2/skills" / name, destination)
     subprocess.run(
         ["uv", "sync", "--project", str(target / "workbench"), "--locked", "--extra", "references"],
         check=True,
     )
     if (ROOT / "node_modules").exists():
         (target / "node_modules").symlink_to(ROOT / "node_modules", target_is_directory=True)
-    ignore = target / ".gitignore"
-    ignore.write_text(ignore.read_text() + "\n# Rehearsal dependency symlink\nnode_modules\n")
-    subprocess.run(["git", "add", ".agents/skills", ".gitignore"], cwd=target, check=True)
-    subprocess.run(
-        ["git", "commit", "-m", "Prepare scoped Contact 2 rehearsal skills"], cwd=target, check=True
-    )
     # Reuse only the dedicated seed-only C2 index, never Contact 1/owner runtime data.
     source = ROOT / "workbench/.runtime/contact2"
     dest = target / "workbench/.runtime/contact2"
@@ -63,7 +52,7 @@ def main():
         ).strip(),
         "seed_index_copied": seeded,
         "credentials_copied": False,
-        "skills": ["review-change", "browser-smoke-check"],
+        "skills": sorted(p.parent.name for p in (target / ".agents/skills").glob("*/SKILL.md")),
         "environment_file": str(ROOT / "workbench/.env"),
     }
     report = ROOT / "workbench/.runtime/contact2/setup.json"

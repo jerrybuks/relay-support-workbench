@@ -60,7 +60,7 @@ uv run --project workbench python workbench/scripts/evaluate.py
 pnpm exec playwright test --config workbench/playwright.config.ts
 ```
 
-Detailed reference commands/status are in [workbench guidance](workbench/README.md). The [Contact 1 preparation guide](docs/teaching/CONTACT_1_PREPARATION.md) covers the starter, retrieval and live-reference profiles. Live/account-dependent checks are distinct from fixture checks. See the [Contact 1 verification report](workbench/evidence/CONTACT_1_PREPARATION.md), [baseline verification report](workbench/evidence/VERIFICATION.md) and [repository cleanup verification](workbench/evidence/CLEANUP_2026-10-20.md) for actual results and remaining delivery gates.
+Detailed commands are in [workbench guidance](workbench/README.md). The [Contact 1 guide](docs/teaching/CONTACT_1_PREPARATION.md) and [Contact 2 guide](docs/teaching/CONTACT_2_REHEARSAL_GUIDE.md) cover their practical flows. [Recorded evidence](workbench/evidence/README.md) distinguishes fixture checks, past live runs and remaining validation gaps. New browser artifacts and evaluation reports are generated under ignored `workbench/.runtime/` folders.
 
 ## Teaching plan
 
@@ -77,4 +77,4 @@ The [documentation index](docs/README.md) links the product design, facilitator 
 
 The default app is a **loopback-only workshop**, with synthetic data, demo identity switching, SQLite, fixture tools and a local ledger. It is not production authentication, a payment integration, a real logistics service or proof of live model quality. An explicit public hosted-workshop mode adds an HTTPS origin, secure cookies and shared request limits. Production startup remains rejected until real identity and operational controls are supplied. Advanced/reference SDK installation does not activate a service or authorize external writes.
 
-This public repository starts with a clean Relay snapshot. Earlier game commits and tags remain in the original local repository and are not published here. Historical tag names in older evidence refer to that local history; use the documented launch profiles for this snapshot. Credentials, runtime databases, vector indexes, dependencies and raw provider reports stay local. Included screenshots use fictional workshop data; published verification logs have local machine paths replaced with placeholders and trailing whitespace normalized.
+This public repository starts with a clean Relay snapshot. Earlier game commits and tags remain in the original local repository and are not published here. Historical tag names in older evidence refer to that local history; use the documented launch profiles for this snapshot. Credentials, runtime databases, vector indexes, dependencies and raw provider reports stay local. Included screenshots use fictional workshop data; the curated evidence index distinguishes historical records from fresh local output.

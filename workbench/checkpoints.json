@@ -1,9 +1,7 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "product": "relay",
-  "executionModel": "Isolated opt-in modules/profiles in one source revision; selecting a tag alone does not switch profiles.",
-  "sourceTag": "relay/m0-starter",
-  "referencePackTag": "relay/teaching-reference-pack",
+  "executionModel": "The baseline and teaching profiles are separate opt-in entrypoints. A tag selects source; a launch command selects the app. Never share their runtime stores.",
   "baseline": {
     "status": "verified-locally",
     "entrypoint": "relay.main:create_app",
@@ -14,16 +12,9 @@
   },
   "contacts": {
     "1": {
-      "before": "relay.main:create_app",
-      "intermediate": "teaching.contact1_reference:create_app",
-      "reference": "teaching.contact1_live:create_app",
-      "port": 8002,
-      "database": "workbench/.runtime/c1-live.sqlite",
-      "status": "expanded-runtime-verified-locally; live-quality-review-materials-and-rehearsal-pending",
-      "liveOpenAI": "model metadata access confirmed for gpt-4o; embedding access blocked: HTTP 429 credit_balance_exhausted",
-      "evaluation": "workbench/evidence/fixture-evaluation.json",
-      "preparation": "docs/teaching/CONTACT_1_PREPARATION.md",
-      "preparedTag": "relay/contact-1-prepared",
+      "guide": "docs/teaching/CONTACT_1_PREPARATION.md",
+      "slides": "/course/contact-1",
+      "conceptsSlides": "/static/contact1-concepts.html",
       "profiles": {
         "before": {
           "command": "pnpm contact1:before",
@@ -47,91 +38,40 @@
           "provider": "openai or openrouter, selected by RELAY_AI_PROVIDER"
         }
       },
-      "evidence": "workbench/evidence/CONTACT_1_PREPARATION.md",
       "rag": {
-        "implementation": "teaching/rag_reference.py",
+        "implementation": "workbench/teaching/contact2/indexing; workbench/teaching/contact2/querying",
         "indexCommand": "pnpm contact1:index",
-        "storage": "persistent local Qdrant; single process",
         "embeddingModelDefault": "text-embedding-3-small",
+        "storage": "persistent local Qdrant; single process",
         "retrievalModes": ["vector", "hybrid"],
-        "liveEmbeddings": "Verified OpenRouter OpenAI embeddings and persistent Qdrant; direct OpenAI billing remains unfunded.",
-        "heldOutDataset": "workbench/evals/rag-held-out.json; draft unreviewed",
-        "thresholdCalibrated": false,
-        "defaultMode": "hybrid"
+        "thresholdCalibrated": false
       },
-      "preparedTagNote": "Historical pre-vector checkpoint; current uncommitted source includes subsequent preparation.",
-      "coverageAudit": "docs/teaching/CONTACT_1_COVERAGE_AUDIT.md",
-      "runtime": {
-        "implementation": "teaching/investigation_reference.py",
-        "memoryModes": ["stateless", "case"],
-        "executionModes": ["workflow", "agent"],
-        "runtimes": ["direct", "langgraph"],
-        "chunkers": ["native", "langchain"],
-        "streaming": "actual provider SDK; bounded progress and validated final result",
-        "tracing": "nested SDK observations; hosted metadata-only root receipt confirmed via observations v2; actual model-run trace pending",
-        "semanticEvaluation": "budgeted model judge; run-bound human import; uncalibrated",
-        "preflight": "pnpm contact1:preflight; --live explicitly billable",
-        "providerStateComparison": "standalone SDK reference: stateless/manual/previous/Conversations; mock transport verified; live pending"
-      },
-      "verification": "workbench/evidence/hosted-workshop-verify.log; 164 Python tests; 26 desktop/mobile checks; 2 opt-in Temporal skips; 98 source fingerprints",
-      "presentation": {
-        "route": "/course/contact-1",
-        "source": "workbench/src/relay/static/contact1.html",
-        "conceptSlides": 15,
-        "demoCards": 5,
-        "appendixSlides": 10,
-        "speakerNotes": true,
-        "participantPdf": "workbench/evidence/contact1-presentation.pdf",
-        "timedRehearsal": "not-run",
-        "verification": "workbench/evidence/contact1-suggestions-verify.log; 145 Python tests; 24 desktop/mobile checks; 2 opt-in Temporal skips; 95 source fingerprints"
-      },
-      "preparationExperiments": {
-        "conflict": "Live strict abstention/no-business-effect checks passed on prompt 5; previous failure retained; facilitator review pending",
-        "comparison": "Live GPT-4o/GPT-4o-mini comparison completed; 6/6 contract checks each; estimated token prices only; semantic review pending",
-        "collector": "Actual live RAG investigation trace receipt confirmed, beyond earlier metadata-only probe",
-        "priceCard": "workbench/evals/price-card-openrouter-2026-10-21.json; official gateway model/provider listed rates; account review pending",
-        "statusEvidence": "workbench/evidence/contact1-live-setup-status.json",
-        "blocker": "Credentials and indexing now work. Remaining: facilitator semantic/data approval, timed rehearsal, explicit reference-only plan for unsupported native provider-state modes."
-      },
-      "liveOpenRouter": "Live embeddings, Responses/tool workflow, stream, agent, LangGraph, caller-managed memory and hosted investigation trace verified; golden 20/20, held-out candidates 8/8, comparison 6/6 per model. Semantic approval and rehearsal pending.",
-      "conceptsOnlyPresentation": {
-        "route": "/static/contact1-concepts.html",
-        "source": "workbench/src/relay/static/contact1-concepts.html",
-        "slides": 15,
-        "speakerNotes": true,
-        "demoCards": 0,
-        "participantPdf": "workbench/evidence/contact1-concepts.pdf",
-        "verification": "workbench/evidence/contact1-suggestions-verify.log; 145 Python tests; 24 desktop/mobile checks; 2 opt-in Temporal skips; 95 source fingerprints"
-      },
-      "mainDemo": {
-        "profile": "live",
-        "url": "http://127.0.0.1:8002",
-        "flow": "Open case \u2192 ask \u2192 answer \u2192 cited policy; inspect same request in Swagger and execution details",
-        "optionalHistoricalProfiles": ["before", "retrieval"],
-        "liveSmokeEvidence": "workbench/evidence/contact1-clean-rag-live.json",
-        "limits": "Two real hybrid streamed answers verified. Earlier full golden/held-out runs used vector mode; no new human semantic approval or timed rehearsal.",
-        "assistantUI": "Question and answer with expandable policy sources; bottom composer. Inspect AI opens a separate Run details / Settings / Raw JSON dialog; saving and execution choices apply to the next question.",
-        "questionSuggestions": "Four compact case-specific cards below the composer; click fills the question without submitting."
-      }
+      "runtime": "workbench/teaching/investigation_reference.py",
+      "recordedLiveEvidence": [
+        "workbench/evidence/contact1-live-setup-status.json",
+        "workbench/evidence/contact1-clean-rag-live.json"
+      ],
+      "providerState": "Caller-managed context is integrated. Native OpenAI response chains and Conversations remain a separate SDK reference and require a supported route."
     },
     "2": {
       "durationMinutes": 120,
-      "before": "teaching.contact2_app:create_app; RELAY_C2_STATE=before",
-      "reference": "teaching.contact2_app:create_app; RELAY_C2_STATE=reference",
-      "port": 8002,
-      "data": "workbench/.runtime/contact2 within isolated worktree",
       "guide": "docs/teaching/CONTACT_2_REHEARSAL_GUIDE.md",
-      "task": "workbench/teaching/contact2/TASK.md",
-      "evidence": "workbench/evidence/contact2-preparation.json",
-      "status": "technical-preparation-verified; presenter timing and client Plan/Goal practice remain",
-      "legacyDuplicateEvent": {
-        "before": "teaching/contact2_before.py",
-        "intermediate": "teaching/codex-task.md",
-        "reference": "teaching/contact2_reference.py",
-        "status": "verified-local-red-before-green-reference",
-        "mcp": "actual SDK in-process fixture protocol verified",
-        "realLinearGitHubCodexCloud": "not-run",
-        "remainingImplementation": "App-visible defect journey, exact patch/PR artifact, actual programmatic/cloud/CI and Windsurf references"
+      "slides": "/course/contact-2",
+      "lab": "/teaching/contact-2",
+      "entrypoint": "teaching.contact2_app:create_app",
+      "command": "pnpm contact2:before",
+      "port": 8002,
+      "data": "workbench/.runtime/contact2 within the selected checkout",
+      "task": "workbench/teaching/contact2/PAGE_REFERENCE_TASK.md",
+      "beforeTag": "contact-2-before",
+      "completedTag": "contact-2-complete",
+      "currentSource": "main includes the completed PDF feature and subsequent fixes. --state before controls the separate Markdown parser, not page references.",
+      "acceptance": "workbench/.venv/bin/python -m pytest -c workbench/pyproject.toml workbench/teaching/contact2/reference_tests/page_reference_acceptance.py -q",
+      "skills": ".agents/skills/",
+      "evidence": "workbench/evidence/contact2-release-verification.json",
+      "optionalPractice": {
+        "markdownTask": "workbench/teaching/contact2/TASK.md",
+        "idempotency": "workbench/teaching/idempotency_practice.py"
       }
     },
     "3": {
@@ -152,32 +92,30 @@
       "remainingPreparation": "Concrete discovery/pilot/incident/handover pack and readiness-objective mapping"
     }
   },
-  "evidence": "workbench/evidence/VERIFICATION.md",
+  "evidence": "workbench/evidence/README.md",
   "fingerprints": "workbench/checkpoint-files.json",
   "deliveryGates": [
-    "Facilitator corpus/dataset review",
-    "Live OpenAI embedding/retrieval/answer quality and threshold calibration",
-    "Langfuse hosted export",
-    "Authorized real ticket/PR/Codex-cloud workflows",
-    "Advanced practice implementations",
-    "Timed rehearsal and exact course-objective mapping",
-    "Customer identity/data/operational review before production"
+    "Reviewed corpus and evaluation data",
+    "Measured current-provider answer quality and retrieval calibration",
+    "Current collector/redaction checks",
+    "Authorized ticket/cloud integrations",
+    "Contact 3 application integration and Contact 4 pilot/operations material",
+    "Real identity, data and operational review before production"
   ],
   "hostedWorkshop": {
     "entrypoint": "workbench/scripts/serve_workshop.py",
     "blueprint": "render.yaml",
-    "image": "Dockerfile",
-    "plan": "Render Free; no paid disk/database/worker",
+    "url": "https://relay-workshop.onrender.com",
+    "storage": "ephemeral; synthetic index rebuilds on fresh boot",
     "publicUI": true,
     "publicAI": true,
+    "publicPdfUploadLab": false,
     "limits": {
       "perMinute": 10,
       "perUTCDay": 100,
-      "scope": "shared across visitors in one process; resets on instance restart"
+      "scope": "shared across visitors in one process; resets on restart"
     },
-    "storage": "ephemeral; synthetic index rebuilds on fresh boot",
-    "verification": "workbench/evidence/hosted-workshop-verify.log",
-    "liveContainerEvidence": "workbench/evidence/hosted-container-live.json",
-    "cloudStatus": "not-created; owner Render login required"
+    "deployment": "Service exists; owner triggers manual deploy. Check the actual service separately for deployed revision.",
+    "recordedContainerEvidence": "workbench/evidence/hosted-container-live.json"
   }
 }
