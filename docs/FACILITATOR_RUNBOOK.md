@@ -108,6 +108,8 @@ The full review/publication lifecycle, source revocation, Temporal and scheduled
 
 ## Contact 3 — governed ingestion and durable automation
 
+For the Shoplytic class, use the [Contact 3 Shoplytic guide](teaching/CONTACT_3_SHOPLYTIC.md) and its completed slide deck instead of the Relay exercise below. That 60-minute session follows a new engineer through research, planning, a bounded MCP change, testing, review and release preparation. The ingestion/Temporal sequence remains a separate exercise; it is not part of the Shoplytic demo.
+
 ### Prepare before class
 
 Local valid/duplicate/missing-provenance/injection fixtures, ingestion candidate parser, reviewed publication boundary, unfinished skill/AGENTS exercise plus separate completed reference, Temporal approval workflow and scheduling definition, MCP tool scope and run-evaluation report. Temporal infrastructure is prepared, not installed during class.

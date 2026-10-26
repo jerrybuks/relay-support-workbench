@@ -2,3 +2,5 @@
 *.pdf binary
 # Patch context lines can contain a significant single space.
 *.patch -whitespace
+# Preserve the source snapshot's trailing blank line and recorded SHA-256.
+workbench/teaching/contact3_shoplytic/data/test_cases.json whitespace=-blank-at-eof
