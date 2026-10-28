@@ -1,0 +1,968 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Contact 3: a simple Shoplytic demo of Codex across research, planning, execution, testing, review and release."
+    />
+    <title>Contact 3 · Codex × Shoplytic</title>
+    <link rel="stylesheet" href="contact1.css" />
+    <link rel="stylesheet" href="contact3.css" />
+    <script src="contact1.js" defer></script>
+  </head>
+  <body data-contact="3">
+    <a class="skip-link" href="#deck">Skip to presentation</a>
+    <header class="deck-toolbar">
+      <a class="deck-brand" href="contact3.html"
+        ><span aria-hidden="true">s.</span><strong>shoplytic</strong><small>Contact 03</small></a
+      >
+      <div class="slide-position">
+        <span id="phase-label">Concepts</span><span id="slide-counter"></span
+        ><span id="planned-time"></span>
+      </div>
+      <div class="rehearsal">
+        <output id="timer" aria-label="Rehearsal elapsed time">00:00</output
+        ><button id="timer-button" type="button">Start timer</button
+        ><button id="reset-timer" type="button">Reset</button>
+      </div>
+      <nav aria-label="Presentation controls">
+        <button id="outline-button" type="button" aria-haspopup="dialog">
+          Contents <kbd>G</kbd></button
+        ><button id="notes-button" type="button" aria-pressed="false">Notes <kbd>N</kbd></button
+        ><button id="fullscreen-button" type="button">Fullscreen <kbd>F</kbd></button
+        ><button id="print-button" type="button">Print / PDF</button>
+      </nav>
+    </header>
+    <progress id="deck-progress" max="21" value="1" aria-label="Slide progress"></progress>
+    <main id="deck" aria-label="Contact 3 presentation">
+      <noscript
+        ><p class="fallback">
+          All slides are shown below. Enable JavaScript for presentation controls.
+        </p></noscript
+      >
+      <section
+        class="slide c3-slide"
+        id="welcome"
+        data-phase="Concepts"
+        data-time="00–01 min"
+        data-title="Your first change at Shoplytic."
+      >
+        <div class="slide-top"><span>Contact 03 / 01</span><span>Concepts</span></div>
+        <p class="eyebrow">Concepts · 00–01 min</p>
+        <h1>Your first change at Shoplytic.</h1>
+        <p class="lead">Contact 3 · Codex across the software development lifecycle</p>
+        <div class="c3-sequence">
+          <span>Research</span><span>Plan</span><span>Build</span><span>Test &amp; review</span
+          ><span>Release</span>
+        </div>
+        <p class="anchor-line">One small task. Evidence at every step. 60 minutes together.</p>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            Today, we’re joining Shoplytic as new engineers. I’ll use Codex to understand the code,
+            plan one small change, build it, test it, review it and prepare a release. Our change is
+            a read-only MCP server for inspecting evaluation cases. I’ve prepared a working
+            reference so we can inspect the end product and recover if the live build takes longer
+            than expected. We’ll spend 15 minutes on concepts and 45 minutes on the engineering
+            workflow.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide c3-slide"
+        id="map"
+        data-phase="Concepts"
+        data-time="01–02 min"
+        data-title="Two repositories. One shopping journey."
+      >
+        <div class="slide-top"><span>Contact 03 / 02</span><span>Concepts</span></div>
+        <p class="eyebrow">Concepts · 01–02 min</p>
+        <h2>Two repositories. One shopping journey.</h2>
+        <div class="c3-cards">
+          <article>
+            <h3>Storefront</h3>
+            <p>React + TypeScript + Vite<br />Products, cart, orders, chatbot</p>
+          </article>
+          <article>
+            <h3>API &amp; agents</h3>
+            <p>FastAPI + Python<br />Routing, tools, validation, evaluation</p>
+          </article>
+          <article>
+            <h3>Data</h3>
+            <p>PostgreSQL: commerce records<br />Chroma: product + handbook retrieval</p>
+          </article>
+        </div>
+        <p class="anchor-line">Read the request path before reading every file.</p>
+        <p class="c3-source">
+          FE: src/components/Chatbot.tsx:173 · src/services/api.ts:85 | BE: src/routes/user.py:101 ·
+          src/querying/service.py:23
+        </p>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            We have two repositories: the React storefront and the Python API. I’ll follow one chat
+            message from the UI into the API and then into the agents. PostgreSQL holds commerce
+            records, while Chroma supports semantic retrieval over products and the handbook. We
+            don’t need to read every file before starting; we need enough evidence to understand the
+            part we’re changing.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide c3-slide"
+        id="request"
+        data-phase="Concepts"
+        data-time="02–03:30 min"
+        data-title="Follow one question through the system."
+      >
+        <div class="slide-top"><span>Contact 03 / 03</span><span>Concepts</span></div>
+        <p class="eyebrow">Concepts · 02–03:30 min</p>
+        <h2>Follow one question through the system.</h2>
+        <div class="c3-flow">
+          <div>Shopper → Chatbot → POST /user/query → Orchestrator</div>
+          <div class="c3-branches">
+            <article>
+              <h3>General info agent</h3>
+              <p>Retrieve handbook → answer with context</p>
+            </article>
+            <article>
+              <h3>Order agent</h3>
+              <p>Search products → bounded tool loop → cart / orders</p>
+            </article>
+          </div>
+          <div>Answer + sources + routing + elapsed time → UI</div>
+          <div class="c3-muted">Langfuse trace → background LLM judge</div>
+        </div>
+        <p class="c3-source">
+          BE: src/querying/agents/orchestrator.py:44,246,306,352 · agents/general_info.py:60 ·
+          agents/order.py:289
+        </p>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            Let’s trace a shopper’s question. The UI sends it to /user/query. The orchestrator
+            selects the general-information specialist, the order specialist, or both. General
+            information retrieves handbook passages before answering. The order agent has a bounded
+            loop for product and commerce tools. Different specialists can run concurrently. The
+            response includes sources, routing and timing. A separate background judge can attach
+            scores to a Langfuse trace. This diagram explains the implementation; it isn’t a
+            recording of a live shopper request.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide c3-slide"
+        id="two-agent-systems"
+        data-phase="Concepts"
+        data-time="03:30–04:30 min"
+        data-title="Two kinds of multi-agent work."
+      >
+        <div class="slide-top"><span>Contact 03 / 04</span><span>Concepts</span></div>
+        <p class="eyebrow">Concepts · 03:30–04:30 min</p>
+        <h2>Two kinds of multi-agent work.</h2>
+        <div class="c3-cards">
+          <article>
+            <h3>Shoplytic runtime agents</h3>
+            <p>
+              Serve shoppers.<br />Orchestrator → policy or order specialist.<br />Tools operate on
+              application state.
+            </p>
+          </article>
+          <article>
+            <h3>Codex engineering subagents</h3>
+            <p>
+              Help us change the code.<br />Researcher → implementer → reviewer.<br />Each gets a
+              bounded question and context.
+            </p>
+          </article>
+        </div>
+        <p class="anchor-line">
+          Parallelize independent research. Keep dependent implementation steps coordinated.
+        </p>
+        <p class="c3-source">
+          BE: src/querying/agents/orchestrator.py:246,269 | Official:
+          learn.chatgpt.com/docs/agent-configuration/subagents
+        </p>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            There are two agent systems in our discussion. Shoplytic’s runtime agents serve
+            shoppers. Codex’s subagents help us research and review the code. I’ll delegate
+            independent research to two read-only agents, then keep one writer responsible for the
+            patch. A fresh reviewer gets the task contract, diff and test evidence. Shoplytic’s
+            router is custom Python orchestration; its sequential branch does not pass one
+            specialist’s result into the next, and it is not a durable workflow engine.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide c3-slide"
+        id="context"
+        data-phase="Concepts"
+        data-time="04:30–06 min"
+        data-title="Give each agent a useful working context."
+      >
+        <div class="slide-top"><span>Contact 03 / 05</span><span>Concepts</span></div>
+        <p class="eyebrow">Concepts · 04:30–06 min</p>
+        <h2>Give each agent a useful working context.</h2>
+        <div class="c3-split">
+          <div>
+            <p class="eyebrow">A small task packet</p>
+            <ul>
+              <li>Goal and acceptance criteria</li>
+              <li>Relevant paths and constraints</li>
+              <li>Expected output and evidence</li>
+              <li>What is unknown or blocked</li>
+            </ul>
+          </div>
+          <pre><code>Research agent: read only.
+Follow the main user journey we found.
+Return key findings with source refs.
+Do not import app startup.
+Do not edit or call providers.</code></pre>
+        </div>
+        <p class="anchor-line">
+          Bring back findings, decisions and test results. Keep raw logs with the specialist.
+        </p>
+        <p class="c3-source">
+          BE: src/utils/memory.py:29,80 | See facilitator guide for the handoff prompt.
+        </p>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            My first prompt should describe what I need to learn, not assume I know the
+            architecture. Once Codex has discovered the structure, I can give specialists a small
+            packet with the goal, relevant paths, constraints and expected evidence. I’ll ask
+            researchers to return concise findings with source references rather than full source
+            dumps. Then we’ll turn those findings into a diagram and check its arrows. For a
+            handoff, I’ll preserve the decision, changed files, observed checks and next action.
+            We’ll add context as we learn instead of inventing detail upfront.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide c3-slide"
+        id="instructions"
+        data-phase="Concepts"
+        data-time="06–07 min"
+        data-title="Guidance, workflow, tools, people."
+      >
+        <div class="slide-top"><span>Contact 03 / 06</span><span>Concepts</span></div>
+        <p class="eyebrow">Concepts · 06–07 min</p>
+        <h2>Guidance, workflow, tools, people.</h2>
+        <div class="c3-definitions">
+          <p>
+            <strong>AGENTS.md</strong><span>Project rules: commands, boundaries, conventions.</span>
+          </p>
+          <p>
+            <strong>Skill</strong><span>A reusable procedure, such as a review checklist.</span>
+          </p>
+          <p>
+            <strong>MCP</strong><span>A protocol for exposing tools and context to an agent.</span>
+          </p>
+          <p>
+            <strong>Specialized agent</strong
+            ><span>A focused role with a clear task and expected result.</span>
+          </p>
+        </div>
+        <p class="anchor-line">
+          Instructions guide behavior. Code, permissions and validation enforce boundaries.
+        </p>
+        <p class="c3-source">
+          Official: learn.chatgpt.com/docs/customization/overview ·
+          learn.chatgpt.com/docs/extend/mcp
+        </p>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            I use AGENTS.md for recurring project guidance, a skill for a reusable procedure, MCP
+            for access to tools and context, and a subagent for a focused delegated task. We don’t
+            need to introduce all four into every change. Instructions guide behavior; permissions,
+            validation and implementation enforce boundaries. If a tool returns a query that says
+            ‘ignore your instructions,’ we treat that query as dataset content rather than a
+            command.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide c3-slide"
+        id="patterns"
+        data-phase="Concepts"
+        data-time="07–08:30 min"
+        data-title="Patterns worth keeping."
+      >
+        <div class="slide-top"><span>Contact 03 / 07</span><span>Concepts</span></div>
+        <p class="eyebrow">Concepts · 07–08:30 min</p>
+        <h2>Patterns worth keeping.</h2>
+        <div class="c3-cards">
+          <article>
+            <h3>Separate responsibilities</h3>
+            <p>Indexing builds retrieval data.<br />Querying routes work to specialists.</p>
+          </article>
+          <article>
+            <h3>Bound the work</h3>
+            <p>Six-step order-agent loop.<br />Model and blocking-tool timeouts.</p>
+          </article>
+          <article>
+            <h3>Enforce in code</h3>
+            <p>Cart, shipping and voucher checks.<br />Transaction commit or rollback.</p>
+          </article>
+        </div>
+        <p class="anchor-line">
+          Inspect one trace across routing, retrieval, tool execution and response.
+        </p>
+        <p class="c3-source">
+          BE: src/build_index.py:37 · src/querying/agents/order.py:115,289 · src/utils/llm.py:45,79
+          · src/querying/tools/order.py:754,786
+        </p>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            Here are patterns I want us to recognize and keep: separate indexing from querying, give
+            specialists bounded tools, preserve product identifiers, and put business checks in
+            Python. The order tool loop has a six-step cap, and calls have timeouts. Purchase code
+            checks prerequisites and uses transaction commit or rollback. Those are useful patterns,
+            but they don’t establish complete retry or concurrency safety. We’ll inspect the code
+            without running purchase actions on shared data.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide c3-slide"
+        id="golden"
+        data-phase="Concepts"
+        data-time="08:30–10 min"
+        data-title="Golden data describes expected behavior."
+      >
+        <div class="slide-top"><span>Contact 03 / 08</span><span>Concepts</span></div>
+        <p class="eyebrow">Concepts · 08:30–10 min</p>
+        <h2>Golden data describes expected behavior.</h2>
+        <div class="c3-split">
+          <div class="c3-metric">
+            <strong>15</strong><span>checked-in cases · 9 categories</span>
+            <p>
+              Use the same cases to compare versions.<br />They are evaluation inputs, not training
+              here.
+            </p>
+          </div>
+          <pre><code>id: policy_001
+query: What is your return policy?
+expected_agent: general_info
+expected_behavior: answer from handbook
+min_quality_score: 7</code></pre>
+        </div>
+        <p class="anchor-line">
+          Today’s runner passes on agent routing. It does not enforce the behavior or quality
+          threshold.
+        </p>
+        <p class="c3-source">
+          BE: data/golden_data/test_cases.json · tests/test_runner.py:86 · reports/REPORT.MD:507
+        </p>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            Let’s open policy_001, then compare it with the runner. The golden dataset contains 15
+            cases in nine categories. It records the query, expected agent, expected behavior and a
+            quality threshold. These are evaluation inputs; this code does not use them for
+            training. The current runner passes a case based on agent routing. It doesn’t enforce
+            the expected behavior or the minimum score. That distinction matters when we interpret a
+            green result. The older report says 17 cases; we’ll use the checked-in data as our
+            evidence.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide c3-slide"
+        id="judge"
+        data-phase="Concepts"
+        data-time="10–11:30 min"
+        data-title="An LLM judge is another measurement."
+      >
+        <div class="slide-top"><span>Contact 03 / 09</span><span>Concepts</span></div>
+        <p class="eyebrow">Concepts · 10–11:30 min</p>
+        <h2>An LLM judge is another measurement.</h2>
+        <div class="c3-cards">
+          <article>
+            <h3>What it sees</h3>
+            <p>Query + answer excerpt + agent names.<br />Scores five dimensions from 1 to 10.</p>
+          </article>
+          <article>
+            <h3>What it records</h3>
+            <p>Relevance, accuracy, completeness,<br />clarity and helpfulness in Langfuse.</p>
+          </article>
+          <article>
+            <h3>What it cannot prove</h3>
+            <p>
+              No source facts or reference answer.<br />No database outcome checks.<br />No release
+              gate in the runner.
+            </p>
+          </article>
+        </div>
+        <p class="anchor-line">
+          Pair rubric scores with source evidence, deterministic assertions and human review.
+        </p>
+        <p class="c3-source">
+          BE: src/utils/evaluation.py:16,112,120,140 · src/querying/agents/orchestrator.py:352
+        </p>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            Our LLM judge scores relevance, accuracy, completeness, clarity and helpfulness. It
+            receives the query, agent names and the first 2,000 response characters, then submits
+            scores and reasoning to Langfuse. It does not receive source facts, a reference answer
+            or database outcomes, so I won’t treat its accuracy score as proof. It runs in the
+            background when a trace ID exists, and missing fields can default to 5. We would need
+            better grounding, score validation and human calibration before using it as a quality
+            gate. We won’t invent scores or make paid judge calls in this demo.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide c3-slide"
+        id="task"
+        data-phase="Concepts"
+        data-time="11:30–13 min"
+        data-title="Our first task: inspect cases through MCP."
+      >
+        <div class="slide-top"><span>Contact 03 / 10</span><span>Concepts</span></div>
+        <p class="eyebrow">Concepts · 11:30–13 min</p>
+        <h2>Our first task: inspect cases through MCP.</h2>
+        <p class="lead"><code>list_golden_cases(category: str | None = None)</code></p>
+        <div class="c3-cards">
+          <article>
+            <h3>Read a fixed fixture</h3>
+            <p>Return the six case fields.<br />Preserve dataset order.</p>
+          </article>
+          <article>
+            <h3>Filter predictably</h3>
+            <p>No category → all 15 cases.<br />Unknown category → empty list.</p>
+          </article>
+          <article>
+            <h3>Keep scope small</h3>
+            <p>Separate stdio process.<br />No app import, model, DB or writes.</p>
+          </article>
+        </div>
+        <p class="anchor-line">
+          Our completed teaching reference is ready; the original Shoplytic app is unchanged.
+        </p>
+        <p class="c3-source">
+          Reference: workbench/teaching/contact3_shoplytic/ · server.py:34 starts stdio
+        </p>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            Our task is to expose the golden cases through one read-only MCP tool. Codex can already
+            read a local JSON file, so MCP adds limited value for this file alone. I’m using a small
+            file to make the interface and connection easy to understand. The same interface becomes
+            more useful when a shared service owns the data or several clients need it. I’ve built a
+            working teaching reference using a snapshot; the original Shoplytic repositories are
+            unchanged. The tool reads and filters examples. It does not run evaluations or shopping
+            actions. The reference connection diagram explains how Inspector reaches it.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide c3-slide"
+        id="plan"
+        data-phase="Concepts"
+        data-time="13–15 min"
+        data-title="Define done before asking for a patch."
+      >
+        <div class="slide-top"><span>Contact 03 / 11</span><span>Concepts</span></div>
+        <p class="eyebrow">Concepts · 13–15 min</p>
+        <h2>Define done before asking for a patch.</h2>
+        <div class="c3-definitions">
+          <p>
+            <strong>Behavior</strong
+            ><span>All cases, category filter, empty result, exact field contract.</span>
+          </p>
+          <p>
+            <strong>Boundaries</strong
+            ><span>Fixed fixture; no application startup or customer operations.</span>
+          </p>
+          <p>
+            <strong>Evidence</strong
+            ><span>Offline tests + real MCP discovery and tool call + diff review.</span>
+          </p>
+          <p>
+            <strong>Release</strong
+            ><span>Pinned runtime, exact launcher, smoke check and rollback.</span>
+          </p>
+        </div>
+        <p class="anchor-line">
+          Demo starts now. Leave broad refactors and evaluation redesign for later.
+        </p>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            Before I ask Codex to edit, we’ll agree on what done means: preserve the six fields and
+            their order, filter predictably, use a fixed file, and avoid application startup. Then
+            we’ll test the function and the real protocol separately. A function test cannot prove
+            that an MCP client can discover and call the tool. We already have a completed
+            reference, but I’ll label whether we’re watching a live change, inspecting that
+            reference or describing a later release step.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide c3-slide demo"
+        id="demo-research"
+        data-phase="Demo"
+        data-time="15–23 min"
+        data-title="01 / Research the codebase."
+      >
+        <div class="slide-top"><span>Contact 03 / 12</span><span>Demo</span></div>
+        <p class="eyebrow">Demo · 15–23 min</p>
+        <h2>01 / Research the codebase.</h2>
+        <p class="demo-question">
+          “I’ve just joined Shoplytic. What does it do, and where should I start?”
+        </p>
+        <div class="c3-cards">
+          <article>
+            <h3>Discover</h3>
+            <p>Product purpose and repository roles.<br />Find entrypoints from the source.</p>
+          </article>
+          <article>
+            <h3>Investigate</h3>
+            <p>Delegate the main user journey.<br />Research quality and release practices.</p>
+          </article>
+          <article>
+            <h3>Sketch &amp; check</h3>
+            <p>Draw the discovered architecture.<br />Verify the arrows against code.</p>
+          </article>
+        </div>
+        <p class="anchor-line">
+          Evidence: a small code map that distinguishes implemented behavior from README claims.
+        </p>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            I’ll begin as someone who hasn’t worked on this code before: what does the product do,
+            what does each repository own, and where should I start? I won’t name internal agents or
+            evaluation files in that first prompt. Once we have an overview, I’ll ask two read-only
+            subagents to investigate the main user journey and the quality/release practices
+            independently. Then I’ll ask for a simple source-backed architecture sketch and explain
+            its arrows back to you. I’ll use /sketch only if it is available in my client; otherwise
+            I’ll make the same request in plain language and use Mermaid. The detailed code map is
+            my preparation reference, not knowledge I need to put into the onboarding prompt. We’ll
+            spend about two minutes on orientation, three on research, two on the diagram and one
+            verifying a finding.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide c3-slide demo"
+        id="demo-plan"
+        data-phase="Demo"
+        data-time="23–28 min"
+        data-title="02 / Plan one small change."
+      >
+        <div class="slide-top"><span>Contact 03 / 13</span><span>Demo</span></div>
+        <p class="eyebrow">Demo · 23–28 min</p>
+        <h2>02 / Plan one small change.</h2>
+        <p class="demo-question">
+          “Our workshop ticket: let engineers inspect evaluation examples through MCP.”
+        </p>
+        <div class="c3-cards">
+          <article>
+            <h3>Agree the contract</h3>
+            <p>
+              Tool arguments and six returned fields.<br />Category matching and error behavior.
+            </p>
+          </article>
+          <article>
+            <h3>Limit the patch</h3>
+            <p>Pure loader + thin MCP adapter.<br />Tests, optional dependency and docs.</p>
+          </article>
+          <article>
+            <h3>Choose evidence</h3>
+            <p>Offline edge cases.<br />Actual tools/list and tools/call.</p>
+          </article>
+        </div>
+        <p class="anchor-line">Evidence: acceptance criteria and expected files before editing.</p>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            Now that we understand the system, I’ll introduce our explicit workshop ticket: make the
+            evaluation examples available through a read-only MCP tool. I won’t claim Codex
+            independently discovered that requirement. We’ll ask it to propose the smallest
+            implementation, inputs, outputs and acceptance checks. Our prepared reference is a
+            comparison point after the plan, rather than a list of implementation details to hide
+            inside the first prompt. We’ll agree on the contract and files before editing, using the
+            locked MCP SDK 2.3.0 for the completed reference. Later prompts can be more specific
+            because we’ve now learned and decided those details.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide c3-slide demo"
+        id="demo-build"
+        data-phase="Demo"
+        data-time="28–38 min"
+        data-title="03 / Execute within the agreed scope."
+      >
+        <div class="slide-top"><span>Contact 03 / 14</span><span>Demo</span></div>
+        <p class="eyebrow">Demo · 28–38 min</p>
+        <h2>03 / Execute within the agreed scope.</h2>
+        <p class="demo-question">
+          “Implement the accepted plan. Keep the application startup untouched.”
+        </p>
+        <div class="c3-cards">
+          <article>
+            <h3>Build</h3>
+            <p>
+              Load fixed JSON through pathlib.<br />Validate, filter and return structured cases.
+            </p>
+          </article>
+          <article>
+            <h3>Expose</h3>
+            <p>One MCP tool.<br />stdio launcher in a separate process.</p>
+          </article>
+          <article>
+            <h3>Inspect</h3>
+            <p>Review changed files early.<br />Keep protocol output clean.</p>
+          </article>
+        </div>
+        <p class="anchor-line">
+          Evidence: a focused diff and a runnable, documented tool entrypoint.
+        </p>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            I’ll keep one writer on the patch and check the changed files early. The loader resolves
+            one fixed fixture relative to its module, so launching from another working directory
+            still works. In server.py, we create MCPServer, register list_golden_cases with
+            mcp.tool, then call mcp.run with transport set to stdio. The SDK handles schemas,
+            argument validation and protocol messages. We own the loading, validation and filtering
+            logic. Our read-only annotation describes the behavior; the code implements it.
+            Diagnostics belong on stderr because stdout carries MCP messages.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide c3-slide demo"
+        id="demo-test"
+        data-phase="Demo"
+        data-time="38–46 min"
+        data-title="04 / Test behavior, then the protocol."
+      >
+        <div class="slide-top"><span>Contact 03 / 15</span><span>Demo</span></div>
+        <p class="eyebrow">Demo · 38–46 min</p>
+        <h2>04 / Test behavior, then the protocol.</h2>
+        <div class="c3-split">
+          <div>
+            <h3>Offline assertions</h3>
+            <ul>
+              <li>All 15 cases; exact fields</li>
+              <li>product_search → 3 product cases</li>
+              <li>Unknown category → []</li>
+              <li>Malformed or missing input → clear error</li>
+            </ul>
+          </div>
+          <div>
+            <h3>MCP smoke</h3>
+            <ul>
+              <li>Initialize a real client</li>
+              <li>Discover tool + argument schema</li>
+              <li>Call filter and compare structured output</li>
+              <li>Reject invalid arguments</li>
+            </ul>
+          </div>
+        </div>
+        <p class="anchor-line">
+          Evidence: command, result, environment and which boundary it tested.
+        </p>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            First, we’ll check deterministic behavior: all 15 cases, the three product_search cases,
+            an empty result for an unknown category, and clear failures for malformed input. Then
+            I’ll run pnpm contact3:mcp:demo. That client launches the server from a temporary
+            directory, initializes the connection, discovers the tool and checks actual calls. It
+            also checks invalid arguments, an unknown tool and unchanged fixture bytes. In
+            Inspector, I’ll switch on the server, open Tools, select the tool, enter product_search
+            and execute it. We are manually calling the tool here; no model is connected. The
+            existing commerce runner is a separate live integration path, not this offline check.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide c3-slide demo"
+        id="demo-review"
+        data-phase="Demo"
+        data-time="46–53 min"
+        data-title="05 / Give a fresh reviewer the diff."
+      >
+        <div class="slide-top"><span>Contact 03 / 16</span><span>Demo</span></div>
+        <p class="eyebrow">Demo · 46–53 min</p>
+        <h2>05 / Give a fresh reviewer the diff.</h2>
+        <pre><code>Review this patch against its acceptance criteria.
+Focus on correctness, arbitrary file access, side effects,
+startup imports, protocol behavior and missing tests.
+Return actionable findings with file:line evidence.
+Do not edit. Do not assume passing tests prove safety.</code></pre>
+        <p class="anchor-line">
+          Evidence: address findings, rerun affected checks, record remaining limits.
+        </p>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            I’ll give a fresh reviewer the task contract, actual diff and observed test results. I
+            want concrete findings about correctness, file access, side effects, imports and
+            protocol behavior. The reviewer won’t edit. We’ll inspect each finding, make the
+            smallest justified repair and rerun the affected checks. I’ll keep existing issues such
+            as IP sessions and routing-only evaluation in the backlog rather than expanding this
+            patch halfway through the demo.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide c3-slide demo"
+        id="demo-release"
+        data-phase="Demo"
+        data-time="53–60 min"
+        data-title="06 / Release with a recovery path."
+      >
+        <div class="slide-top"><span>Contact 03 / 17</span><span>Demo</span></div>
+        <p class="eyebrow">Demo · 53–60 min</p>
+        <h2>06 / Release with a recovery path.</h2>
+        <div class="c3-cards">
+          <article>
+            <h3>This MCP tool</h3>
+            <p>
+              Pinned environment + fixed fixture.<br />Use a disposable Codex demo profile.<br />Rollback
+              to the previous command/version.
+            </p>
+          </article>
+          <article>
+            <h3>The Shoplytic application</h3>
+            <p>
+              Vercel storefront + Render API clues.<br />Check URL, secrets, DB and vector data.<br />Stage
+              → smoke → decide on promotion.
+            </p>
+          </article>
+        </div>
+        <p class="anchor-line">A local stdio MCP release is not a hosted application deployment.</p>
+        <p class="c3-source">
+          FE: src/services/api.ts:3 · vercel.json | BE: README.md · src/main.py:87
+        </p>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            For this tool, our release is a pinned runtime, fixed fixture, exact stdio launcher,
+            test evidence and recovery instructions. Inspector is our test client. To use the tool
+            from Codex, we would separately configure Codex with the same Python command and server
+            path; Inspector’s toggle does not connect a model. Stopping the demo client stops its
+            child server. Deploying the storefront and API is a separate workflow. We have Vercel
+            and Render clues, but we haven’t performed a cloud deployment. We would need isolated
+            staging data, environment configuration, smoke checks and a database-compatible rollback
+            plan. HEAD /health alone doesn’t prove readiness.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide c3-slide"
+        id="appendix-map"
+        data-phase="Appendix"
+        data-time="Reference"
+        data-title="Keep this code map beside the demo."
+      >
+        <div class="slide-top"><span>Contact 03 / 18</span><span>Appendix</span></div>
+        <p class="eyebrow">Appendix · Reference</p>
+        <h2>Keep this code map beside the demo.</h2>
+        <div class="c3-split">
+          <div>
+            <h3>Frontend</h3>
+            <p><code>src/components/Chatbot.tsx</code><br />Chat UI and cart refresh</p>
+            <p><code>src/services/api.ts</code><br />HTTP requests and response types</p>
+            <h3>Backend entry</h3>
+            <p><code>src/routes/user.py</code><br />Validation, IP session, query response</p>
+          </div>
+          <div>
+            <h3>Agent system</h3>
+            <p><code>src/querying/agents/</code><br />Router, general info, order specialist</p>
+            <p><code>src/querying/tools/</code><br />Retrieval and commerce operations</p>
+            <h3>Evidence</h3>
+            <p>
+              <code>tests/test_runner.py</code><br /><code>src/utils/evaluation.py</code><br /><code
+                >data/golden_data/test_cases.json</code
+              >
+            </p>
+          </div>
+        </div>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            Here’s the code map I’ll keep beside the demo. Frontend paths are relative to
+            agentic-ecommerce-fe and backend paths are relative to agentic-ecommerce. Our completed
+            MCP reference lives separately in Relay’s workbench/teaching/contact3_shoplytic folder.
+            I’ll use the source references to navigate and verify claims, rather than treating an
+            agent summary as the final authority.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide c3-slide"
+        id="appendix-limits"
+        data-phase="Appendix"
+        data-time="Reference"
+        data-title="Three limits to discuss before production."
+      >
+        <div class="slide-top"><span>Contact 03 / 19</span><span>Appendix</span></div>
+        <p class="eyebrow">Appendix · Reference</p>
+        <h2>Three limits to discuss before production.</h2>
+        <div class="c3-cards">
+          <article>
+            <h3>Identity &amp; state</h3>
+            <p>IP-derived sessions can share state.<br />Memory and cart are process-local.</p>
+          </article>
+          <article>
+            <h3>Evaluation</h3>
+            <p>Routing pass ≠ correct answer.<br />Judge lacks reference evidence.</p>
+          </article>
+          <article>
+            <h3>Reliability</h3>
+            <p>Background judge is not durable.<br />Transaction ≠ complete idempotency.</p>
+          </article>
+        </div>
+        <p class="anchor-line">
+          Useful engineering patterns can coexist with unfinished production requirements.
+        </p>
+        <p class="c3-source">
+          BE: src/routes/user.py:54,134 · src/utils/memory.py:17 · src/utils/cart.py:28 ·
+          src/querying/tools/order.py:704
+        </p>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            Before we call this production ready, we need to address identity, evaluation and
+            reliability. Shared IP sessions can share shopping state, and incognito browser contexts
+            do not fix that server-side identity choice. Process-local carts and memory can reset or
+            diverge across workers. A routing pass is not an answer-quality pass, and a background
+            task is not a durable workflow. We’ll keep these limitations visible without turning
+            today’s small task into a redesign.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide c3-slide"
+        id="appendix-connection"
+        data-phase="Appendix"
+        data-time="Reference"
+        data-title="Who connects to our MCP server?"
+      >
+        <div class="slide-top"><span>Contact 03 / 20</span><span>Appendix</span></div>
+        <p class="eyebrow">MCP connection / reference</p>
+        <h2>Who connects to our MCP server?</h2>
+        <div class="c3-flow">
+          <div>Browser Inspector UI → local HTTP → Inspector’s Node.js backend</div>
+          <div>Inspector backend → MCP over stdio → our Python MCP server</div>
+          <div>Python tool → fixed golden JSON → results return along the same path</div>
+        </div>
+        <p class="anchor-line">
+          The toggle starts the client connection. No model is involved in this test.
+        </p>
+        <div class="c3-split">
+          <p>
+            <strong>Our server</strong><br /><code>MCPServer(...)</code> → register tool →
+            <code>mcp.run(transport="stdio")</code>
+          </p>
+          <p>
+            <strong>Codex later</strong><br />Configure the same launcher in Codex. The host makes
+            the tool available to its model.
+          </p>
+        </div>
+        <p class="c3-source">
+          server.py:15,23,34 · Inspector is the existing @modelcontextprotocol/inspector package.
+        </p>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            I built the Python server, not the Inspector interface. Inspector is an existing npm
+            package. When I switch its toggle on, the browser asks Inspector’s local backend to
+            connect. The backend already has our Python command and server-file path. It launches
+            that file, which reaches mcp.run and waits for MCP messages on stdin. Inspector
+            initializes the connection, lists tools and sends calls over the child process’s
+            input/output streams. It displays the returned results in the browser. The SDK creates
+            the schema from our function signature and docstring and handles protocol messages and
+            argument validation. No model was connected in this test. Codex is a separate possible
+            client: its host would need the same launcher configured before its model could use this
+            tool. Our Python stdio server has no web URL of its own.
+          </p>
+        </aside>
+      </section>
+      <section
+        class="slide c3-slide"
+        id="appendix-sources"
+        data-phase="Appendix"
+        data-time="Reference"
+        data-title="References and rehearsal material."
+      >
+        <div class="slide-top"><span>Contact 03 / 21</span><span>Appendix</span></div>
+        <p class="eyebrow">Appendix · Reference</p>
+        <h2>References and rehearsal material.</h2>
+        <div class="c3-split">
+          <div>
+            <h3>Use after class</h3>
+            <p>
+              <a href="https://learn.chatgpt.com/docs/agent-configuration/subagents"
+                >Codex subagents</a
+              ><br /><a href="https://learn.chatgpt.com/docs/customization/overview"
+                >Project guidance and skills</a
+              ><br /><a href="https://learn.chatgpt.com/docs/extend/mcp">Connect MCP to Codex</a
+              ><br /><a href="https://py.sdk.modelcontextprotocol.io/">Official MCP Python SDK</a>
+            </p>
+          </div>
+          <div>
+            <h3>In this workspace</h3>
+            <p>
+              <code>docs/teaching/CONTACT_3_SHOPLYTIC.md</code><br />Minute plan, copyable prompts,
+              preflight, checks and release handoff.
+            </p>
+            <p class="c3-muted">
+              Prepared 26 October 2026.<br />Source inspection is not a live deployment result.
+            </p>
+          </div>
+        </div>
+        <p class="anchor-line">
+          A good handoff states what changed, what passed, what remains and how to recover.
+        </p>
+        <aside class="speaker-notes" hidden>
+          <h3>Speaker notes</h3>
+          <p>
+            I’ve included the source map, prompts, setup commands, connection explanation and
+            fallback steps in my handbook. The completed reference has 20 tests, a real stdio smoke
+            client and an Inspector walkthrough. These checks cover the local fixture tool; they do
+            not establish chatbot quality or cloud deployment success. I’ll finish our handoff with
+            what changed, what passed, what remains and how we recover.
+          </p>
+        </aside>
+      </section>
+    </main>
+    <footer class="deck-footer">
+      <div class="navigation">
+        <button id="previous-slide" type="button" aria-label="Previous slide">← Prev</button>
+        <div id="slide-dots" role="group" aria-label="Slide shortcuts"></div>
+        <button id="next-slide" type="button" aria-label="Next slide">Next →</button>
+      </div>
+    </footer>
+    <p class="keyboard-help">
+      ← → slides · G contents · N notes · F fullscreen · Print / PDF exports all slides
+    </p>
+    <p id="announcement" class="sr-only" role="status" aria-live="polite"></p>
+    <dialog id="outline" aria-labelledby="outline-title">
+      <div class="outline-heading">
+        <div>
+          <p class="eyebrow">Contact 3 / 60 minutes</p>
+          <h2 id="outline-title">Presentation contents</h2>
+        </div>
+        <button id="close-outline" type="button" aria-label="Close contents">✕</button>
+      </div>
+      <p>11 concept slides · 6 demo cards · 4 reference slides</p>
+      <nav id="outline-list" aria-label="Slide selection"></nav>
+    </dialog>
+    <output id="code-copy-status" class="code-copy-status" role="status" hidden></output>
+  </body>
+</html>

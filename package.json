@@ -39,6 +39,9 @@
     "contact2:preview": "uv run --project workbench --locked --extra references --env-file workbench/.env python workbench/scripts/contact2.py preview --state reference",
     "contact2:mcp": "uv run --project workbench --locked --extra references python workbench/scripts/contact2_mcp.py",
     "contact2:browser": "node workbench/scripts/contact2_browser.mjs --base http://127.0.0.1:8002",
+    "contact3:mcp": "workbench/.venv/bin/python workbench/teaching/contact3_shoplytic/server.py",
+    "contact3:mcp:demo": "workbench/.venv/bin/python workbench/teaching/contact3_shoplytic/smoke.py",
+    "contact3:mcp:test": "workbench/.venv/bin/python -m pytest -c workbench/pyproject.toml workbench/tests/test_contact3_mcp.py -q",
     "contact2:setup": "uv run --project workbench --locked --extra references python workbench/scripts/contact2_workspace.py",
     "contact2:preflight": "uv run --project workbench --locked --extra references --env-file workbench/.env python workbench/scripts/contact2_preflight.py"
   },

@@ -1,0 +1,150 @@
+/* Contact 3 keeps the shared presentation controls and adds Shoplytic diagrams. */
+body {
+  --blue: #76e4bb;
+  --violet: #b7a0ff;
+}
+.c3-slide {
+  gap: 22px;
+}
+.c3-cards {
+  display: flex;
+  gap: 18px;
+}
+.c3-cards article,
+.c3-branches article {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #76e4bb06;
+  padding: 24px;
+}
+.c3-cards h3,
+.c3-branches h3 {
+  margin-bottom: 12px;
+  color: var(--blue);
+}
+.c3-cards p,
+.c3-split p,
+.c3-branches p {
+  color: var(--muted);
+  font-size: 18px;
+}
+.c3-sequence {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.c3-sequence span {
+  border: 1px solid #76e4bb50;
+  color: var(--blue);
+  padding: 13px 18px;
+  border-radius: 30px;
+}
+.c3-flow {
+  display: grid;
+  gap: 16px;
+  text-align: center;
+  font-size: 20px;
+}
+.c3-branches,
+.c3-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.c3-split h3 {
+  margin-bottom: 12px;
+}
+.c3-split ul {
+  margin: 0;
+  padding-left: 24px;
+  font-size: 19px;
+  color: var(--muted);
+}
+.c3-split p + p {
+  margin-top: 12px;
+}
+.c3-slide pre {
+  padding: 24px;
+  margin: 0;
+  background: #02090980;
+  border: 1px solid #76e4bb30;
+  border-radius: 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 18px;
+  line-height: 1.65;
+  color: var(--blue);
+}
+.c3-slide code {
+  overflow-wrap: anywhere;
+}
+.c3-definitions p {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  padding: 15px 0;
+  gap: 24px;
+  border-bottom: 1px solid var(--line);
+  font-size: 19px;
+}
+.c3-definitions strong {
+  color: var(--blue);
+  font-weight: 600;
+}
+.c3-definitions span,
+.c3-muted {
+  color: var(--muted);
+}
+.c3-metric strong {
+  display: block;
+  font-size: 105px;
+  line-height: 1;
+  color: var(--blue);
+  letter-spacing: -6px;
+}
+.c3-metric span {
+  display: block;
+  color: var(--blue);
+  margin: 14px 0;
+}
+.c3-slide .c3-source {
+  font-size: 11px;
+  color: var(--quiet);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 760px) {
+  .c3-cards {
+    flex-direction: column;
+  }
+  .c3-branches,
+  .c3-split {
+    grid-template-columns: 1fr;
+  }
+  .c3-definitions p {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
+@media print {
+  .c3-slide {
+    gap: 20px;
+  }
+  .c3-slide h1 {
+    font-size: 60px;
+  }
+  .c3-cards {
+    flex-direction: row;
+  }
+  .c3-branches,
+  .c3-split {
+    grid-template-columns: 1fr 1fr;
+  }
+  .c3-definitions p {
+    grid-template-columns: 220px 1fr;
+  }
+  .c3-slide .c3-source {
+    font-size: 10px;
+  }
+}

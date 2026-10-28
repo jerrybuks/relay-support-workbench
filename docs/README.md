@@ -6,6 +6,7 @@ Start with the [repository README](../README.md) for access links and local setu
 
 - [Contact 1](teaching/CONTACT_1_PREPARATION.md): RAG, Responses, streaming and evaluation walkthrough.
 - [Contact 2](teaching/CONTACT_2_REHEARSAL_GUIDE.md): the two-hour PDF and governed Codex session, with copyable prompts and code maps.
+- [Contact 3 — Shoplytic](teaching/CONTACT_3_SHOPLYTIC.md): the 60-minute Codex SDLC demonstration, read-only MCP task, slide deck and rehearsal prompts.
 - [Participant practice](teaching/RELAY_PRACTICE.md): exercises and expected evidence.
 - [Checkpoints](CHECKPOINTS.md): repeat an exercise or inspect its completed implementation.
 
