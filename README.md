@@ -14,7 +14,7 @@ No local setup is needed to read the materials or explore the hosted workbench.
 | Contact 1 slides and speaker notes   | [Contact 1](https://relay-workshop.onrender.com/course/contact-1)                  |
 | Contact 1 concepts-only slides       | [Concepts deck](https://relay-workshop.onrender.com/static/contact1-concepts.html) |
 | Contact 2 slides and speaker notes   | [Contact 2](https://relay-workshop.onrender.com/course/contact-2)                  |
-| Contact 3 slides and speaker notes   | [Contact 3](https://relay-workshop.onrender.com/static/contact3.html)             |
+| Contact 3 slides and speaker notes   | [Contact 3](https://relay-workshop.onrender.com/static/contact3.html)              |
 | Contact 4 slides and speaker notes   | [Contact 4](https://relay-workshop.onrender.com/course/contact-4)                  |
 | Resolution desk and policy assistant | [Open the workbench](https://relay-workshop.onrender.com/dashboard)                |
 | Interactive API documentation        | [Swagger](https://relay-workshop.onrender.com/docs)                                |
