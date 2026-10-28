@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Contact 4: MCP client boundaries, deployment choices, prompt caching, Codex practice and readiness review."
+    />
+    <title>Contact 4 · MCP, clients and deployment readiness · Relay</title>
+    <link rel="stylesheet" href="/static/contact1.css" />
+    <link rel="stylesheet" href="/static/contact4.css" />
+    <script src="/static/contact1.js" defer></script>
+  </head>
+  <body data-contact="4">
+    <a class="skip-link" href="#deck">Skip to presentation</a>
+    <header class="deck-toolbar">
+      <a class="deck-brand" href="contact4.html"
+        ><span aria-hidden="true">r.</span><strong>relay</strong><small>Contact 04</small></a
+      >
+      <div class="slide-position">
+        <span id="phase-label">Concepts</span><span id="slide-counter"></span
+        ><span id="planned-time"></span>
+      </div>
+      <div class="rehearsal">
+        <output id="timer" aria-label="Rehearsal elapsed time">00:00</output
+        ><button id="timer-button" type="button">Start timer</button
+        ><button id="reset-timer" type="button">Reset</button>
+      </div>
+      <nav aria-label="Presentation controls">
+        <button id="outline-button" type="button" aria-haspopup="dialog">
+          Contents <kbd>G</kbd></button
+        ><button id="notes-button" type="button" aria-pressed="false">Notes <kbd>N</kbd></button
+        ><button id="fullscreen-button" type="button">Fullscreen <kbd>F</kbd></button
+        ><button id="print-button" type="button">Print / PDF</button>
+      </nav>
+    </header>
+    <progress id="deck-progress" max="12" value="1" aria-label="Slide progress"></progress>
+    <main id="deck" aria-label="Contact 4 presentation">
+      <noscript
+        ><p class="fallback">All slides are shown below. Enable JavaScript for presentation controls.</p></noscript
+      >
+      <section class="slide c4-slide cover" id="welcome" data-phase="Concepts" data-time="00–01 min" data-title="From a local tool to a usable client connection.">
+        <div class="slide-top"><span>Contact 04 / 01</span><span>Concepts</span></div>
+        <p class="eyebrow">Contact 04 · MCP + OpenAI</p>
+        <h1>From a local tool<br /><em>to a usable client connection.</em></h1>
+        <p class="lead">A practical walkthrough of Shoplytic's read-only MCP server, Inspector, stdio boundaries, remote-client options and prompt caching.</p>
+        <div class="c4-title-grid">
+          <div class="c4-mark">MCP</div>
+          <div>
+            <p class="c4-lead">One small tool. Four important deployment lessons.</p>
+            <div class="c4-chip-row"><span class="c4-chip">read-only</span><span class="c4-chip">stdio</span><span class="c4-chip">Inspector</span><span class="c4-chip">prompt cache</span></div>
+          </div>
+        </div>
+        <aside class="speaker-notes" hidden><h3>Speaker notes</h3><p>This contact starts from the MCP server built in the Shoplytic exercise, then separates local testing from client deployment and explains why stable prompt structure matters for caching.</p></aside>
+      </section>
+
+      <section class="slide c4-slide" id="server" data-phase="Concepts" data-time="01–02 min" data-title="A deliberately narrow MCP server.">
+        <div class="slide-top"><span>Contact 04 / 02</span><span>Concepts</span></div>
+        <p class="eyebrow">01 · What we built</p><h2>A deliberately narrow MCP server.</h2>
+        <p class="lead">The implementation stays beside the backend but does not import the ecommerce application.</p>
+        <div class="c4-flow"><div class="c4-flow-item">MCP client</div><div class="c4-flow-item">golden_cases_mcp.py</div><div class="c4-flow-item">golden_loader.py</div><div class="c4-flow-item">test_cases.json</div></div>
+        <div class="c4-card-grid c4-card-grid-3">
+          <article class="c4-card"><span class="c4-card-label">Tool</span><h3>list_golden_cases</h3><p>Optional exact category filter. No path argument.</p></article>
+          <article class="c4-card accent-lime"><span class="c4-card-label">Data</span><h3>Fixed fixture</h3><p>Reads six fields in source order.</p></article>
+          <article class="c4-card accent-amber"><span class="c4-card-label">Boundary</span><h3>No side effects</h3><p>No Shoplytic imports, database calls, model calls or writes.</p></article>
+        </div>
+        <p class="c4-source">Source: <a href="https://github.com/jerrybuks/agentic-ecommerce/blob/codex/golden-cases-mcp/src/golden_loader.py">golden_loader.py</a> · <a href="https://github.com/jerrybuks/agentic-ecommerce/blob/codex/golden-cases-mcp/src/golden_cases_mcp.py">golden_cases_mcp.py</a></p>
+        <aside class="speaker-notes" hidden><h3>Speaker notes</h3><p>The boundary is deliberate: the server is a read-only fixture adapter, not a commerce integration or a model-powered agent.</p></aside>
+      </section>
+
+      <section class="slide c4-slide" id="contract" data-phase="Concepts" data-time="02–03 min" data-title="Predictable input, predictable output.">
+        <div class="slide-top"><span>Contact 04 / 03</span><span>Concepts</span></div>
+        <p class="eyebrow">02 · The contract</p><h2>Predictable input, predictable output.</h2>
+        <p class="lead">The tool is easy to test because its contract is intentionally boring.</p>
+        <div class="c4-contract-layout">
+          <div><p class="c4-card-label">Signature</p><pre class="c4-code"><code>list_golden_cases(category: string | null = null)
+→ array of six-field objects</code></pre><div class="c4-callout"><strong>Unknown categories return []</strong><span>Filtering is exact and case-sensitive.</span></div></div>
+          <div class="c4-table-wrap"><table class="c4-table"><thead><tr><th>Input</th><th>Result</th></tr></thead><tbody><tr><td>omitted / null</td><td>all cases, source order</td></tr><tr><td>product_search</td><td>matching cases only</td></tr><tr><td>PRODUCT_SEARCH</td><td>empty list</td></tr><tr><td>does_not_exist</td><td>empty list</td></tr></tbody></table></div>
+        </div>
+        <p class="c4-source">Source: <a href="https://github.com/jerrybuks/agentic-ecommerce/blob/codex/golden-cases-mcp/data/golden_data/test_cases.json">fixture</a> · <a href="https://github.com/jerrybuks/agentic-ecommerce/blob/codex/golden-cases-mcp/tests/test_golden_cases_mcp.py">tests</a></p>
+        <aside class="speaker-notes" hidden><h3>Speaker notes</h3><p>Exact matching and source order make this a useful protocol exercise: we can distinguish a wrong argument, an unknown category and a valid empty result.</p></aside>
+      </section>
+
+      <section class="slide c4-slide" id="inspector" data-phase="Concepts" data-time="03–04:30 min" data-title="See the protocol before trusting the tool.">
+        <div class="slide-top"><span>Contact 04 / 04</span><span>Concepts</span></div>
+        <p class="eyebrow">03 · Inspector demo</p><h2>See the protocol before trusting the tool.</h2>
+        <p class="lead">Inspector makes capabilities and calls visible without starting Shoplytic itself.</p>
+        <div class="c4-inspector-layout"><pre class="c4-code"><code>cd agentic-ecommerce
+PYTHONPATH="$PWD/src" uv run mcp dev src/golden_cases_mcp.py</code></pre><div class="c4-checklist"><div><span>01</span><p>Open the URL printed by Inspector.</p></div><div><span>02</span><p>Confirm the transport is <b>stdio</b>.</p></div><div><span>03</span><p>List tools and inspect the schema.</p></div><div><span>04</span><p>Call with no category, then <code>product_search</code>.</p></div><div><span>05</span><p>Use <code>PRODUCT_SEARCH</code> to prove exact filtering.</p></div></div></div>
+        <p class="c4-source">Source: <a href="https://github.com/modelcontextprotocol/docs/blob/main/docs/tools/inspector.mdx">Inspector guide</a> · <a href="https://github.com/modelcontextprotocol/inspector/blob/main/docs/mcp-server-configuration.md">configuration</a></p>
+        <aside class="speaker-notes" hidden><h3>Speaker notes</h3><p>Inspector is the client UI. It launches the local process, initializes MCP, lists the tool and sends calls. No model is involved in this manual test.</p></aside>
+      </section>
+
+      <section class="slide c4-slide" id="stdio" data-phase="Concepts" data-time="04:30–06 min" data-title="stdio is a local process pipe.">
+        <div class="slide-top"><span>Contact 04 / 05</span><span>Concepts</span></div>
+        <p class="eyebrow">04 · Transport</p><h2>stdio is a local process pipe.</h2>
+        <p class="lead">That is a strength for development—and the reason ChatGPT web cannot call this server directly.</p>
+        <div class="c4-flow"><div class="c4-flow-item">Host launches process</div><div class="c4-flow-item">stdin / stdout</div><div class="c4-flow-item">MCP server</div><div class="c4-flow-item">Fixture read</div></div>
+        <div class="c4-card-grid c4-card-grid-2"><article class="c4-card accent-lime"><span class="c4-card-label">Good fit</span><ul class="c4-list"><li>Codex CLI/IDE and local stdio clients</li><li>Inspector, tests and local demos</li><li>No public endpoint to operate</li></ul></article><article class="c4-card accent-red"><span class="c4-card-label">Not provided</span><ul class="c4-list"><li>No public HTTPS MCP URL</li><li>No direct ChatGPT web connection</li><li>No multi-user network process</li></ul></article></div>
+        <p class="c4-source">Source: <a href="https://github.com/modelcontextprotocol/inspector/blob/main/docs/mcp-server-configuration.md">Inspector configuration</a> · <a href="https://developers.openai.com/api/docs/guides/tools-connectors-mcp">OpenAI MCP guide</a></p>
+        <aside class="speaker-notes" hidden><h3>Speaker notes</h3><p>A local stdio server is a process boundary, not a hosted web service. The client owns launching it and carrying messages over standard input and output.</p></aside>
+      </section>
+
+      <section class="slide c4-slide" id="options" data-phase="Concepts" data-time="06–07:30 min" data-title="Four paths from local to client-ready.">
+        <div class="slide-top"><span>Contact 04 / 06</span><span>Concepts</span></div>
+        <p class="eyebrow">05 · ChatGPT options</p><h2>Four paths from local to client-ready.</h2>
+        <p class="lead">Choose the boundary that matches the trust, hosting and audience requirements.</p>
+        <div class="c4-option-grid"><article class="c4-option current"><b>01</b><h3>Keep stdio</h3><p>Best for Codex, local clients, tests and Inspector.</p><span>current</span></article><article class="c4-option"><b>02</b><h3>Secure tunnel</h3><p>Keep the local process while making it reachable to supported clients.</p><span>private</span></article><article class="c4-option"><b>03</b><h3>Streamable HTTP</h3><p>Deploy an HTTPS MCP endpoint for web and API clients.</p><span>network</span></article><article class="c4-option"><b>04</b><h3>Desktop-only plugin</h3><p>Package local stdio for an approved desktop path.</p><span>approval</span></article></div>
+        <p class="c4-source">Source: <a href="https://help.openai.com/en/articles/12584461-connecting-custom-mcp-servers-in-chatgpt">ChatGPT custom MCP</a> · <a href="https://developers.openai.com/api/docs/guides/tools-connectors-mcp">OpenAI MCP connections</a> · <a href="https://developers.openai.com/plugins/deploy/desktop-only">desktop-only plugins</a></p>
+        <aside class="speaker-notes" hidden><h3>Speaker notes</h3><p>The current implementation is intentionally the first option. The other options require a separate transport, hosting or product approval decision.</p></aside>
+      </section>
+
+      <section class="slide c4-slide" id="slack" data-phase="Concepts" data-time="07:30–09 min" data-title="Slack is a useful hosted-server contrast.">
+        <div class="slide-top"><span>Contact 04 / 07</span><span>Concepts</span></div>
+        <p class="eyebrow">06 · Partner server</p><h2>Slack is a useful hosted-server contrast.</h2>
+        <p class="lead">A first-party connector shows what a permissioned, networked MCP integration adds beyond our local fixture server.</p>
+        <div class="c4-slack-layout"><div class="c4-slack-badge"><span>slack</span><b>+ ChatGPT</b></div><ol class="c4-steps"><li><span>01</span><p>Open ChatGPT Apps or Connectors.</p></li><li><span>02</span><p>Add the Slack connector available to the workspace.</p></li><li><span>03</span><p>Connect the workspace and review scopes.</p></li><li><span>04</span><p>Start read-only: search a channel or summarize a thread.</p></li><li><span>05</span><p>Review every action scope before allowing writes.</p></li></ol></div>
+        <p class="c4-source">Source: <a href="https://slack.com/help/articles/48855576908307-Guide-to-Model-Context-Protocol-in-Slack">Slack MCP guide</a> · <a href="https://slack.com/marketplace/A0BSMEG31ML-chatgpt-connector-local-mcp">Slack ChatGPT connector</a></p>
+        <aside class="speaker-notes" hidden><h3>Speaker notes</h3><p>Slack is the comparison point: a hosted connector has identity, scopes and a network boundary. It is not the same as our local stdio process.</p></aside>
+      </section>
+
+      <section class="slide c4-slide" id="caching" data-phase="Concepts" data-time="09–10 min" data-title="Cache the stable prefix, not the changing question.">
+        <div class="slide-top"><span>Contact 04 / 08</span><span>Concepts</span></div>
+        <p class="eyebrow">07 · Prompt caching</p><h2>Cache the stable prefix, not the changing question.</h2>
+        <p class="lead">Caching can reuse model work when the rendered prompt prefix matches.</p>
+        <div class="c4-cache-strip"><span class="stable">instructions + tools + examples</span><i>→</i><span class="dynamic">new user/task data</span></div>
+        <div class="c4-card-grid c4-card-grid-3"><article class="c4-card"><span class="c4-card-label">Keep stable</span><p>System/developer instructions, tool definitions and shared reference material.</p></article><article class="c4-card accent-lime"><span class="c4-card-label">Append</span><p>New turns and tool results should extend history instead of rewriting it.</p></article><article class="c4-card accent-amber"><span class="c4-card-label">Measure</span><p>Inspect cached tokens, cache-write tokens, latency and total cost.</p></article></div>
+        <p class="c4-note">A cache hit is not guaranteed. Model, tools, settings, prefix equality and lifetime all matter.</p>
+        <p class="c4-source">Source: <a href="https://developers.openai.com/api/docs/guides/prompt-caching">OpenAI Prompt Caching</a></p>
+        <aside class="speaker-notes" hidden><h3>Speaker notes</h3><p>Prompt caching is an optimization with observable usage and cost signals, not a promise that every request will be cheaper.</p></aside>
+      </section>
+
+      <section class="slide c4-slide" id="breakpoints" data-phase="Concepts" data-time="10–11 min" data-title="A breakpoint is a cache boundary.">
+        <div class="slide-top"><span>Contact 04 / 09</span><span>Concepts</span></div>
+        <p class="eyebrow">08 · Breakpoints</p><h2>A breakpoint is a cache boundary.</h2>
+        <p class="lead">It is not a debugger pause. It marks the exact end of content worth writing to the prompt cache.</p>
+        <div class="c4-breakpoint-layout"><pre class="c4-code"><code>{
+  "prompt_cache_options": { "mode": "explicit", "ttl": "30m" },
+  "content": [
+    { "text": "Stable instructions…",
+      "prompt_cache_breakpoint": { "mode": "explicit" } },
+    { "text": "Changing user request…" }
+  ]
+}</code></pre><div class="c4-breakpoint-notes"><div><b>Implicit</b><span>Provider chooses an eligible boundary.</span></div><div><b>Explicit</b><span>You mark the reusable boundary.</span></div><div><b>Suffix</b><span>Changing content can stay uncached.</span></div><div><b>Check</b><span>Rules vary by model and API version.</span></div></div></div>
+        <p class="c4-source">Source: <a href="https://developers.openai.com/api/docs/guides/prompt-caching">Prompt caching guide</a></p>
+        <aside class="speaker-notes" hidden><h3>Speaker notes</h3><p>Use the current API documentation and model support matrix before teaching an explicit breakpoint as an available production feature.</p></aside>
+      </section>
+
+      <section class="slide c4-slide" id="codex" data-phase="Concepts" data-time="11–12 min" data-title="Codex benefits from the same discipline.">
+        <div class="slide-top"><span>Contact 04 / 10</span><span>Concepts</span></div>
+        <p class="eyebrow">09 · Codex</p><h2>Codex benefits from the same discipline.</h2>
+        <p class="lead">Codex is an application and workflow; the model's prompt-cache rules still apply.</p>
+        <div class="c4-flow"><div class="c4-flow-item">system + tools<br /><small>stable, ordered</small></div><div class="c4-flow-item">reusable prefix<br /><small>cache candidate</small></div><div class="c4-flow-item">new task turn<br /><small>append, don't rewrite</small></div><div class="c4-flow-item">measured result<br /><small>tokens / latency / cost</small></div></div>
+        <div class="c4-card-grid c4-card-grid-2"><article class="c4-card"><span class="c4-card-label">Codex practice</span><p>Keep instructions, tool definitions, sandbox configuration and environment context identical and ordered.</p></article><article class="c4-card accent-lime"><span class="c4-card-label">Proof</span><p>Use cached-token usage, latency and cost to verify that the structure helped.</p></article></div>
+        <p class="c4-source">Source: <a href="https://developers.openai.com/learn/codex">Codex training</a> · <a href="https://developers.openai.com/cookbook/examples/prompt_caching_201">Caching example</a></p>
+        <aside class="speaker-notes" hidden><h3>Speaker notes</h3><p>Do not claim that a Codex setting alone guarantees a cache hit. Preserve the stable prefix and inspect the resulting usage.</p></aside>
+      </section>
+
+      <section class="slide c4-slide" id="exam" data-phase="Concepts" data-time="12–14 min" data-title="Deployment-practitioner study checklist.">
+        <div class="slide-top"><span>Contact 04 / 11</span><span>Concepts</span></div>
+        <p class="eyebrow">10 · Exam prep</p><h2>Deployment-practitioner study checklist.</h2>
+        <p class="lead">These are practical study themes—not an official exam blueprint.</p>
+        <div class="c4-exam-grid"><article class="c4-exam-card"><span>Codex deployment</span><ul><li>Scope the task and define “done”.</li><li>Plan before editing; review the diff.</li><li>Know sandbox, approvals, credentials and network boundaries.</li><li>Run proportionate tests and report evidence.</li><li>Keep tool connections least-privilege.</li></ul></article><article class="c4-exam-card"><span>API deployment</span><ul><li>Start with representative evaluations.</li><li>Choose model and reasoning effort for the workload.</li><li>Instrument latency, tokens, cache, errors and cost.</li><li>Handle overload, retries, safety identifiers and approvals.</li><li>Use HTTP or a tunnel for remote MCP clients.</li></ul></article></div>
+        <p class="c4-source">Source: <a href="https://developers.openai.com/api/docs/guides/deployment-checklist">API deployment checklist</a> · <a href="https://developers.openai.com/learn/codex">Codex training</a></p>
+        <aside class="speaker-notes" hidden><h3>Speaker notes</h3><p>Use the official objectives and documentation for exam preparation. This slide is a practical review checklist, not a claim about exam questions.</p></aside>
+      </section>
+
+      <section class="slide c4-slide" id="close" data-phase="Reference" data-time="Reference" data-title="Make the boundary explicit.">
+        <div class="slide-top"><span>Contact 04 / 12</span><span>Reference</span></div>
+        <p class="eyebrow">11 · Close</p><h2>The invariant: make the boundary explicit.</h2>
+        <p class="lead">A good MCP demo ends with a safe next step, not just a successful tool call.</p>
+        <div class="c4-close-grid"><div class="c4-close-number">01</div><p>Know what the server can read and what it cannot change.</p><div class="c4-close-number">02</div><p>Choose stdio, tunnel or HTTPS based on the client.</p><div class="c4-close-number">03</div><p>Inspect tools and permissions before using real data.</p><div class="c4-close-number">04</div><p>Keep stable context cacheable; measure the result.</p></div>
+        <p class="c4-source">Further reading: <a href="https://help.openai.com/en/articles/12584461-connecting-custom-mcp-servers-in-chatgpt">ChatGPT MCP connections</a> · <a href="https://developers.openai.com/api/docs/guides/prompt-caching">Prompt caching</a></p>
+        <aside class="speaker-notes" hidden><h3>Speaker notes</h3><p>The handoff should state the transport, authority, permissions, evidence and next deployment decision.</p></aside>
+      </section>
+    </main>
+    <footer class="deck-footer"><div class="navigation"><button id="previous-slide" type="button" aria-label="Previous slide">← Prev</button><div id="slide-dots" role="group" aria-label="Slide shortcuts"></div><button id="next-slide" type="button" aria-label="Next slide">Next →</button></div></footer>
+    <p class="keyboard-help">← → slides · G contents · N notes · F fullscreen · Print / PDF exports all slides</p>
+    <p id="announcement" class="sr-only" role="status" aria-live="polite"></p>
+    <dialog id="outline" aria-labelledby="outline-title"><div class="outline-heading"><div><p class="eyebrow">Contact 4 / 60 minutes</p><h2 id="outline-title">Presentation contents</h2></div><button id="close-outline" type="button" aria-label="Close contents">✕</button></div><p>11 concept slides · 1 reference close</p><nav id="outline-list" aria-label="Slide selection"></nav></dialog>
+    <output id="code-copy-status" class="code-copy-status" role="status" hidden></output>
+  </body>
+</html>

@@ -10,7 +10,7 @@ The frontend, FastAPI API, Swagger and slides share **one service and one HTTPS 
 2. Review the Blueprint: one Docker web service on the **Free** plan, with no paid disk, database or worker. Keep the repository root as the Docker context.
 3. Supply **OPENROUTER_API_KEY** in Render's secret prompt. Copy only that value from your local configuration; do not upload `.env`, credentials, local databases or vector indexes. No password or class code is required for visitors.
 4. Create the service. The explicit hosted entrypoint builds embeddings for the original published synthetic policies before accepting traffic. A provider failure stops startup; it never substitutes fixture answers.
-5. Open the URL Render assigns after the deploy reports **Live**. The same URL serves the course homepage at `/` (also `/course`), the workbench at `/dashboard`, Swagger at `/docs` and slides at `/course/contact-1` and `/course/contact-2`. Demo slide links adapt to that hosted URL.
+5. Open the URL Render assigns after the deploy reports **Live**. The same URL serves the course homepage at `/` (also `/course`), the workbench at `/dashboard`, Swagger at `/docs` and slides at `/course/contact-1`, `/course/contact-2`, `/static/contact3.html` and `/course/contact-4`. Demo slide links adapt to that hosted URL.
 
 The PDF upload lab at `/teaching/contact-2` remains a local opt-in app. Learners can clone the published source to run it with their own credentials; the hosted update publishes its slides without opening public document uploads.
 

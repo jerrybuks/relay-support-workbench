@@ -14,6 +14,8 @@ No local setup is needed to read the materials or explore the hosted workbench.
 | Contact 1 slides and speaker notes   | [Contact 1](https://relay-workshop.onrender.com/course/contact-1)                  |
 | Contact 1 concepts-only slides       | [Concepts deck](https://relay-workshop.onrender.com/static/contact1-concepts.html) |
 | Contact 2 slides and speaker notes   | [Contact 2](https://relay-workshop.onrender.com/course/contact-2)                  |
+| Contact 3 slides and speaker notes   | [Contact 3](https://relay-workshop.onrender.com/static/contact3.html)             |
+| Contact 4 slides and speaker notes   | [Contact 4](https://relay-workshop.onrender.com/course/contact-4)                  |
 | Resolution desk and policy assistant | [Open the workbench](https://relay-workshop.onrender.com/dashboard)                |
 | Interactive API documentation        | [Swagger](https://relay-workshop.onrender.com/docs)                                |
 
@@ -33,6 +35,8 @@ Open the workbench at **http://127.0.0.1:8000/dashboard**. Interactive API docum
 Course homepage and four-contact learning path: **http://127.0.0.1:8000/** (also available at `/course`).
 
 Contact 1 presentation, speaker notes and demo guide: **http://127.0.0.1:8000/course/contact-1**.
+
+Contact 3 slides: **http://127.0.0.1:8000/static/contact3.html**. Contact 4 slides: **http://127.0.0.1:8000/course/contact-4**.
 
 The browser starts an isolated local demo workspace as Tolu, a support agent. Open RY-1042, choose **Investigate case**, inspect policy evidence, then **Propose a service credit**. Use **Demo persona** to switch to Amara and review it. Reload preserves the workspace. Another browser/context starts independently.
 
