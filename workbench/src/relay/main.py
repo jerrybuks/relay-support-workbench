@@ -366,6 +366,10 @@ def create_app(
     def contact2_presentation():
         return FileResponse(STATIC / "contact2.html")
 
+    @app.get("/course/contact-4", include_in_schema=False)
+    def contact4_presentation():
+        return FileResponse(STATIC / "contact4.html")
+
     @app.get("/docs", include_in_schema=False)
     def api_docs():
         return FileResponse(STATIC / "swagger.html")
